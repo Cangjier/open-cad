@@ -85,7 +85,7 @@ let main = async () => {
     }
     let indexJson = await gitManager.getIndexJson();
     console.log(indexJson);
-    let sdks = indexJson.SDK[cadName];
+    let sdks = indexJson.SDK[cadName.toUpperCase()];
     console.log(sdks);
 };
 
