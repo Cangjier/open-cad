@@ -120,16 +120,21 @@ let main = async () => {
         axios.setProxy(proxyInfo);
     }
     let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
-    console.log(`downloading ${sdk.download_url} to ${download_path}`);
-    await axios.download(sdk.download_url, download_path);
-    console.log(`downloaded ${download_path}`);
     let cadDirectory = Path.Combine(sdkDirectory, cadName);
-    if (Directory.Exists(cadDirectory) == false) {
-        Directory.CreateDirectory(cadDirectory);
-    }
     let cadSdkDirectory = Path.Combine(cadDirectory, sdk.name);
-    await zip.extract(download_path, cadSdkDirectory);
+    if (Directory.Exists(cadSdkDirectory) == false || Directory.GetFiles(cadSdkDirectory).length == 0) {
+        console.log(`downloading ${sdk.download_url} to ${download_path}`);
+        await axios.download(sdk.download_url, download_path);
+        console.log(`downloaded ${download_path}`);
+        if (Directory.Exists(cadDirectory) == false) {
+            Directory.CreateDirectory(cadDirectory);
+        }
+        await zip.extract(download_path, cadSdkDirectory);
+        File.Delete(download_path);
+    }
+
     // 自动生成vscode配置文件，以及cmake文件
+
 };
 
 await main();
