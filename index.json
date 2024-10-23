@@ -1,0 +1,10 @@
+{
+    "SDK": {
+        "NX": [
+            {
+                "name": "NX1926",
+                "download_url": "https://github.com/Cangjier/open-cad/releases/download/all-cad-sdk/NX1926.zip"
+            }
+        ]
+    }
+}

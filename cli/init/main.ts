@@ -1,10 +1,11 @@
-import { args, script_path } from "../.tsc/context";
+import { args, cmdAsync, script_path } from "../.tsc/context";
 import { Path } from "../.tsc/System/IO/Path";
 import { File } from "../.tsc/System/IO/File";
+import { Directory } from "../.tsc/System/IO/Directory";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
 import { Environment } from "../.tsc/System/Environment";
 import { EnvironmentVariableTarget } from "../.tsc/System/EnvironmentVariableTarget";
-
+import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
 let utf8 = new UTF8Encoding(false);
 let parameters = {} as { [key: string]: string };
 for (let i = 0; i < args.length; i++) {
@@ -32,9 +33,59 @@ let help = () => {
     console.log(File.ReadAllText(Path.Combine(Path.GetDirectoryName(script_path), "README.md"), utf8));
 };
 
-if (Environment.GetEnvironmentVariable("OPEN_CAD_SDK_DIR") == null) {
-    Environment.SetEnvironmentVariable("OPEN_CAD_SDK_DIR", "C:\\OPEN_CAD_SDK", EnvironmentVariableTarget.User);
+let OPEN_CAD_DIR = "C:\\OPEN_CAD";
+if (Environment.GetEnvironmentVariable("OPEN_CAD_DIR") == null) {
+    Environment.SetEnvironmentVariable("OPEN_CAD_DIR", OPEN_CAD_DIR, EnvironmentVariableTarget.User);
 }
-else {
-    console.log("OPEN_CAD_SDK_DIR is already set.");
+let repositoryDirectory = Path.Combine(OPEN_CAD_DIR, "repository");
+if (Directory.Exists(repositoryDirectory) == false) {
+    Directory.CreateDirectory(repositoryDirectory);
 }
+
+let cadName = args[0];
+
+let GitManager = () => {
+    let clone = async () => {
+        let gitDirectory = Path.Combine(repositoryDirectory, ".git");
+        if (Directory.Exists(gitDirectory)) {
+            let cmd = `git pull origin master`;
+            console.log(cmd);
+            if (await cmdAsync(repositoryDirectory, cmd) != 0) {
+                console.log("pull failed");
+                return false;
+            }
+        }
+        else {
+            let cmd = `git clone https://github.com/Cangjier/open-cad.git .`;
+            console.log(cmd);
+            if (await cmdAsync(repositoryDirectory, cmd) != 0) {
+                console.log("clone failed");
+                return false;
+            }
+        }
+        return true;
+    };
+    let getIndexJson = async () => {
+        let indexJsonPath = Path.Combine(repositoryDirectory, "index.json");
+        return await Json.LoadAsync(indexJsonPath);
+    };
+
+    return {
+        clone,
+        getIndexJson
+    };
+};
+
+let gitManager = GitManager();
+
+
+let main = async () => {
+    if (await gitManager.clone() == false) {
+        return;
+    }
+    let indexJson = await gitManager.getIndexJson();
+    let sdks = indexJson.SDK[cadName];
+    console.log(sdks);
+};
+
+await main();
