@@ -24,14 +24,17 @@ endforeach()
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 # 2. 三方库
-# 2.1 头文件目录
+## 2.1 头文件目录
 target_include_directories(${PROJECT_NAME} PRIVATE "C:/third_party/include")
 
-# 2.2 库文件
+## 2.2 库文件
 file(GLOB_RECURSE LIBS
     "C:/third_party/lib/*.lib"
 )
 target_link_libraries(${PROJECT_NAME} ${LIBS})
+
+## 2.3 find_package
+find_package(OpenCV REQUIRED)
 
 # 3. 其他配置
 ## 3.1 C++标准
