@@ -191,7 +191,7 @@ let main = async () => {
     if (await gitManager.clone() == false) {
         return;
     }
-    
+
     let proxyInfo = await gitManager.getHttpProxy();
     if (proxyInfo != "") {
         console.log(`http.proxy: ${proxyInfo}`);
@@ -234,7 +234,7 @@ let main = async () => {
     let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
     let cadDirectory = Path.Combine(sdkDirectory, cadName);
     let cadSdkDirectory = Path.Combine(cadDirectory, sdk.name);
-    if (Directory.Exists(cadSdkDirectory) == false || Directory.GetFiles(cadSdkDirectory).length == 0) {
+    if ((Directory.Exists(cadSdkDirectory) == false) || (Directory.GetFiles(cadSdkDirectory).length == 0)) {
         console.log(`downloading ${sdk.download_url} to ${download_path}`);
         await axios.download(sdk.download_url, download_path);
         console.log(`downloaded ${download_path}`);
