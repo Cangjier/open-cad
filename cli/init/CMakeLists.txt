@@ -39,3 +39,14 @@ set(CMAKE_CXX_STANDARD 17)
 
 ## 3.2 输出路径
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+## 3.3 警告等级
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
+endif()
+
+## 3.4 预处理宏
+target_compile_definitions(${PROJECT_NAME} PRIVATE MY_DEFINE)
+

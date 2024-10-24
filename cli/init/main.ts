@@ -101,7 +101,9 @@ let main = async () => {
     if (await gitManager.clone() == false) {
         return;
     }
+    let script_directory = Path.GetDirectoryName(script_path);
     let cadName = args[0];
+    let projectDirectory = args.length > 1 ? args[1] : Environment.CurrentDirectory;
     let indexJson = await gitManager.getIndexJson();
     let sdks = indexJson.SDK[cadName.toUpperCase()] as {
         name: string,
@@ -133,8 +135,29 @@ let main = async () => {
         File.Delete(download_path);
     }
 
-    // 自动生成vscode配置文件，以及cmake文件
-
+    // 自动创建CMakeLists.txt
+    let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "CMakeLists.txt"), utf8);
+    await File.WriteAllTextAsync(Path.Combine(projectDirectory, "CMakeLists.txt"), cmakeListsText, utf8);
+    // 自动创建.vscode/settings.json
+    let vscodeDirectory = Path.Combine(projectDirectory, ".vscode");
+    if (Directory.Exists(vscodeDirectory) == false) {
+        Directory.CreateDirectory(vscodeDirectory);
+    }
+    let vscodeSettingsPath = Path.Combine(vscodeDirectory, "settings.json");
+    let vscodeSettingsText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "settings.json"), utf8);
+    await File.WriteAllTextAsync(vscodeSettingsPath, vscodeSettingsText, utf8);
+    // 自动创建.vscode/c_cpp_properties.json
+    let vscodeCppPropertiesPath = Path.Combine(vscodeDirectory, "c_cpp_properties.json");
+    let vscodeCppPropertiesText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "c_cpp_properties.json"), utf8);
+    await File.WriteAllTextAsync(vscodeCppPropertiesPath, vscodeCppPropertiesText, utf8);
+    // 自动创建.vscode/tasks.json
+    let vscodeTasksPath = Path.Combine(vscodeDirectory, "tasks.json");
+    let vscodeTasksText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "tasks.json"), utf8);
+    await File.WriteAllTextAsync(vscodeTasksPath, vscodeTasksText, utf8);
+    // 自动创建.vscode/launch.json
+    let vscodeLaunchPath = Path.Combine(vscodeDirectory, "launch.json");
+    let vscodeLaunchText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "launch.json"), utf8);
+    await File.WriteAllTextAsync(vscodeLaunchPath, vscodeLaunchText, utf8);
 };
 
 await main();
