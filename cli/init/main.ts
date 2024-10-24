@@ -108,7 +108,7 @@ let CMakeManager = () => {
     let install = async () => {
         let response = await axios.get("https://api.github.com/repos/Kitware/CMake/releases/latest", {
             headers: {
-                "Agent": "open-cad"
+                "User-Agent": "open-cad"
             }
         });
         let assets = response.data.assets;
@@ -164,7 +164,11 @@ let VisualStudioManager = () => {
         return false;
     };
     let install = async () => {
-        let response = await axios.get("https://api.github.com/repos/Cangjier/open-cad/releases/latest");
+        let response = await axios.get("https://api.github.com/repos/Cangjier/open-cad/releases/latest", {
+            headers: {
+                "User-Agent": "open-cad"
+            }
+        });
         let assets = response.data.assets;
         let asset = assets.find(item => item.name.includes("vs_community"));
         if (asset) {
