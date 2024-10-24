@@ -256,7 +256,7 @@ let main = async () => {
 
     let script_directory = Path.GetDirectoryName(script_path);
     let cadName = args[0];
-    let projectDirectory = "";
+    let projectDirectory = Environment.CurrentDirectory;
     if (args.length > 1 && args[1].startsWith("--") == false) {
         projectDirectory = args[1];
         if (projectDirectory == "." || projectDirectory == "./") {

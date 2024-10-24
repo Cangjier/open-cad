@@ -13,7 +13,7 @@ let help = () => {
 let main = async () => {
     let utf8 = new UTF8Encoding(false);
     let script_directory = Path.GetDirectoryName(script_path);
-    let projectDirectory = "";
+    let projectDirectory = Environment.CurrentDirectory;
     if (args.length > 0 && args[0].startsWith("--") == false) {
         projectDirectory = args[0];
         if (projectDirectory == "." || projectDirectory == "./") {
