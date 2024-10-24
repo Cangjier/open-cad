@@ -215,6 +215,10 @@ let VcpkgManager = () => {
         if (vcpkg_root == null) {
             Environment.SetEnvironmentVariable("VCPKG_ROOT", vcpkgDirectory, EnvironmentVariableTarget.User);
         }
+        var path = Environment.GetEnvironmentVariable("Path");
+        if ((path == null) || (path.includes(vcpkgDirectory) == false)) {
+            Environment.SetEnvironmentVariable("Path", `${vcpkgDirectory};${path}`, EnvironmentVariableTarget.User);
+        }
     };
     return {
         checkInstalled,
