@@ -103,7 +103,13 @@ let main = async () => {
     }
     let script_directory = Path.GetDirectoryName(script_path);
     let cadName = args[0];
-    let projectDirectory = args.length > 1 ? args[1] : Environment.CurrentDirectory;
+    let projectDirectory = "";
+    if (args.length > 1 && args[1].startsWith("--") == false) {
+        projectDirectory = args[1];
+        if (projectDirectory == "." || projectDirectory == "./") {
+            projectDirectory = Environment.CurrentDirectory;
+        }
+    }
     let indexJson = await gitManager.getIndexJson();
     let sdks = indexJson.SDK[cadName.toUpperCase()] as {
         name: string,
