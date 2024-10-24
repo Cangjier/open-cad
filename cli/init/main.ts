@@ -218,6 +218,13 @@ let VcpkgManager = () => {
                 await File.WriteAllTextAsync(bootstrapVcpkgPath, bootstrapLines.join("\n"), utf8);
             }
             await cmdAsync(vcpkgDirectory, `bootstrap-vcpkg.bat`);
+            if(proxyInfo.trim() != "") {
+                // 恢复bootstrap-vcpkg.bat
+                let bootstrapVcpkgPath = Path.Combine(vcpkgDirectory, "bootstrap-vcpkg.bat");
+                let bootstrapLines = [...await File.ReadAllLinesAsync(bootstrapVcpkgPath, utf8)];
+                bootstrapLines.splice(1, 1);
+                await File.WriteAllTextAsync(bootstrapVcpkgPath, bootstrapLines.join("\n"), utf8);
+            }
         }
         var vcpkg_root = Environment.GetEnvironmentVariable("VCPKG_ROOT");
         if (vcpkg_root == null) {
