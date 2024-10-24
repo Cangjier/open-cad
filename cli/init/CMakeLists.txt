@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.10)
 project(MyProject)
 
 # 1.2 默认所有源文件
-set(IGNORED_DIRS ".git" ".vs" "bin")
+set(IGNORED_DIRS ".git" ".vs" "bin","build")
 file(GLOB_RECURSE SOURCES
     "${CMAKE_SOURCE_DIR}/*.cpp"
     "${CMAKE_SOURCE_DIR}/*.cxx"
