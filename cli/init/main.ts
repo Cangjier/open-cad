@@ -106,22 +106,29 @@ let CMakeManager = () => {
         return false;
     };
     let install = async () => {
-        let response = await axios.get("https://api.github.com/repos/Kitware/CMake/releases/latest", {
-            headers: {
-                "User-Agent": "open-cad"
+        try {
+            let response = await axios.get("https://api.github.com/repos/Kitware/CMake/releases/latest", {
+                headers: {
+                    "User-Agent": "open-cad"
+                }
+            });
+            let assets = response.data.assets;
+            let asset = assets.find(item => item.name.includes("windows-x86_64.msi"));
+            if (asset) {
+                let browser_download_url = asset.browser_download_url;
+                let download_path = Path.Combine(downloadDirectory, Path.GetFileName(browser_download_url));
+                await axios.download(browser_download_url, download_path);
+                await cmdAsync(downloadDirectory, `msiexec /i ${download_path} /quiet /norestart`);
             }
-        });
-        let assets = response.data.assets;
-        let asset = assets.find(item => item.name.includes("windows-x86_64.msi"));
-        if (asset) {
-            let browser_download_url = asset.browser_download_url;
-            let download_path = Path.Combine(downloadDirectory, Path.GetFileName(browser_download_url));
-            await axios.download(browser_download_url, download_path);
-            await cmdAsync(downloadDirectory, `msiexec /i ${download_path} /quiet /norestart`);
+            else {
+                throw "cmake asset not found";
+            }
         }
-        else {
-            console.log("cmake asset not found");
+        catch {
+            console.log("CMake Install Failed");
+            console.log("CMake Download: https://cmake.org/download/");
         }
+
     };
     return {
         checkInstalled,
@@ -141,10 +148,16 @@ let VsCodeManager = () => {
         return false;
     };
     let install = async () => {
-        let download_path = Path.Combine(downloadDirectory, "vs_code.exe");
-        axios.download("https://code.visualstudio.com/sha/download?build=stable&os=win32-x64", download_path);
-        // 静态安装，要求挂载右键菜单
-        await cmdAsync(downloadDirectory, `start /wait ${download_path} /VERYSILENT /MERGETASKS=!runcode,addcontextmenufiles,addcontextmenufolders`);
+        try {
+            let download_path = Path.Combine(downloadDirectory, "vs_code.exe");
+            axios.download("https://code.visualstudio.com/sha/download?build=stable&os=win32-x64", download_path);
+            // 静态安装，要求挂载右键菜单
+            await cmdAsync(downloadDirectory, `start /wait ${download_path} /VERYSILENT /MERGETASKS=!runcode,addcontextmenufiles,addcontextmenufolders`);
+        }
+        catch {
+            console.log("VsCode Install Failed");
+            console.log("VsCode Download: https://code.visualstudio.com/download");
+        }
     };
     return {
         checkInstalled,
@@ -164,21 +177,43 @@ let VisualStudioManager = () => {
         return false;
     };
     let install = async () => {
-        let response = await axios.get("https://api.github.com/repos/Cangjier/open-cad/releases/latest", {
-            headers: {
-                "User-Agent": "open-cad"
-            }
-        });
-        let assets = response.data.assets;
-        let asset = assets.find(item => item.name.includes("vs_community"));
-        if (asset) {
-            let browser_download_url = asset.browser_download_url;
-            let download_path = Path.Combine(downloadDirectory, Path.GetFileName(browser_download_url));
-            await axios.download(browser_download_url, download_path);
-            await cmdAsync(downloadDirectory, `start /wait ${download_path}`);
+        console.log("VisualStudio Download: https://visualstudio.microsoft.com/zh-hans/downloads/");
+    };
+    return {
+        checkInstalled,
+        install
+    };
+};
+
+let visualStudioManager = VisualStudioManager();
+
+let VcpkgManager = () => {
+    let checkInstalled = async () => {
+        let output = {} as { lines: string[] };
+        await cmdAsync(Environment.CurrentDirectory, "vcpkg version", output);
+        if (output.lines && output.lines.length > 0) {
+            return true;
         }
-        else {
-            console.log("visual studio asset not found");
+        return false;
+    };
+    let install = async () => {
+        let vcpkgDirectory = Path.Combine(OPEN_CAD_DIR, "vcpkg");
+        if (Directory.Exists(vcpkgDirectory) == false) {
+            Directory.CreateDirectory(vcpkgDirectory);
+        }
+        let gitDirectory = Path.Combine(vcpkgDirectory, ".git");
+        if (Directory.Exists(gitDirectory) == false) {
+            let cmd = `git clone --depth 1 https://github.com/microsoft/vcpkg.git .`;
+            console.log(cmd);
+            if (await cmdAsync(vcpkgDirectory, cmd) != 0) {
+                console.log("clone failed");
+                return;
+            }
+            await cmdAsync(vcpkgDirectory, `bootstrap-vcpkg.bat`);
+        }
+        var vcpkg_root = Environment.GetEnvironmentVariable("VCPKG_ROOT");
+        if (vcpkg_root == null) {
+            Environment.SetEnvironmentVariable("VCPKG_ROOT", vcpkgDirectory, EnvironmentVariableTarget.User);
         }
     };
     return {
@@ -186,6 +221,8 @@ let VisualStudioManager = () => {
         install
     };
 };
+
+let vcpkgManager = VcpkgManager();
 
 let main = async () => {
     if (await gitManager.clone() == false) {
@@ -209,13 +246,19 @@ let main = async () => {
     }
     // 检查是否安装了cmake
     if (await cmakeManager.checkInstalled() == false) {
-        console.log("cmake not installed, installing...");
         await cmakeManager.install();
     }
     // 检查是否安装了vscode
     if (await vscodeManager.checkInstalled() == false) {
-        console.log("vscode not installed, installing...");
         await vscodeManager.install();
+    }
+    // 检查是否安装了vcpkg
+    if (await vcpkgManager.checkInstalled() == false) {
+        await vcpkgManager.install();
+    }
+    // 检查是否安装了visual studio
+    if (await visualStudioManager.checkInstalled() == false) {
+        await visualStudioManager.install();
     }
     // 安装cad的sdk
     let indexJson = await gitManager.getIndexJson();
@@ -230,7 +273,7 @@ let main = async () => {
     }
     // 从sdks中找到最新的版本
     let sdk = sdks[0];
-    
+
     let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
     let cadDirectory = Path.Combine(sdkDirectory, cadName);
     let cadSdkDirectory = Path.Combine(cadDirectory, sdk.name);
