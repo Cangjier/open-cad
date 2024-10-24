@@ -34,7 +34,7 @@ let main = async () => {
     else{
         cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}")`);
     }
-    await File.WriteAllText(Path.Combine(projectDirectory,`${projectName}.cmake`),cmakeLines.join("\n"),utf8);
+    await File.WriteAllTextAsync(Path.Combine(projectDirectory,`${projectName}.cmake`),cmakeLines.join("\n"),utf8);
     
 };
 
