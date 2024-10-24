@@ -106,7 +106,11 @@ let CMakeManager = () => {
         return false;
     };
     let install = async () => {
-        let response = await axios.get("https://api.github.com/repos/Kitware/CMake/releases/latest");
+        let response = await axios.get("https://api.github.com/repos/Kitware/CMake/releases/latest", {
+            headers: {
+                "Agent": "open-cad"
+            }
+        });
         let assets = response.data.assets;
         let asset = assets.find(item => item.name.includes("windows-x86_64.msi"));
         if (asset) {
