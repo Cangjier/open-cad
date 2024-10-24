@@ -201,7 +201,7 @@ let VcpkgManager = () => {
         if (Directory.Exists(vcpkgDirectory) == false) {
             Directory.CreateDirectory(vcpkgDirectory);
         }
-        let gitDirectory = Path.Combine(vcpkgDirectory, ".git");
+        let gitDirectory = Path.Combine(vcpkgDirectory, ".github");
         if (Directory.Exists(gitDirectory) == false) {
             let cmd = `git clone --depth 1 https://github.com/microsoft/vcpkg.git .`;
             console.log(cmd);
@@ -209,11 +209,14 @@ let VcpkgManager = () => {
                 console.log("clone failed");
                 return;
             }
-            // 在bootstrap-vcpkg.bat 中添加一行，用于设置下载源
-            let bootstrapVcpkgPath = Path.Combine(vcpkgDirectory, "bootstrap-vcpkg.bat");
-            let bootstrapLines = [...await File.ReadAllLinesAsync(bootstrapVcpkgPath, utf8)];
-            bootstrapLines.splice(1, 0, `set VCPKG_DOWNLOADS=https://mirrors.tuna.tsinghua.edu.cn/vcpkg/`);
-            await File.WriteAllTextAsync(bootstrapVcpkgPath, bootstrapLines.join("\n"), utf8);
+            let proxyInfo = await gitManager.getHttpProxy();
+            if (proxyInfo.trim() != "") {
+                // 在bootstrap-vcpkg.bat 中添加代理
+                let bootstrapVcpkgPath = Path.Combine(vcpkgDirectory, "bootstrap-vcpkg.bat");
+                let bootstrapLines = [...await File.ReadAllLinesAsync(bootstrapVcpkgPath, utf8)];
+                bootstrapLines.splice(1, 0, `set https_proxy=${proxyInfo}`);
+                await File.WriteAllTextAsync(bootstrapVcpkgPath, bootstrapLines.join("\n"), utf8);
+            }
             await cmdAsync(vcpkgDirectory, `bootstrap-vcpkg.bat`);
         }
         var vcpkg_root = Environment.GetEnvironmentVariable("VCPKG_ROOT");
