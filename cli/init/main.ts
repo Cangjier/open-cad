@@ -191,6 +191,13 @@ let main = async () => {
     if (await gitManager.clone() == false) {
         return;
     }
+    
+    let proxyInfo = await gitManager.getHttpProxy();
+    if (proxyInfo != "") {
+        console.log(`http.proxy: ${proxyInfo}`);
+        axios.setProxy(proxyInfo);
+    }
+
     let script_directory = Path.GetDirectoryName(script_path);
     let cadName = args[0];
     let projectDirectory = "";
@@ -223,11 +230,7 @@ let main = async () => {
     }
     // 从sdks中找到最新的版本
     let sdk = sdks[0];
-    let proxyInfo = await gitManager.getHttpProxy();
-    if (proxyInfo != "") {
-        console.log(`http.proxy: ${proxyInfo}`);
-        axios.setProxy(proxyInfo);
-    }
+    
     let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
     let cadDirectory = Path.Combine(sdkDirectory, cadName);
     let cadSdkDirectory = Path.Combine(cadDirectory, sdk.name);
