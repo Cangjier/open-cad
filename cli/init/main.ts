@@ -1,4 +1,4 @@
-import { args, cmdAsync, copyDirectory, script_path } from "../.tsc/context";
+import { args, cmdAsync, copyDirectory, script_path, execAsync } from "../.tsc/context";
 import { Path } from "../.tsc/System/IO/Path";
 import { File } from "../.tsc/System/IO/File";
 import { Directory } from "../.tsc/System/IO/Directory";
@@ -218,7 +218,7 @@ let VcpkgManager = () => {
                 await File.WriteAllTextAsync(bootstrapVcpkgPath, bootstrapLines.join("\n"), utf8);
             }
             await cmdAsync(vcpkgDirectory, `bootstrap-vcpkg.bat`);
-            if(proxyInfo.trim() != "") {
+            if (proxyInfo.trim() != "") {
                 // 恢复bootstrap-vcpkg.bat
                 let bootstrapVcpkgPath = Path.Combine(vcpkgDirectory, "bootstrap-vcpkg.bat");
                 let bootstrapLines = [...await File.ReadAllLinesAsync(bootstrapVcpkgPath, utf8)];
@@ -305,6 +305,9 @@ let main = async () => {
         }
         await zip.extract(download_path, cadSdkDirectory);
         File.Delete(download_path);
+        if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetDirectoryName(cadSdkDirectory)}.cmake`)) == false) {
+            await cmdAsync(cadSdkDirectory, `${Environment.ProcessPath} cmake`);
+        }
     }
 
     // 自动创建CMakeLists.txt
