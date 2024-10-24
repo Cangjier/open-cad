@@ -122,7 +122,7 @@ let CMakeManager = () => {
     return {
         checkInstalled,
         install
-    }
+    };
 };
 
 let cmakeManager = CMakeManager();
@@ -145,7 +145,7 @@ let VsCodeManager = () => {
     return {
         checkInstalled,
         install
-    }
+    };
 };
 
 let vscodeManager = VsCodeManager();
@@ -176,7 +176,7 @@ let VisualStudioManager = () => {
     return {
         checkInstalled,
         install
-    }
+    };
 };
 
 let main = async () => {
