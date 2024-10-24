@@ -306,7 +306,7 @@ let main = async () => {
         await zip.extract(download_path, cadSdkDirectory);
         File.Delete(download_path);
         if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetDirectoryName(cadSdkDirectory)}.cmake`)) == false) {
-            await cmdAsync(cadSdkDirectory, `opencad cmake`);
+            await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
         }
     }
 

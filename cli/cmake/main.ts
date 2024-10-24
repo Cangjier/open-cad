@@ -6,36 +6,28 @@ import { File } from "../.tsc/System/IO/File";
 import { Directory } from "../.tsc/System/IO/Directory";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
 
-let help = () => {
+let utf8 = new UTF8Encoding(false);
+let help = async () => {
+    console.log(await File.ReadAllTextAsync(Path.Combine(Path.GetDirectoryName(script_path), "Readme.md")));
+};
 
+let addThirdParty = async (cmakeListsPath: string, cmakePath: string) => {
+    let cmakeLists = await File.ReadAllTextAsync(cmakeListsPath, utf8);
+    let cmakeListsLines = cmakeLists.replace("\r", "").split("\n");
+    let findPackageIndex = cmakeListsLines.findIndex((line) => line.includes("find_package") && line.startsWith("#"));
+    if (findPackageIndex == -1) {
+        throw "Could not find find_package in CMakeLists.txt";
+    }
+    // 添加find_package查找路径
+    cmakeListsLines.splice(findPackageIndex + 1, 0, `list(APPEND CMAKE_MODULE_PATH "${cmakePath}")`);
 };
 
 let main = async () => {
-    let utf8 = new UTF8Encoding(false);
+
     let script_directory = Path.GetDirectoryName(script_path);
-    let projectDirectory = Environment.CurrentDirectory;
-    if (args.length > 0 && args[0].startsWith("--") == false) {
-        projectDirectory = args[0];
-        if (projectDirectory == "." || projectDirectory == "./") {
-            projectDirectory = Environment.CurrentDirectory;
-        }
-    }
-    let projectName = Path.GetFileName(projectDirectory);
-    let cmakeLines = [] as string[];
-    cmakeLines.push(`set(${projectName}_DIR \"\${CMAKE_CURRENT_LIST_DIR}\")`);
-    cmakeLines.push(`file(GLOB_RECURSE ${projectName}_LIBRARIES "\${${projectName}_DIR}/*.lib")`);
-    cmakeLines.push(`set(${projectName}_FOUND TRUE)`);
-    if(Directory.Exists(Path.Combine(projectDirectory,"include"))){
-        cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}/include")`);
-    }
-    else if(Directory.Exists(Path.Combine(projectDirectory,"inc"))){
-        cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}/inc")`);
-    }
-    else{
-        cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}")`);
-    }
-    await File.WriteAllTextAsync(Path.Combine(projectDirectory,`Find${projectName}.cmake`),cmakeLines.join("\n"),utf8);
-    
+    let cmakeListsPath = args[0];
+    let command = args[1];
+
 };
 
 
