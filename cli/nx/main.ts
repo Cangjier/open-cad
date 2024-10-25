@@ -69,6 +69,7 @@ let cmd_init = async () => {
     let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "CMakeLists.txt"), utf8);
     await File.WriteAllTextAsync(Path.Combine(projectDirectory, "CMakeLists.txt"), cmakeListsText, utf8);
     await cmdAsync(Environment.CurrentDirectory, `opencad cmake add_find_package ${cmakeListsPath} ${cmakePath}`);
+    await cmdAsync(Environment.CurrentDirectory, `opencad cmake set_toolchain ${cmakeListsPath} ${Path.Combine(OPEN_CAD_DIR, "vcpkg\\scripts\\buildsystems\\vcpkg.cmake")}`);
     // 自动创建.vscode/settings.json
     let vscodeDirectory = Path.Combine(projectDirectory, ".vscode");
     if (Directory.Exists(vscodeDirectory) == false) {
