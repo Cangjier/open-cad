@@ -222,6 +222,8 @@ let VisualStudioManager = () => {
                 Environment.SetEnvironmentVariable("VSDEVCMD", vsDevCmd, EnvironmentVariableTarget.User);
                 Environment.SetEnvironmentVariable("VSDEVCMDX86", vsDevCmdx86, EnvironmentVariableTarget.User);
             }
+            // 设置 VSINSTALLDIR 环境变量
+            Environment.SetEnvironmentVariable("VSINSTALLDIR", installationPath, EnvironmentVariableTarget.User);
         }
     };
     return {
