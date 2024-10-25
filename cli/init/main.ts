@@ -196,9 +196,31 @@ let VisualStudioManager = () => {
     let install = async () => {
         console.log("VisualStudio Download: https://visualstudio.microsoft.com/zh-hans/downloads/");
     };
+    let resgiterEnvironment = async () => {
+        // 检查所有Visual Studio的版本是否正确注册环境变量
+        let vswhere = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), "Microsoft Visual Studio", "Installer", "vswhere.exe");
+        let output = {} as { lines: string[] };
+        await cmdAsync(Environment.CurrentDirectory, `"${vswhere}" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`, output);
+        if (output.lines && output.lines.length > 0) {
+            let installationPath = output.lines[0];
+            let vcvarsall = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join(Path.DirectorySeparatorChar);
+            let vcvarsallx86 = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join(Path.DirectorySeparatorChar);
+            let vsDevCmd = Path.Combine(installationPath, "Common7", "Tools", "VsDevCmd.bat");
+            let vsDevCmdx86 = Path.Combine(installationPath, "Common7", "Tools", "VsDevCmd.bat");
+            if (File.Exists(vcvarsall) && File.Exists(vcvarsallx86)) {
+                Environment.SetEnvironmentVariable("VCVARSALL", vcvarsall, EnvironmentVariableTarget.User);
+                Environment.SetEnvironmentVariable("VCVARSALLX86", vcvarsallx86, EnvironmentVariableTarget.User);
+            }
+            if (File.Exists(vsDevCmd) && File.Exists(vsDevCmdx86)) {
+                Environment.SetEnvironmentVariable("VSDEVCMD", vsDevCmd, EnvironmentVariableTarget.User);
+                Environment.SetEnvironmentVariable("VSDEVCMDX86", vsDevCmdx86, EnvironmentVariableTarget.User);
+            }
+        }
+    };
     return {
         checkInstalled,
-        install
+        install,
+        resgiterEnvironment
     };
 };
 
@@ -338,6 +360,8 @@ let main = async () => {
     if (await visualStudioManager.checkInstalled() == false) {
         await visualStudioManager.install();
     }
+    // 检查visual studio环境变量
+    await visualStudioManager.resgiterEnvironment();
 
     await cmdAsync(Environment.CurrentDirectory, `opencad nx init ${cadSDK.name}`);
 
