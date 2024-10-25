@@ -28,7 +28,7 @@ let addThirdParty = async (cmakeListsPath: string, cmakePath: string) => {
     }
     cmakeListsLines.splice(findPackageIndex + 2, 0, `find_package(${cmakeFileName} REQUIRED)`);
     // 添加到项目
-    cmakeListsLines.push(`target_link_libraries(\${PROJECT_NAME} INTERFACE ${cmakeFileName})`);
+    cmakeListsLines.splice(findPackageIndex + 3, 0, `target_link_libraries(\${PROJECT_NAME} INTERFACE ${cmakeFileName})`);
     await File.WriteAllTextAsync(cmakeListsPath, cmakeListsLines.join("\n"), utf8);
 };
 
