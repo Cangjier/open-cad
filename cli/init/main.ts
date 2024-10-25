@@ -206,8 +206,8 @@ let VisualStudioManager = () => {
         if (output.lines && output.lines.length > 0) {
             let installationPath = output.lines[0];
             console.log(`installationPath: ${installationPath}`);
-            let vcvarsall = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join(Path.DirectorySeparatorChar);
-            let vcvarsallx86 = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join(Path.DirectorySeparatorChar);
+            let vcvarsall = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join("\\");
+            let vcvarsallx86 = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join("\\");
             let vsDevCmd = Path.Combine(installationPath, "Common7", "Tools", "VsDevCmd.bat");
             let vsDevCmdx86 = Path.Combine(installationPath, "Common7", "Tools", "VsDevCmd.bat");
             console.log(`vcvarsall: ${vcvarsall}`);
