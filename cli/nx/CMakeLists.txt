@@ -14,7 +14,7 @@ foreach(IGNORE_DIR ${IGNORED_DIRS})
     list(FILTER SOURCES EXCLUDE REGEX "${CMAKE_SOURCE_DIR}/${IGNORE_DIR}/.*")
 endforeach()
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 # 1.3 添加头文件路径
 file(GLOB INCLUDE_DIRS LIST_DIRECTORIES true "${CMAKE_SOURCE_DIR}/*")

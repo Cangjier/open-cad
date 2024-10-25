@@ -90,6 +90,12 @@ let cmd_init = async () => {
     let vscodeLaunchPath = Path.Combine(vscodeDirectory, "launch.json");
     let vscodeLaunchText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "launch.json"), utf8);
     await File.WriteAllTextAsync(vscodeLaunchPath, vscodeLaunchText, utf8);
+    // 自动创建 main.cpp
+    let mainCppPath = Path.Combine(projectDirectory, "main.cpp");
+    let templateMainCppPath = Path.Combine(script_directory, "template.cpp");
+    if (File.Exists(mainCppPath) == false) {
+        File.Copy(templateMainCppPath, mainCppPath, true);
+    }
 };
 
 let main = async () => {
