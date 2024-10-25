@@ -201,6 +201,7 @@ let VisualStudioManager = () => {
         let vswhere = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), "Microsoft Visual Studio", "Installer", "vswhere.exe");
         let output = {} as { lines: string[] };
         await cmdAsync(Environment.CurrentDirectory, `"${vswhere}" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`, output);
+        console.log(`vswhere: ${output}`);
         if (output.lines && output.lines.length > 0) {
             let installationPath = output.lines[0];
             console.log(`installationPath: ${installationPath}`);
