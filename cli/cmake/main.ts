@@ -20,14 +20,37 @@ let addThirdParty = async (cmakeListsPath: string, cmakePath: string) => {
     }
     // 添加find_package查找路径
     cmakeListsLines.splice(findPackageIndex + 1, 0, `list(APPEND CMAKE_MODULE_PATH "${cmakePath}")`);
+    await File.WriteAllTextAsync(cmakeListsPath, cmakeListsLines.join("\n"), utf8);
+};
+
+let cmd_add_find_package = async () => {
+    if (args.length < 3) {
+        console.log("Usage: cmake add_find_package <CMakeLists.txt> <CMakePath>");
+        return;
+    }
+    let cmakeListsPath = args[1];
+    let cmakePath = args[2];
+    if (Path.GetFileName(cmakeListsPath).toLowerCase() != "cmakelists.txt") {
+        console.log("The first argument must be a CMakeLists.txt file");
+        return;
+    }
+    if (Path.GetExtension(cmakePath).toLowerCase() != ".cmake") {
+        console.log("The second argument must be a .cmake file");
+        return;
+    }
+    await addThirdParty(cmakeListsPath, cmakePath);
 };
 
 let main = async () => {
-
+    if (args.length < 1) {
+        await help();
+        return
+    }
     let script_directory = Path.GetDirectoryName(script_path);
-    let cmakeListsPath = args[0];
-    let command = args[1];
-
+    let command = args[0];
+    if (command.toLowerCase() == "add_find_package") {
+        await cmd_add_find_package();
+    }
 };
 
 

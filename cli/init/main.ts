@@ -86,11 +86,28 @@ let GitManager = () => {
         }
         return "";
     };
+    let getLatestSdkName = async (cadName: string) => {
+        cadName = cadName.toUpperCase();
+        // 安装cad的sdk
+        let indexJson = await getIndexJson();
+        let sdks = indexJson.SDK[cadName] as {
+            name: string,
+            version: string,
+            download_url: string
+        }[];
+        if (sdks == undefined) {
+            throw `cadName ${cadName} not found`;
+        }
+        // 从sdks中找到最新的版本
+        let sdk = sdks[0];
+        return sdk.name;
+    };
 
     return {
         clone,
         getIndexJson,
-        getHttpProxy
+        getHttpProxy,
+        getLatestSdkName
     };
 };
 
@@ -243,6 +260,47 @@ let VcpkgManager = () => {
 
 let vcpkgManager = VcpkgManager();
 
+let SDKManager = () => {
+    let installLatestSDK = async (cadName: string) => {
+        cadName = cadName.toUpperCase();
+        // 安装cad的sdk
+        let indexJson = await gitManager.getIndexJson();
+        let sdks = indexJson.SDK[cadName] as {
+            name: string,
+            version: string,
+            download_url: string
+        }[];
+        if (sdks == undefined) {
+            throw `cadName ${cadName} not found`;
+        }
+        // 从sdks中找到最新的版本
+        let sdk = sdks[0];
+
+        let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
+        let cadDirectory = Path.Combine(sdkDirectory, cadName);
+        let cadSdkDirectory = Path.Combine(cadDirectory, sdk.name);
+        if ((Directory.Exists(cadSdkDirectory) == false) || (Directory.GetFiles(cadSdkDirectory).length == 0)) {
+            console.log(`downloading ${sdk.download_url} to ${download_path}`);
+            await axios.download(sdk.download_url, download_path);
+            console.log(`downloaded ${download_path}`);
+            if (Directory.Exists(cadDirectory) == false) {
+                Directory.CreateDirectory(cadDirectory);
+            }
+            await zip.extract(download_path, cadSdkDirectory);
+            File.Delete(download_path);
+        }
+        if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetDirectoryName(cadSdkDirectory)}.cmake`)) == false) {
+            await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
+        }
+        return sdk;
+    };
+    return {
+        installLatestSDK
+    };
+};
+
+let sdkManager = SDKManager();
+
 let main = async () => {
     if (await gitManager.clone() == false) {
         return;
@@ -254,15 +312,16 @@ let main = async () => {
         axios.setProxy(proxyInfo);
     }
 
-    let script_directory = Path.GetDirectoryName(script_path);
-    let cadName = args[0];
-    let projectDirectory = Environment.CurrentDirectory;
-    if (args.length > 1 && args[1].startsWith("--") == false) {
-        projectDirectory = args[1];
-        if (projectDirectory == "." || projectDirectory == "./") {
-            projectDirectory = Environment.CurrentDirectory;
-        }
+    if (args.length < 1) {
+        help();
+        return;
     }
+
+    let cadName = args[0];
+
+    // 安装cad的sdk
+    let cadSDK = await sdkManager.installLatestSDK(cadName);
+
     // 检查是否安装了cmake
     if (await cmakeManager.checkInstalled() == false) {
         await cmakeManager.install();
@@ -279,60 +338,9 @@ let main = async () => {
     if (await visualStudioManager.checkInstalled() == false) {
         await visualStudioManager.install();
     }
-    // 安装cad的sdk
-    let indexJson = await gitManager.getIndexJson();
-    let sdks = indexJson.SDK[cadName.toUpperCase()] as {
-        name: string,
-        version: string,
-        download_url: string
-    }[];
-    if (sdks == undefined) {
-        console.log(`cadName ${cadName} not found`);
-        return;
-    }
-    // 从sdks中找到最新的版本
-    let sdk = sdks[0];
 
-    let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
-    let cadDirectory = Path.Combine(sdkDirectory, cadName);
-    let cadSdkDirectory = Path.Combine(cadDirectory, sdk.name);
-    if ((Directory.Exists(cadSdkDirectory) == false) || (Directory.GetFiles(cadSdkDirectory).length == 0)) {
-        console.log(`downloading ${sdk.download_url} to ${download_path}`);
-        await axios.download(sdk.download_url, download_path);
-        console.log(`downloaded ${download_path}`);
-        if (Directory.Exists(cadDirectory) == false) {
-            Directory.CreateDirectory(cadDirectory);
-        }
-        await zip.extract(download_path, cadSdkDirectory);
-        File.Delete(download_path);
-        if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetDirectoryName(cadSdkDirectory)}.cmake`)) == false) {
-            await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
-        }
-    }
+    await cmdAsync(Environment.CurrentDirectory, `opencad nx init ${cadSDK.name}`);
 
-    // 自动创建CMakeLists.txt
-    let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "CMakeLists.txt"), utf8);
-    await File.WriteAllTextAsync(Path.Combine(projectDirectory, "CMakeLists.txt"), cmakeListsText, utf8);
-    // 自动创建.vscode/settings.json
-    let vscodeDirectory = Path.Combine(projectDirectory, ".vscode");
-    if (Directory.Exists(vscodeDirectory) == false) {
-        Directory.CreateDirectory(vscodeDirectory);
-    }
-    let vscodeSettingsPath = Path.Combine(vscodeDirectory, "settings.json");
-    let vscodeSettingsText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "settings.json"), utf8);
-    await File.WriteAllTextAsync(vscodeSettingsPath, vscodeSettingsText, utf8);
-    // 自动创建.vscode/c_cpp_properties.json
-    let vscodeCppPropertiesPath = Path.Combine(vscodeDirectory, "c_cpp_properties.json");
-    let vscodeCppPropertiesText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "c_cpp_properties.json"), utf8);
-    await File.WriteAllTextAsync(vscodeCppPropertiesPath, vscodeCppPropertiesText, utf8);
-    // 自动创建.vscode/tasks.json
-    let vscodeTasksPath = Path.Combine(vscodeDirectory, "tasks.json");
-    let vscodeTasksText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "tasks.json"), utf8);
-    await File.WriteAllTextAsync(vscodeTasksPath, vscodeTasksText, utf8);
-    // 自动创建.vscode/launch.json
-    let vscodeLaunchPath = Path.Combine(vscodeDirectory, "launch.json");
-    let vscodeLaunchText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "launch.json"), utf8);
-    await File.WriteAllTextAsync(vscodeLaunchPath, vscodeLaunchText, utf8);
 };
 
 await main();
