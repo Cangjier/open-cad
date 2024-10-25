@@ -58,15 +58,10 @@ let cmd_init = async () => {
         console.log("Usage: nx init <sdk_name> [project_directory]");
         return;
     }
+    console.log(`args: ${args}`);
     let cadName = "nx";
     let sdkName = args[1];
     let projectDirectory = Environment.CurrentDirectory;
-    if (args.length > 2 && args[2].startsWith("--") == false) {
-        projectDirectory = args[2];
-        if (projectDirectory == "." || projectDirectory == "./") {
-            projectDirectory = Environment.CurrentDirectory;
-        }
-    }
     let script_directory = Path.GetDirectoryName(script_path);
     let cmakePath = Path.Combine(sdkDirectory, cadName, sdkName, `Find${sdkName}.cmake`);
     // 自动创建CMakeLists.txt
