@@ -124,6 +124,7 @@ let CMakeManager = () => {
     };
     let install = async () => {
         try {
+            console.log(`CMake Installing...`);
             let response = await axios.get("https://api.github.com/repos/Kitware/CMake/releases/latest", {
                 headers: {
                     "User-Agent": "open-cad"
@@ -166,8 +167,9 @@ let VsCodeManager = () => {
     };
     let install = async () => {
         try {
+            console.log(`VsCode Installing...`);
             let download_path = Path.Combine(downloadDirectory, "vs_code.exe");
-            axios.download("https://code.visualstudio.com/sha/download?build=stable&os=win32-x64", download_path);
+            await axios.download("https://code.visualstudio.com/sha/download?build=stable&os=win32-x64", download_path);
             // 静态安装，要求挂载右键菜单
             await cmdAsync(downloadDirectory, `start /wait ${download_path} /VERYSILENT /MERGETASKS=!runcode,addcontextmenufiles,addcontextmenufolders`);
         }
@@ -261,6 +263,7 @@ let VcpkgManager = () => {
         }
         let gitDirectory = Path.Combine(vcpkgDirectory, ".github");
         if (Directory.Exists(gitDirectory) == false) {
+            console.log("vcpkg Installing...");
             let cmd = `git clone --depth 1 https://github.com/microsoft/vcpkg.git .`;
             console.log(cmd);
             if (await cmdAsync(vcpkgDirectory, cmd) != 0) {
