@@ -197,6 +197,7 @@ let VisualStudioManager = () => {
         console.log("VisualStudio Download: https://visualstudio.microsoft.com/zh-hans/downloads/");
     };
     let resgiterEnvironment = async () => {
+        console.log(`resgiterEnvironment`);
         // 检查所有Visual Studio的版本是否正确注册环境变量
         let vswhere = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), "Microsoft Visual Studio", "Installer", "vswhere.exe");
         let output = {} as { lines: string[] };
