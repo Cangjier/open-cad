@@ -19,7 +19,16 @@ let addThirdParty = async (cmakeListsPath: string, cmakePath: string) => {
         throw "Could not find find_package in CMakeLists.txt";
     }
     // 添加find_package查找路径
-    cmakeListsLines.splice(findPackageIndex + 1, 0, `list(APPEND CMAKE_MODULE_PATH "${cmakePath.replace("\\", "/")}")`);
+    let cmakeDirectory = Path.GetDirectoryName(cmakePath);
+    cmakeListsLines.splice(findPackageIndex + 1, 0, `list(APPEND CMAKE_MODULE_PATH "${cmakeDirectory.replace("\\", "/")}")`);
+    // 添加find_package
+    let cmakeFileName = Path.GetFileNameWithoutExtension(cmakePath);
+    if (cmakeFileName.toLowerCase().startsWith("find")) {
+        cmakeFileName = cmakeFileName.substring(4);
+    }
+    cmakeListsLines.splice(findPackageIndex + 2, 0, `find_package(${cmakeFileName} REQUIRED)`);
+    // 添加到项目
+    cmakeListsLines.push(`target_link_libraries(\${PROJECT_NAME} INTERFACE ${cmakeFileName})`);
     await File.WriteAllTextAsync(cmakeListsPath, cmakeListsLines.join("\n"), utf8);
 };
 
