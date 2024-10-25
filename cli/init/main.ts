@@ -201,7 +201,7 @@ let VisualStudioManager = () => {
         // 检查所有Visual Studio的版本是否正确注册环境变量
         let vswhere = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), "Microsoft Visual Studio", "Installer", "vswhere.exe");
         let output = {} as { lines: string[] };
-        await cmdAsync(Environment.CurrentDirectory, `"${vswhere}" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`, output);
+        await cmdAsync(Path.GetDirectoryName(vswhere), `${Path.GetFileName(vswhere)} -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`, output);
         console.log(`vswhere: ${output}`);
         if (output.lines && output.lines.length > 0) {
             let installationPath = output.lines[0];
