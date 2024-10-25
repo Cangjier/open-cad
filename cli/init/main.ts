@@ -203,10 +203,15 @@ let VisualStudioManager = () => {
         await cmdAsync(Environment.CurrentDirectory, `"${vswhere}" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`, output);
         if (output.lines && output.lines.length > 0) {
             let installationPath = output.lines[0];
+            console.log(`installationPath: ${installationPath}`);
             let vcvarsall = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join(Path.DirectorySeparatorChar);
             let vcvarsallx86 = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join(Path.DirectorySeparatorChar);
             let vsDevCmd = Path.Combine(installationPath, "Common7", "Tools", "VsDevCmd.bat");
             let vsDevCmdx86 = Path.Combine(installationPath, "Common7", "Tools", "VsDevCmd.bat");
+            console.log(`vcvarsall: ${vcvarsall}`);
+            console.log(`vcvarsallx86: ${vcvarsallx86}`);
+            console.log(`vsDevCmd: ${vsDevCmd}`);
+            console.log(`vsDevCmdx86: ${vsDevCmdx86}`);
             if (File.Exists(vcvarsall) && File.Exists(vcvarsallx86)) {
                 Environment.SetEnvironmentVariable("VCVARSALL", vcvarsall, EnvironmentVariableTarget.User);
                 Environment.SetEnvironmentVariable("VCVARSALLX86", vcvarsallx86, EnvironmentVariableTarget.User);
