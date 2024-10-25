@@ -215,15 +215,25 @@ let VisualStudioManager = () => {
             console.log(`vsDevCmd: ${vsDevCmd}`);
             console.log(`vsDevCmdx86: ${vsDevCmdx86}`);
             if (File.Exists(vcvarsall) && File.Exists(vcvarsallx86)) {
-                Environment.SetEnvironmentVariable("VCVARSALL", vcvarsall, EnvironmentVariableTarget.User);
-                Environment.SetEnvironmentVariable("VCVARSALLX86", vcvarsallx86, EnvironmentVariableTarget.User);
+                if (Environment.GetEnvironmentVariable("VCVARSALL") == null) {
+                    Environment.SetEnvironmentVariable("VCVARSALL", vcvarsall, EnvironmentVariableTarget.User);
+                }
+                if (Environment.GetEnvironmentVariable("VCVARSALLX86") == null) {
+                    Environment.SetEnvironmentVariable("VCVARSALLX86", vcvarsallx86, EnvironmentVariableTarget.User);
+                }
             }
             if (File.Exists(vsDevCmd) && File.Exists(vsDevCmdx86)) {
-                Environment.SetEnvironmentVariable("VSDEVCMD", vsDevCmd, EnvironmentVariableTarget.User);
-                Environment.SetEnvironmentVariable("VSDEVCMDX86", vsDevCmdx86, EnvironmentVariableTarget.User);
+                if (Environment.GetEnvironmentVariable("VSDEVCMD") == null) {
+                    Environment.SetEnvironmentVariable("VSDEVCMD", vsDevCmd, EnvironmentVariableTarget.User);
+                }
+                if (Environment.GetEnvironmentVariable("VSDEVCMDX86") == null) {
+                    Environment.SetEnvironmentVariable("VSDEVCMDX86", vsDevCmdx86, EnvironmentVariableTarget.User);
+                }
             }
             // 设置 VSINSTALLDIR 环境变量
-            Environment.SetEnvironmentVariable("VSINSTALLDIR", installationPath, EnvironmentVariableTarget.User);
+            if(Environment.GetEnvironmentVariable("VSINSTALLDIR") == null) {
+                Environment.SetEnvironmentVariable("VSINSTALLDIR", installationPath, EnvironmentVariableTarget.User);
+            }
         }
     };
     return {
