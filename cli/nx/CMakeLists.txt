@@ -5,22 +5,29 @@ cmake_minimum_required(VERSION 3.28)
 project(MyProject)
 
 # 1.2 默认所有源文件
-set(IGNORED_DIRS ".git" ".vs" "bin" "build")
+set(IGNORED_DIRS "\\.git" "\\.vs" "bin" "build" "\\.vscode")
 file(GLOB_RECURSE SOURCES
     "${CMAKE_SOURCE_DIR}/*.cpp"
     "${CMAKE_SOURCE_DIR}/*.cxx"
 )
 foreach(IGNORE_DIR ${IGNORED_DIRS})
-    list(FILTER SOURCES EXCLUDE REGEX "${CMAKE_SOURCE_DIR}/${IGNORE_DIR}/.*")
+    list(FILTER SOURCES EXCLUDE REGEX "${CMAKE_SOURCE_DIR}(/|\\\\)${IGNORE_DIR}(/|\\\\).*")
 endforeach()
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 # 1.3 添加头文件路径
-file(GLOB INCLUDE_DIRS LIST_DIRECTORIES true "${CMAKE_SOURCE_DIR}/*")
-foreach(IGNORE_DIR ${IGNORED_DIRS})
-    list(FILTER INCLUDE_DIRS EXCLUDE REGEX "${CMAKE_SOURCE_DIR}/${IGNORE_DIR}/.*")
+file(GLOB TEMP_INCLUDE_DIRS LIST_DIRECTORIES true "${CMAKE_SOURCE_DIR}/*")
+set(INCLUDE_DIRS "")
+foreach(path ${TEMP_INCLUDE_DIRS})
+    if(IS_DIRECTORY "${path}")
+        list(APPEND INCLUDE_DIRS "${path}")
+    endif()
 endforeach()
+foreach(IGNORE_DIR ${IGNORED_DIRS})
+    list(FILTER INCLUDE_DIRS EXCLUDE REGEX "${CMAKE_SOURCE_DIR}(/|\\\\)${IGNORE_DIR}((/|\\\\).*)*")
+endforeach()
+
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 # 2. 三方库

@@ -11,7 +11,7 @@ let help = async () => {
     console.log(await File.ReadAllTextAsync(Path.Combine(Path.GetDirectoryName(script_path), "Readme.md")));
 };
 
-let addThirdParty = async (cmakeListsPath: string, cmakePath: string) => {
+let addFindPackage = async (cmakeListsPath: string, cmakePath: string) => {
     let cmakeLists = await File.ReadAllTextAsync(cmakeListsPath, utf8);
     let cmakeListsLines = cmakeLists.replace("\r", "").split("\n");
     let findPackageIndex = cmakeListsLines.findIndex((line) => line.includes("find_package") && line.startsWith("#"));
@@ -28,7 +28,8 @@ let addThirdParty = async (cmakeListsPath: string, cmakePath: string) => {
     }
     cmakeListsLines.splice(findPackageIndex + 2, 0, `find_package(${cmakeFileName} REQUIRED)`);
     // 添加到项目
-    cmakeListsLines.splice(findPackageIndex + 3, 0, `target_link_libraries(\${PROJECT_NAME} INTERFACE ${cmakeFileName})`);
+    cmakeListsLines.splice(findPackageIndex + 3, 0, `target_link_libraries(\${PROJECT_NAME} PRIVATE ${cmakeFileName})`);
+    cmakeListsLines.splice(findPackageIndex + 4, 0, `target_include_directories(\${PROJECT_NAME} PRIVATE ${cmakeFileName})`);
     await File.WriteAllTextAsync(cmakeListsPath, cmakeListsLines.join("\n"), utf8);
 };
 
@@ -47,7 +48,7 @@ let cmd_add_find_package = async () => {
         console.log("The second argument must be a .cmake file");
         return;
     }
-    await addThirdParty(cmakeListsPath, cmakePath);
+    await addFindPackage(cmakeListsPath, cmakePath);
 };
 
 let cmd_set_toolchain = async () => {
