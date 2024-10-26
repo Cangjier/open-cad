@@ -62,11 +62,13 @@ let cmd_init = async () => {
     let cadName = "nx";
     let sdkName = args[1];
     let projectDirectory = Environment.CurrentDirectory;
+    let projectName = Path.GetFileName(projectDirectory);
     let script_directory = Path.GetDirectoryName(script_path);
     let cmakePath = Path.Combine(sdkDirectory, cadName, sdkName, `Find${sdkName}.cmake`);
     // 自动创建CMakeLists.txt
     let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt");
     let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "CMakeLists.txt"), utf8);
+    cmakeListsText = cmakeListsText.replace("__PROJECT_NAME__", projectName);
     await File.WriteAllTextAsync(Path.Combine(projectDirectory, "CMakeLists.txt"), cmakeListsText, utf8);
     await cmdAsync(Environment.CurrentDirectory, `opencad cmake add_find_package ${cmakeListsPath} ${cmakePath}`);
     await cmdAsync(Environment.CurrentDirectory, `opencad cmake set_toolchain ${cmakeListsPath} ${Path.Combine(OPEN_CAD_DIR, "vcpkg\\scripts\\buildsystems\\vcpkg.cmake").replace("\\", "/")}`);
@@ -75,9 +77,9 @@ let cmd_init = async () => {
     if (Directory.Exists(vscodeDirectory) == false) {
         Directory.CreateDirectory(vscodeDirectory);
     }
-    // let vscodeSettingsPath = Path.Combine(vscodeDirectory, "settings.json");
-    // let vscodeSettingsText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "settings.json"), utf8);
-    // await File.WriteAllTextAsync(vscodeSettingsPath, vscodeSettingsText, utf8);
+    let vscodeSettingsPath = Path.Combine(vscodeDirectory, "settings.json");
+    let vscodeSettingsText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "settings.json"), utf8);
+    await File.WriteAllTextAsync(vscodeSettingsPath, vscodeSettingsText, utf8);
     // 自动创建.vscode/c_cpp_properties.json
     // let vscodeCppPropertiesPath = Path.Combine(vscodeDirectory, "c_cpp_properties.json");
     // let vscodeCppPropertiesText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "c_cpp_properties.json"), utf8);

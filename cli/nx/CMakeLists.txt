@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.28)
 
 # 1. 项目构建
 # 1.1 项目名称
-project(MyProject)
+project(__PROJECT_NAME__)
+## 1.2 输出路径
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
-# 1.2 默认所有源文件
+## 1.3 默认所有源文件
 set(IGNORED_DIRS "\\.git" "\\.vs" "bin" "build" "\\.vscode")
 file(GLOB_RECURSE SOURCES
     "${CMAKE_SOURCE_DIR}/*.cpp"
@@ -16,7 +18,7 @@ endforeach()
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-# 1.3 添加头文件路径
+## 1.4 添加头文件路径
 file(GLOB TEMP_INCLUDE_DIRS LIST_DIRECTORIES true "${CMAKE_SOURCE_DIR}/*")
 set(INCLUDE_DIRS "")
 foreach(path ${TEMP_INCLUDE_DIRS})
@@ -51,16 +53,13 @@ target_link_libraries(${PROJECT_NAME} ${LIBS})
 ## 3.1 C++标准
 set(CMAKE_CXX_STANDARD 17)
 
-## 3.2 输出路径
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-
-## 3.3 警告等级
+## 3.2 警告等级
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 endif()
 
-## 3.4 预处理宏
+## 3.3 预处理宏
 target_compile_definitions(${PROJECT_NAME} PRIVATE MY_DEFINE)
 
