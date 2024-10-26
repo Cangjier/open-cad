@@ -188,12 +188,8 @@ let vscodeManager = VsCodeManager();
 
 let VisualStudioManager = () => {
     let checkInstalled = async () => {
-        let output = {} as { lines: string[] };
-        await cmdAsync(Environment.CurrentDirectory, "devenv /?", output);
-        if (output.lines && output.lines.length > 0) {
-            return true;
-        }
-        return false;
+        let vswhere = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), "Microsoft Visual Studio", "Installer", "vswhere.exe");
+        return File.Exists(vswhere);
     };
     let install = async () => {
         console.log("VisualStudio Download: https://visualstudio.microsoft.com/zh-hans/downloads/");
@@ -233,7 +229,7 @@ let VisualStudioManager = () => {
                 }
             }
             // 设置 VSINSTALLDIR 环境变量
-            if(Environment.GetEnvironmentVariable("VSINSTALLDIR") == null) {
+            if (Environment.GetEnvironmentVariable("VSINSTALLDIR") == null) {
                 Environment.SetEnvironmentVariable("VSINSTALLDIR", installationPath, EnvironmentVariableTarget.User);
             }
         }
