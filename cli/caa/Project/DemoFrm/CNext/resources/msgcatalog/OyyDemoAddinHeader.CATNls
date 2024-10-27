@@ -1,0 +1,3 @@
+OyyDemoAddinHeader.OyyHeader.Title="OyyNiuBi";
+OyyDemoAddinHeader.OyyHeader.ShortHelp="The short help of the command";
+OyyDemoAddinHeader.OyyHeader.LongHelp="The long help of the command";
