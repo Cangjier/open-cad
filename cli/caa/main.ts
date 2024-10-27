@@ -60,4 +60,4 @@ let main = async () => {
 
 await main();
 
-//tscl run E:\Downloads\Temp\open-cad\cli\caa\main.ts package-sdk C:\Users\ELEAD-33\Downloads\李东明\B21
+//tscl run E:\Downloads\Temp\open-cad\cli\caa\main.ts package-sdk C:\Users\ELEAD-33\Downloads\李东明\B21  E:\Downloads\李东明\SDK
