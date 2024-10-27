@@ -16,6 +16,9 @@ let cmd_package_sdk = async () => {
         console.log(`Catia directory does not exist: ${catiaDirectory}`);
         return;
     }
+    if(Directory.Exists(outputDirectory) == false) {
+        Directory.CreateDirectory(outputDirectory);
+    }
     let directories = Directory.GetDirectories(catiaDirectory);
     let frameworkDirectories = [] as string[];
     for (let directory of directories) {
