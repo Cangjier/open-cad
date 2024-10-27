@@ -3,8 +3,12 @@ cmake_minimum_required(VERSION 3.28)
 # 1. 项目构建
 # 1.1 项目名称
 project(__PROJECT_NAME__)
+
 ## 1.2 输出路径
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+## 1.3 Release/Debug
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
 
 ## 1.3 默认所有源文件
 set(IGNORED_DIRS "\\.git" "\\.vs" "bin" "build" "\\.vscode")

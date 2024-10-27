@@ -1,4 +1,3 @@
-
 import { args, script_path } from "../.tsc/context";
 import { Environment } from "../.tsc/System/Environment";
 import { Path } from "../.tsc/System/IO/Path";
