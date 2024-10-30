@@ -2,6 +2,11 @@ import { Exception } from "../../System/Exception";
 import { Levels } from "../Loggers/Logger+Levels";
 import { Type } from "../../System/Type";
 export class TraceInterface {
+    public get Success(): boolean {
+        return {} as any;
+    }
+    public set Success(value: boolean) {
+    }
     public get Message(): string {
         return {} as any;
     }
@@ -22,7 +27,7 @@ export class TraceInterface {
     public Info(message?: string, exception?: Exception): void {
         return {} as any;
     }
-    public Update(trace?: TraceInterface): void {
+    public Update(trace?: TraceInterface, overwrite?: boolean): void {
         return {} as any;
     }
     public Log(level?: Levels, message?: string, exception?: Exception, popOuterFunctionCount?: number, showTrace?: boolean): void {

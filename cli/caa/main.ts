@@ -5,7 +5,13 @@ import { File } from "../.tsc/System/IO/File";
 import { Directory } from "../.tsc/System/IO/Directory";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
 import { EnvironmentVariableTarget } from "../.tsc/System/EnvironmentVariableTarget";
+import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
+import { Regex } from "../.tsc/System/Text/RegularExpressions/Regex";
+import { Encoding } from "../.tsc/System/Text/Encoding";
+import { ICATNls, IDictionary, IPrereqComponent, Languages, Visiblity } from "./Inerfaces";
+import { Match } from "../.tsc/System/Text/RegularExpressions/Match";
 let utf8 = new UTF8Encoding(false);
+let gb2312 = Encoding.GetEncoding("gb2312");
 
 
 let OPEN_CAD_DIR = "C:\\OPEN_CAD";
@@ -25,9 +31,364 @@ if (Directory.Exists(sdkDirectory) == false) {
     Directory.CreateDirectory(sdkDirectory);
 }
 
-let ProjectManager = () => {
-    let createFramework = async (projectDirectory: string, frameworkName: string) => {
-        
+let catnlsRegex = new Regex("(?<MacDeclareHeader>.*)\\.(?<CommandHeader>.*)\\.(?<Property>.*)=\"(?<Value>.*)\"");
+let identityCardRegex = new Regex("AddPrereqComponent\\(\"(?<Framework>.*)\",(?<Visiblity>.*)\\);");
+let imakefileRegex = (/^(?!#)(\w+)\s*=\s*(.*?)(?:\s*\\\s*\n\s*(.*?))*\s*(?=\n|$)/gm) as any as Regex;
+let ProjectV1 = (projectDirectory: string) => {
+    let Dictionary = (dicoPath: string) => {
+        let getTIEs = () => {
+            if (File.Exists(dicoPath) == false) {
+                return [];
+            };
+            let lines = File.ReadAllLines(dicoPath, utf8);
+            let result = [] as IDictionary[];
+            for (let line of lines) {
+                let items = line.trim().split(" ");
+                if (items.length == 3) {
+                    result.push({
+                        TieName: items[0],
+                        WorkshopName: items[1],
+                        ModuleName: items[2].substring(3)
+                    });
+                }
+            }
+            return result;
+        };
+        let setTIEs = (ties: IDictionary[]) => {
+            let dictionaryDirectory = Path.GetDirectoryName(dicoPath);
+            if (Directory.Exists(dictionaryDirectory) == false) {
+                Directory.CreateDirectory(dictionaryDirectory);
+            }
+            let lines = [] as string[];
+            for (let item of ties) {
+                lines.push(`${item.TieName} ${item.WorkshopName} lib${item.ModuleName}`);
+            }
+            File.WriteAllText(dicoPath, lines.join("\n"), utf8);
+        };
+        let addTIE = (tieName: string, workshopName: string, moduleName: string) => {
+            let ties = getTIEs();
+            let index = ties.findIndex(item => item.TieName == tieName);
+            if (index == -1) {
+                ties.push({
+                    TieName: tieName,
+                    WorkshopName: workshopName,
+                    ModuleName: moduleName
+                });
+            }
+            else {
+                ties[index].WorkshopName = workshopName;
+                ties[index].ModuleName = moduleName;
+            }
+            setTIEs(ties);
+        };
+        let removeTIE = (tieName: string) => {
+            let ties = getTIEs();
+            let index = ties.findIndex(item => item.TieName == tieName);
+            if (index != -1) {
+                ties.splice(index, 1);
+                setTIEs(ties);
+            }
+        };
+
+        return {
+            getTIEs,
+            setTIEs,
+            addTIE,
+            removeTIE
+        };
+    };
+    let Icons = (iconsDirectory: string) => {
+        let initialize = () => {
+            if (Directory.Exists(iconsDirectory) == false) {
+                Directory.CreateDirectory(iconsDirectory);
+            }
+            let normalDirectory = Path.Combine(iconsDirectory, "normal");
+            if (Directory.Exists(normalDirectory) == false) {
+                Directory.CreateDirectory(normalDirectory);
+            }
+        };
+        return {
+            initialize
+        };
+    };
+    let CATNls = (catnlsPath: string, language: Languages) => {
+        let encoding = language == "Simplified_Chinese" ? gb2312 : utf8;
+        let getNls = () => {
+            if (File.Exists(catnlsPath) == false) {
+                return [];
+            }
+            let lines = File.ReadAllLines(catnlsPath, encoding);
+            let result = [] as ICATNls[];
+            for (let line of lines) {
+                let match = catnlsRegex.Match(line);
+                if (match.Success) {
+                    result.push({
+                        MacDeclareHeader: match.Groups["MacDeclareHeader"].Value,
+                        CommandHeader: match.Groups["CommandHeader"].Value,
+                        Property: match.Groups["Property"].Value,
+                        Value: match.Groups["Value"].Value
+                    });
+                }
+            }
+            return result;
+        };
+        let setNls = (nls: ICATNls[]) => {
+            let catnlsDirectory = Path.GetDirectoryName(catnlsPath);
+            if (Directory.Exists(catnlsDirectory) == false) {
+                Directory.CreateDirectory(catnlsDirectory);
+            }
+            File.WriteAllText(catnlsPath, nls.map(item => {
+                return `${item.MacDeclareHeader}.${item.CommandHeader}.${item.Property}="${item.Value}";`;
+            }).join("\n"), encoding);
+        };
+        let setProperty = (macDeclareHeader: string, commandHeader: string, titleValue: string, shortHelpValue: string, longHelpValue: string) => {
+            let properties = ["Title", "ShortHelp", "LongHelp"];
+            let values = [titleValue, shortHelpValue, longHelpValue];
+            let nls = getNls();
+            for (let property of properties) {
+                let index = nls.findIndex(item => item.MacDeclareHeader == macDeclareHeader && item.CommandHeader == commandHeader && item.Property == property);
+                if (index == -1) {
+                    nls.push({
+                        MacDeclareHeader: macDeclareHeader,
+                        CommandHeader: commandHeader,
+                        Property: property,
+                        Value: values[properties.indexOf(property)]
+                    });
+                }
+                else {
+                    nls[index].Value = values[properties.indexOf(property)];
+                }
+            }
+            setNls(nls);
+        };
+        let getProperty = (macDeclareHeader: string, commandHeader: string) => {
+            let properties = ["Title", "ShortHelp", "LongHelp"];
+            let nls = getNls();
+            let result = {} as {
+                [key: string]: string
+            };
+            for (let property of properties) {
+                let index = nls.findIndex(item => item.MacDeclareHeader == macDeclareHeader && item.CommandHeader == commandHeader && item.Property == property);
+                if (index != -1) {
+                    result[property] = nls[index].Value;
+                }
+            }
+        };
+        return {
+            getNls,
+            setNls,
+            setProperty,
+            getProperty
+        };
+    };
+    let Msgcatalog = (msgcatalogDirectory: string) => {
+        let simplifiedChineseDirectory = Path.Combine(msgcatalogDirectory, "Simplified_Chinese");
+        let getCATNls = (macDeclareHeader: string, language: Languages) => {
+            let filePath = Path.Combine(msgcatalogDirectory, `${macDeclareHeader}.CATNls`);
+            if (language == "Simplified_Chinese") {
+                filePath = Path.Combine(simplifiedChineseDirectory, `${macDeclareHeader}.CATNls`);
+            };
+            return CATNls(filePath, language);
+        };
+        return {
+            getCATNls
+        };
+    };
+    let CNext = (frameworkDirectory: string) => {
+        let dictionaryDirectory = Path.Combine(frameworkDirectory, "CNext", "code", "dictionary");
+        let dictionary = Dictionary(Path.Combine(dictionaryDirectory, `${Path.GetFileName(frameworkDirectory)}.dico`));
+        let icons = Icons([frameworkDirectory, "CNext", "resources", "graphic", "icons"].join(Path.DirectorySeparatorChar.toString()));
+        let msgcatalog = Msgcatalog(Path.Combine(frameworkDirectory, "CNext", "resources", "msgcatalog"));
+
+        return {
+            dictionary,
+            icons,
+            msgcatalog
+        };
+    };
+    let IdentityCard = (IdentityCardPath: string) => {
+        let getItems = () => {
+            if (File.Exists(IdentityCardPath) == false) {
+                return [];
+            }
+            let lines = File.ReadAllLines(IdentityCardPath, utf8);
+            let result = [] as IPrereqComponent[];
+            for (let line of lines) {
+                let match = identityCardRegex.Match(line);
+                if (match.Success) {
+                    result.push({
+                        Framework: match.Groups["Framework"].Value,
+                        Visiblity: match.Groups["Visiblity"].Value
+                    });
+                }
+            }
+            return result;
+        };
+        let setItems = (items: IPrereqComponent[]) => {
+            let identityCardDirectory = Path.GetDirectoryName(IdentityCardPath);
+            if (Directory.Exists(identityCardDirectory) == false) {
+                Directory.CreateDirectory(identityCardDirectory);
+            }
+            let lines = [] as string[];
+            lines.push(`// COPYRIGHT Dassault Systemes 2023
+//===================================================================
+//
+// IdentityCard.h
+// Supplies the list of prerequisite components for framework DemoFrm
+//
+//===================================================================
+//
+// Usage notes:
+//   For every prereq framework FW, use the syntax:
+//   AddPrereqComponent ("FW", Public);
+//
+//===================================================================
+//
+//  May 2023  Creation: Code generated by the CAA wizard  Administrator
+//===================================================================`.replace("\r", ""));
+            for (let item of items) {
+                lines.push(`AddPrereqComponent("${item.Framework}",${item.Visiblity});`);
+            }
+            lines.push("// END WIZARD EDITION ZONE");
+            File.WriteAllText(IdentityCardPath, lines.join("\n"), utf8);
+        };
+        let addItem = (framework: string, visiblity: Visiblity) => {
+            let items = getItems();
+            if (items.findIndex(item => item.Framework == framework) == -1) {
+                items.push({
+                    Framework: framework,
+                    Visiblity: visiblity
+                });
+                setItems(items);
+            }
+        };
+        let removeItem = (framework: string) => {
+            let items = getItems();
+            let index = items.findIndex(item => item.Framework == framework);
+            if (index != -1) {
+                items.splice(index, 1);
+                setItems(items);
+            }
+        };
+        return {
+            getItems,
+            setItems,
+            addItem,
+            removeItem
+        };
+    };
+    let ImakeFile = (imakeFilePath: string) => {
+        let getItems = () => {
+            if (File.Exists(imakeFilePath) == false) {
+                return [];
+            }
+            let text = File.ReadAllText(imakeFilePath, utf8);
+            let matches = imakefileRegex.Matches(text) as any;
+            let result = [] as {
+                key: string,
+                value: string
+            }[];
+            for (let match of matches) {
+                let line = (match as Match).Value;
+                result.push({
+                    key: line.substring(0, line.indexOf("=")).trim(),
+                    value: line.substring(line.indexOf("=") + 1).trim()
+                });
+            }
+            return result;
+        };
+        return {
+            getItems
+        };
+    };
+    let Module = (framework: any, moduleDirectory: string) => {
+        let moduleName = Path.GetFileNameWithoutExtension(moduleDirectory);
+        let frameworkDirectory = framework.getFrameDirectory();
+        let frameworkName = Path.GetFileName(frameworkDirectory);
+        let frameworkProtectedInterfacesDirectory = Path.Combine(frameworkDirectory, "ProtectedInterfaces");
+        let addModuleHeader = () => {
+            let headerPath = Path.Combine(frameworkProtectedInterfacesDirectory, `${moduleName}.h`);
+            if (File.Exists(headerPath) == false) {
+                File.WriteAllText(headerPath, `#ifdef  _WINDOWS_SOURCE
+#ifdef  __${frameworkName}
+#define ExportedBy${frameworkName}     __declspec(dllexport)
+#else
+#define ExportedBy${frameworkName}     __declspec(dllimport)
+#endif
+#else
+#define ExportedBy${frameworkName}
+#endif
+`, utf8);
+            }
+        };
+        let imakefile = ImakeFile(Path.Combine(moduleDirectory, "Imakefile.mk"));
+        return {
+            addModuleHeader,
+            imakefile
+        };
+    };
+    let Framework = (frameworkDirectory: string) => {
+        let _this = {};
+        let cnext = CNext(frameworkDirectory);
+        let identityCard = IdentityCard(Path.Combine(frameworkDirectory, "IdentityCard", "IdentityCard.h"));
+        let getModule = (moduleName: string) => {
+            return Module(_this, Path.Combine(frameworkDirectory, `${moduleName}.m`));
+        };
+        let getModules = () => {
+            if (Directory.Exists(frameworkDirectory) == false) {
+                return [];
+            }
+            let directories = Directory.GetDirectories(frameworkDirectory);
+            let result = [] as string[];
+            for (let directory of directories) {
+                if (directory.endsWith(".m")) {
+                    result.push(Path.GetFileNameWithoutExtension(directory));
+                }
+            }
+            return result;
+        }
+        let self = {
+            getFrameDirectory: () => frameworkDirectory,
+            cnext,
+            identityCard,
+            getModule,
+            getModules
+        }
+        _this = self;
+        return self;
+    };
+
+    let getFramework = (frameworkName: string) => {
+        return Framework(Path.Combine(projectDirectory, frameworkName));
+    };
+    let isFramework = (frameworkName: string) => {
+        let frameworkDirectory = Path.Combine(projectDirectory, frameworkName);
+        return Directory.Exists(Path.Combine(frameworkDirectory, "CNext", "code"));
+    };
+    let getFrameworks = () => {
+        if (Directory.Exists(projectDirectory) == false) {
+            return [];
+        }
+        let directories = Directory.GetDirectories(projectDirectory);
+        let result = [] as string[];
+        for (let directory of directories) {
+            if (isFramework(directory)) {
+                result.push(Path.GetFileName(directory));
+            }
+        }
+        return result;
+    };
+    let createFramework = (frameworkName: string) => {
+        let frameworkDirectory = Path.Combine(projectDirectory, frameworkName);
+        if (Directory.Exists(frameworkDirectory) == false) {
+            Directory.CreateDirectory(frameworkDirectory);
+        }
+    };
+    return {
+        getFramework,
+        isFramework,
+        getFrameworks,
+        createFramework
     };
 };
 
@@ -135,6 +496,9 @@ let main = async () => {
     }
 };
 
-await main();
-
+// await main();
 //tscl run E:\Downloads\Temp\open-cad\cli\caa\main.ts package-sdk C:\Users\ELEAD-33\Downloads\李东明\B21  E:\Downloads\李东明\SDK
+
+let project = ProjectV1("E:\\Downloads\\Temp\\open-cad\\cli\\caa\\Project");
+let framework = project.getFramework("DemoFrm");
+console.log(framework.getModule(framework.getModules()[0]).imakefile.getItems());

@@ -1,3 +1,6 @@
 OyyDemoAddinHeader.OyyHeader.Title="欧语言不是狗";
 OyyDemoAddinHeader.OyyHeader.ShortHelp="命令的短帮助提示";
 OyyDemoAddinHeader.OyyHeader.LongHelp="命令的长帮助提示";
+OyyDemoAddinHeader.OyyDemoAddinCmd.Title="标题1";
+OyyDemoAddinHeader.OyyDemoAddinCmd.ShortHelp="短帮助2";
+OyyDemoAddinHeader.OyyDemoAddinCmd.LongHelp="长帮助3";

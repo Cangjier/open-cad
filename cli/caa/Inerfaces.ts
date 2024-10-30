@@ -1,0 +1,21 @@
+export interface ICATNls {
+    MacDeclareHeader: string,
+    CommandHeader: string,
+    Property: string,
+    Value: string
+}
+
+export type Languages = "Simplified_Chinese" | "English";
+
+export interface IPrereqComponent {
+    Framework: string,
+    Visiblity: Visiblity,
+}
+
+export type Visiblity = 'Public' | 'Private';
+
+export interface IDictionary {
+    TieName: string,
+    WorkshopName: string,
+    ModuleName: string
+}
