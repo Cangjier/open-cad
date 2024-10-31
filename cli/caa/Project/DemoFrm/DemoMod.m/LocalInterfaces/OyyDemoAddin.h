@@ -1,5 +1,3 @@
-//Author     : QiaoMu
-//CreateTime : 2023Äê06ÔÂ17ÈÕ
 #ifndef OyyDemoAddin_H
 #define OyyDemoAddin_H
 

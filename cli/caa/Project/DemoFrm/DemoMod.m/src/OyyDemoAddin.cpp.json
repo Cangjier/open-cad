@@ -1,0 +1,592 @@
+[
+    {
+        "type": "PreprocessorDirectives",
+        "value": "include \"OyyDemoAddin.h\""
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "PreprocessorDirectives",
+        "value": "include \"CATCommandHeader.h\""
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "Common",
+        "value": "MacDeclareHeader"
+    },
+    {
+        "startBracketChar": "(",
+        "endBracketChar": ")",
+        "children": [
+            {
+                "type": "Common",
+                "value": "OyyDemoAddinHeader"
+            }
+        ]
+    },
+    {
+        "type": "Symbol",
+        "value": ";"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "Common",
+        "value": "CATImplementClass"
+    },
+    {
+        "startBracketChar": "(",
+        "endBracketChar": ")",
+        "children": [
+            {
+                "type": "Common",
+                "value": "OyyDemoAddin"
+            },
+            {
+                "type": "Symbol",
+                "value": ","
+            },
+            {
+                "type": "Common",
+                "value": "Implementation"
+            },
+            {
+                "type": "Symbol",
+                "value": ","
+            },
+            {
+                "type": "Common",
+                "value": "CATBaseUnknown"
+            },
+            {
+                "type": "Symbol",
+                "value": ","
+            },
+            {
+                "type": "Common",
+                "value": "CATnull"
+            }
+        ]
+    },
+    {
+        "type": "Symbol",
+        "value": ";"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "Common",
+        "value": "OyyDemoAddin"
+    },
+    {
+        "type": "Symbol",
+        "value": "::"
+    },
+    {
+        "type": "Common",
+        "value": "OyyDemoAddin"
+    },
+    {
+        "startBracketChar": "(",
+        "endBracketChar": ")"
+    },
+    {
+        "type": "Symbol",
+        "value": ":"
+    },
+    {
+        "type": "Common",
+        "value": "CATBaseUnknown"
+    },
+    {
+        "startBracketChar": "(",
+        "endBracketChar": ")"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "startBracketChar": "{",
+        "endBracketChar": "}",
+        "children": [
+            {
+                "type": "WrapSymbol"
+            }
+        ]
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "Common",
+        "value": "OyyDemoAddin"
+    },
+    {
+        "type": "Symbol",
+        "value": "::"
+    },
+    {
+        "type": "Symbol",
+        "value": "~"
+    },
+    {
+        "type": "Common",
+        "value": "OyyDemoAddin"
+    },
+    {
+        "startBracketChar": "(",
+        "endBracketChar": ")"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "startBracketChar": "{",
+        "endBracketChar": "}",
+        "children": [
+            {
+                "type": "WrapSymbol"
+            }
+        ]
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "Common",
+        "value": "void"
+    },
+    {
+        "type": "Common",
+        "value": "OyyDemoAddin"
+    },
+    {
+        "type": "Symbol",
+        "value": "::"
+    },
+    {
+        "type": "Common",
+        "value": "CreateCommands"
+    },
+    {
+        "startBracketChar": "(",
+        "endBracketChar": ")"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "startBracketChar": "{",
+        "endBracketChar": "}",
+        "children": [
+            {
+                "type": "WrapSymbol"
+            },
+            {
+                "type": "New",
+                "name": [
+                    {
+                        "type": "Common",
+                        "value": "OyyDemoAddinHeader"
+                    }
+                ],
+                "arguments": [
+                    {
+                        "type": "String",
+                        "isSupportInterpolation": false,
+                        "isSupportVerbatim": false,
+                        "isSupportRaw": false,
+                        "interpolationCount": 0,
+                        "rawQuoteCount": 1,
+                        "stringChar": "\"",
+                        "rowIndent": 0,
+                        "isRawIndentFormated": false,
+                        "children": [
+                            {
+                                "type": "ConstString"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "String",
+                        "isSupportInterpolation": false,
+                        "isSupportVerbatim": false,
+                        "isSupportRaw": false,
+                        "interpolationCount": 0,
+                        "rawQuoteCount": 1,
+                        "stringChar": "\"",
+                        "rowIndent": 0,
+                        "isRawIndentFormated": false,
+                        "children": [
+                            {
+                                "type": "ConstString"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "String",
+                        "isSupportInterpolation": false,
+                        "isSupportVerbatim": false,
+                        "isSupportRaw": false,
+                        "interpolationCount": 0,
+                        "rawQuoteCount": 1,
+                        "stringChar": "\"",
+                        "rowIndent": 0,
+                        "isRawIndentFormated": false,
+                        "children": [
+                            {
+                                "type": "ConstString"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "startBracketChar": "(",
+                        "endBracketChar": ")",
+                        "children": [
+                            {
+                                "type": "Common",
+                                "value": "void"
+                            },
+                            {
+                                "type": "Symbol",
+                                "value": "*"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Common",
+                        "value": "NULL"
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "Common",
+                        "value": "CATFrmAvailable"
+                    }
+                ]
+            },
+            {
+                "type": "Symbol",
+                "value": ";"
+            },
+            {
+                "type": "WrapSymbol"
+            }
+        ]
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "Common",
+        "value": "CATCmdContainer"
+    },
+    {
+        "type": "Symbol",
+        "value": "*"
+    },
+    {
+        "type": "Common",
+        "value": "OyyDemoAddin"
+    },
+    {
+        "type": "Symbol",
+        "value": "::"
+    },
+    {
+        "type": "Common",
+        "value": "CreateToolbars"
+    },
+    {
+        "startBracketChar": "(",
+        "endBracketChar": ")"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "startBracketChar": "{",
+        "endBracketChar": "}",
+        "children": [
+            {
+                "type": "WrapSymbol"
+            },
+            {
+                "type": "Common",
+                "value": "NewAccess"
+            },
+            {
+                "startBracketChar": "(",
+                "endBracketChar": ")",
+                "children": [
+                    {
+                        "type": "Common",
+                        "value": "CATCmdContainer"
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "Common",
+                        "value": "pOyyDemoContainer"
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "Common",
+                        "value": "OyyDemoContainer"
+                    }
+                ]
+            },
+            {
+                "type": "Symbol",
+                "value": ";"
+            },
+            {
+                "type": "WrapSymbol"
+            },
+            {
+                "type": "Common",
+                "value": "AddToolbarView"
+            },
+            {
+                "startBracketChar": "(",
+                "endBracketChar": ")",
+                "children": [
+                    {
+                        "type": "Common",
+                        "value": "pOyyDemoContainer"
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "Common",
+                        "value": "1"
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "Common",
+                        "value": "Top"
+                    }
+                ]
+            },
+            {
+                "type": "Symbol",
+                "value": ";"
+            },
+            {
+                "type": "WrapSymbol"
+            },
+            {
+                "type": "WrapSymbol"
+            },
+            {
+                "type": "Common",
+                "value": "NewAccess"
+            },
+            {
+                "startBracketChar": "(",
+                "endBracketChar": ")",
+                "children": [
+                    {
+                        "type": "Common",
+                        "value": "CATCmdStarter"
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "Common",
+                        "value": "pOyyCmd"
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "Common",
+                        "value": "OyyCmd"
+                    }
+                ]
+            },
+            {
+                "type": "Symbol",
+                "value": ";"
+            },
+            {
+                "type": "WrapSymbol"
+            },
+            {
+                "type": "Common",
+                "value": "SetAccessCommand"
+            },
+            {
+                "startBracketChar": "(",
+                "endBracketChar": ")",
+                "children": [
+                    {
+                        "type": "Common",
+                        "value": "pOyyCmd"
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "String",
+                        "isSupportInterpolation": false,
+                        "isSupportVerbatim": false,
+                        "isSupportRaw": false,
+                        "interpolationCount": 0,
+                        "rawQuoteCount": 1,
+                        "stringChar": "\"",
+                        "rowIndent": 0,
+                        "isRawIndentFormated": false,
+                        "children": [
+                            {
+                                "type": "ConstString"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "Symbol",
+                "value": ";"
+            },
+            {
+                "type": "WrapSymbol"
+            },
+            {
+                "type": "Common",
+                "value": "SetAccessChild"
+            },
+            {
+                "startBracketChar": "(",
+                "endBracketChar": ")",
+                "children": [
+                    {
+                        "type": "Common",
+                        "value": "pOyyDemoContainer"
+                    },
+                    {
+                        "type": "Symbol",
+                        "value": ","
+                    },
+                    {
+                        "type": "Common",
+                        "value": "pOyyCmd"
+                    }
+                ]
+            },
+            {
+                "type": "Symbol",
+                "value": ";"
+            },
+            {
+                "type": "WrapSymbol"
+            },
+            {
+                "type": "WrapSymbol"
+            },
+            {
+                "type": "Common",
+                "value": "return"
+            },
+            {
+                "type": "Common",
+                "value": "pOyyDemoContainer"
+            },
+            {
+                "type": "Symbol",
+                "value": ";"
+            },
+            {
+                "type": "WrapSymbol"
+            }
+        ]
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "PreprocessorDirectives",
+        "value": "include \"TIE_CATIAfrGeneralWksAddin.h\""
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "Common",
+        "value": "TIE_CATIAfrGeneralWksAddin"
+    },
+    {
+        "startBracketChar": "(",
+        "endBracketChar": ")",
+        "children": [
+            {
+                "type": "Common",
+                "value": "OyyDemoAddin"
+            }
+        ]
+    },
+    {
+        "type": "Symbol",
+        "value": ";"
+    },
+    {
+        "type": "WrapSymbol"
+    },
+    {
+        "type": "WrapSymbol"
+    }
+]

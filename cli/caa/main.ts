@@ -13,7 +13,7 @@ import { Match } from "../.tsc/System/Text/RegularExpressions/Match";
 let utf8 = new UTF8Encoding(false);
 let gb2312 = Encoding.GetEncoding("gb2312");
 
-
+let script_directory = Path.GetDirectoryName(script_path);
 let OPEN_CAD_DIR = "C:\\OPEN_CAD";
 if (Environment.GetEnvironmentVariable("OPEN_CAD_DIR") == null) {
     Environment.SetEnvironmentVariable("OPEN_CAD_DIR", OPEN_CAD_DIR, EnvironmentVariableTarget.User);
@@ -34,6 +34,7 @@ if (Directory.Exists(sdkDirectory) == false) {
 let catnlsRegex = new Regex("(?<MacDeclareHeader>.*)\\.(?<CommandHeader>.*)\\.(?<Property>.*)=\"(?<Value>.*)\"");
 let identityCardRegex = new Regex("AddPrereqComponent\\(\"(?<Framework>.*)\",(?<Visiblity>.*)\\);");
 let imakefileRegex = (/^(?!#)(\w+)\s*=\s*(.*?)(?:\s*\\\s*\n\s*(.*?))*\s*(?=\n|$)/gm) as any as Regex;
+let macDeclareHeaderRegex = (/MacDeclareHeader\((\w+)\);/) as any as Regex;
 let ProjectV1 = (projectDirectory: string) => {
     let Dictionary = (dicoPath: string) => {
         let getTIEs = () => {
@@ -297,11 +298,46 @@ let ProjectV1 = (projectDirectory: string) => {
             }
             return result;
         };
+        let create = () => {
+            if (File.Exists(imakeFilePath)) {
+                throw "Imakefile already exists";
+            }
+            let templatePath = Path.Combine(script_directory, "Template", "Imakefile.mk");
+            if (File.Exists(templatePath) == false) {
+                throw "Template not found";
+            }
+            File.Copy(templatePath, imakeFilePath, true);
+        };
         return {
-            getItems
+            getItems,
+            create
+        };
+    };
+    let Addin = (module: any, name: string) => {
+        let _this = {};
+        let moduleLocalInterfacesDirectory = Path.Combine(module.getModuleDirectory(), "LocalInterfaces");
+        let moduleSrcDirectory = Path.Combine(module.getModuleDirectory(), "src");
+        let headerPath = Path.Combine(moduleLocalInterfacesDirectory, `${name}.h`);
+        let srcPath = Path.Combine(moduleSrcDirectory, `${name}.cpp`);
+        let getMacDeclareHeader = () => {
+            if (File.Exists(srcPath) == false) {
+                console.error(`Header file not found: ${srcPath}`);
+                return "";
+            }
+            let text = File.ReadAllText(srcPath, utf8);
+            let match = macDeclareHeaderRegex.Match(text);
+            if (match.Success) {
+                return match.Groups[1].Value;
+            }
+            console.error(`MacDeclareHeader not found in header file: ${srcPath}`);
+            return "";
+        };
+        return {
+            getMacDeclareHeader
         };
     };
     let Module = (framework: any, moduleDirectory: string) => {
+        let _this = {};
         let moduleName = Path.GetFileNameWithoutExtension(moduleDirectory);
         let frameworkDirectory = framework.getFrameDirectory();
         let frameworkName = Path.GetFileName(frameworkDirectory);
@@ -322,10 +358,31 @@ let ProjectV1 = (projectDirectory: string) => {
             }
         };
         let imakefile = ImakeFile(Path.Combine(moduleDirectory, "Imakefile.mk"));
-        return {
+        let getAddins = () => {
+            let moduleSrcDirectory = Path.Combine(moduleDirectory, "src");
+            let files = Directory.GetFiles(moduleSrcDirectory, "*.cpp");
+            let result = [] as string[];
+            for (let file of files) {
+                let content = File.ReadAllText(file, utf8);
+                let match = macDeclareHeaderRegex.Match(content);
+                if (match.Success) {
+                    result.push(Path.GetFileNameWithoutExtension(file));
+                }
+            }
+            return result;
+        };
+        let getAddin = (name: string) => {
+            return Addin(_this, name);
+        };
+        let self = {
+            getModuleDirectory: () => moduleDirectory,
             addModuleHeader,
+            getAddins,
+            getAddin,
             imakefile
         };
+        _this = self;
+        return self;
     };
     let Framework = (frameworkDirectory: string) => {
         let _this = {};
@@ -444,7 +501,7 @@ let cmd_init = async () => {
     let sdkName = args[1];
     let projectDirectory = Environment.CurrentDirectory;
     let projectName = Path.GetFileName(projectDirectory);
-    let script_directory = Path.GetDirectoryName(script_path);
+
     let cmakePath = Path.Combine(sdkDirectory, cadName, sdkName, `Find${sdkName}.cmake`);
     // 自动创建CMakeLists.txt
     let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt");
@@ -501,4 +558,4 @@ let main = async () => {
 
 let project = ProjectV1("E:\\Downloads\\Temp\\open-cad\\cli\\caa\\Project");
 let framework = project.getFramework("DemoFrm");
-console.log(framework.getModule(framework.getModules()[0]).imakefile.getItems());
+console.log(framework.getModule(framework.getModules()[0]).getAddin("OyyDemoAddin").getMacDeclareHeader());
