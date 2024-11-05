@@ -246,6 +246,33 @@ let identityCardRegex = new Regex("AddPrereqComponent\\(\"(?<Framework>.*)\",(?<
 let imakefileRegex = (/^(?!#)(\w+)\s*=\s*(.*?)(?:\s*\\\s*\n\s*(.*?))*\s*(?=\n|$)/gm) as any as Regex;
 let macDeclareHeaderRegex = (/MacDeclareHeader\((\w+)\);/) as any as Regex;
 let catCommandRegex = (/.*:.*CATCommand.*\(.*\).*/) as any as Regex;
+
+let CATIA = () => {
+    let findCatiaDirectories = () => {
+        let optionalDirectories = [
+            "C:/Program Files/Dassault Systemes"
+        ];
+        let result = [] as string[];
+        for (let directory of optionalDirectories) {
+            if (Directory.Exists(directory)) {
+                let catiaDirectories = Directory.GetDirectories(directory);
+                // such as "C:/Program Files/Dassault Systemes/B28"
+                for (let catiaDirectory of catiaDirectories) {
+                    if (File.Exists(Path.Combine(catiaDirectory, "OSNT"))) {
+                        result.push(catiaDirectory);
+                    }
+                }
+            }
+        }
+        return result;
+    };
+    return {
+        findCatiaDirectories
+    }
+};
+
+let catia = CATIA();
+
 let ProjectV1 = (projectDirectory: string) => {
     let Dictionary = (dicoPath: string) => {
         let getTIEs = () => {
@@ -492,11 +519,21 @@ let ProjectV1 = (projectDirectory: string) => {
                 setItems(items);
             }
         };
+        let initialize = () => {
+            if (File.Exists(IdentityCardPath) == false) {
+                let templatePath = Path.Combine(script_directory, "Project/Template", "IdentityCard.h");
+                if (File.Exists(templatePath) == false) {
+                    throw "Template not found";
+                }
+                File.Copy(templatePath, IdentityCardPath, true);
+            }
+        };
         return {
             getItems,
             setItems,
             addItem,
-            removeItem
+            removeItem,
+            initialize
         };
     };
     let ImakeFile = (imakeFilePath: string) => {
@@ -519,9 +556,9 @@ let ProjectV1 = (projectDirectory: string) => {
             }
             return result;
         };
-        let create = () => {
+        let initialize = () => {
             if (File.Exists(imakeFilePath)) {
-                throw "Imakefile already exists";
+                return;
             }
             let templatePath = Path.Combine(script_directory, "Project/Template", "Imakefile.mk");
             if (File.Exists(templatePath) == false) {
@@ -531,7 +568,7 @@ let ProjectV1 = (projectDirectory: string) => {
         };
         return {
             getItems,
-            create
+            initialize
         };
     };
     let Addin = (module: any, name: string) => {
@@ -684,7 +721,8 @@ let ProjectV1 = (projectDirectory: string) => {
                 }
             };
         };
-        let addCommandToFirstToolbar = (name: string, moduleName: string, className: string) => {
+        let addCommandToFirstToolbar = (name: string, className: string) => {
+            let moduleName = module.getModuleName();
             let addin = get();
             let isContains = addin.commands.commands.findIndex(item => item.header == name || item.header == `${name}Header`) != -1;
             if (isContains) {
@@ -707,7 +745,8 @@ let ProjectV1 = (projectDirectory: string) => {
             toolbar.children.push(name);
             addin.set(addin.commands, addin.toolbars);
         };
-        let addCommand = (name: string, moduleName: string, className: string, toolbarName: string) => {
+        let addCommand = (name: string, className: string, toolbarName: string) => {
+            let moduleName = module.getModuleName();
             let addin = get();
             let isContains = addin.commands.commands.findIndex(item => item.header == name || item.header == `${name}Header`) != -1;
             if (isContains) {
@@ -866,8 +905,22 @@ let ProjectV1 = (projectDirectory: string) => {
             }
             return false;
         };
+        let initialize = () => {
+            let directories = [
+                "LocalInterfaces",
+                "src"
+            ];
+            for (let directory of directories) {
+                let path = Path.Combine(moduleDirectory, directory);
+                if (Directory.Exists(path) == false) {
+                    Directory.CreateDirectory(path);
+                }
+            }
+            imakefile.initialize();
+        };
         let self = {
             getModuleDirectory: () => moduleDirectory,
+            getModuleName: () => moduleName,
             addModuleHeader,
             getAddins,
             getAddin,
@@ -877,6 +930,7 @@ let ProjectV1 = (projectDirectory: string) => {
             getCommandClass,
             createCommandClass,
             containsCommandClass,
+            initialize,
             imakefile
         };
         _this = self;
@@ -902,12 +956,35 @@ let ProjectV1 = (projectDirectory: string) => {
             }
             return result;
         }
+        let createModule = (moduleName: string) => {
+            let moduleDirectory = Path.Combine(frameworkDirectory, `${moduleName}.m`);
+            let module = Module(_this, moduleDirectory);
+            module.initialize();
+        };
+        let initialize = () => {
+            let directories = [
+                "CNext",
+                "IdentityCard",
+                "PrivateInterfaces",
+                "ProtectedInterfaces",
+                "PublicInterfaces",
+            ];
+            for (let directory of directories) {
+                let path = Path.Combine(frameworkDirectory, directory);
+                if (Directory.Exists(path) == false) {
+                    Directory.CreateDirectory(path);
+                }
+            }
+            identityCard.initialize()
+        }
         let self = {
             getFrameDirectory: () => frameworkDirectory,
             cnext,
             identityCard,
             getModule,
-            getModules
+            getModules,
+            createModule,
+            initialize
         }
         _this = self;
         return self;
@@ -937,12 +1014,27 @@ let ProjectV1 = (projectDirectory: string) => {
         if (Directory.Exists(frameworkDirectory) == false) {
             Directory.CreateDirectory(frameworkDirectory);
         }
+        let framework = getFramework(frameworkName);
+        framework.initialize();
+    };
+    let initialize = () => {
+        let catiaV5LevelTemplatePath = Path.Combine(script_directory, "Project/Template", "CATIAV5Level.lvl");
+        let Install_config_win_b64TemplatePath = Path.Combine(script_directory, "Project/Template", "Install_config_win_b64");
+        let catiaV5LevelPath = Path.Combine(projectDirectory, "CATIAV5Level.lvl");
+        let Install_config_win_b64Path = Path.Combine(projectDirectory, "Install_config_win_b64");
+        if (File.Exists(catiaV5LevelPath) == false) {
+            File.Copy(catiaV5LevelTemplatePath, catiaV5LevelPath, true);
+        }
+        if (File.Exists(Install_config_win_b64Path) == false) {
+            File.Copy(Install_config_win_b64TemplatePath, Install_config_win_b64Path, true);
+        }
     };
     return {
         getFramework,
         isFramework,
         getFrameworks,
-        createFramework
+        createFramework,
+        initialize
     };
 };
 
@@ -1003,7 +1095,7 @@ let cmd_init = async () => {
     let cmakePath = Path.Combine(sdkDirectory, cadName, sdkName, `Find${sdkName}.cmake`);
     // 自动创建CMakeLists.txt
     let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt");
-    let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "CMakeLists.txt"), utf8);
+    let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "Project", "CMakeLists.txt"), utf8);
     cmakeListsText = cmakeListsText.replace("__PROJECT_NAME__", projectName);
     await File.WriteAllTextAsync(Path.Combine(projectDirectory, "CMakeLists.txt"), cmakeListsText, utf8);
     await cmdAsync(Environment.CurrentDirectory, `opencad cmake add_find_package ${cmakeListsPath} ${cmakePath}`);
@@ -1029,11 +1121,16 @@ let cmd_init = async () => {
     // let vscodeLaunchText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "launch.json"), utf8);
     // await File.WriteAllTextAsync(vscodeLaunchPath, vscodeLaunchText, utf8);
     // 自动创建 main.cpp
-    let mainCppPath = Path.Combine(projectDirectory, "main.cpp");
-    let templateMainCppPath = Path.Combine(script_directory, "template.cpp");
-    if (File.Exists(mainCppPath) == false) {
-        File.Copy(templateMainCppPath, mainCppPath, true);
-    }
+    let project = ProjectV1(projectDirectory);
+    project.initialize();
+    project.createFramework(projectName);
+    let framework = project.getFramework(projectName);
+    framework.createModule(projectName);
+    let module = framework.getModule(projectName);
+    module.createAddin("Addin");
+    let addin = module.getAddin("Addin");
+    addin.addCommandToFirstToolbar("HelloWorld", "HelloWorldCmd");
+    module.createCommandClass("HelloWorldCmd");
 };
 
 
