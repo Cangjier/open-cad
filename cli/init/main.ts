@@ -381,7 +381,7 @@ let main = async () => {
     // 检查visual studio环境变量
     await visualStudioManager.resgiterEnvironment();
 
-    await cmdAsync(Environment.CurrentDirectory, `opencad nx init ${cadSDK.name}`);
+    await cmdAsync(Environment.CurrentDirectory, `opencad ${cadName} init ${cadSDK.name}`);
 
 };
 
