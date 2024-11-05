@@ -736,6 +736,9 @@ let ProjectV1 = (projectDirectory: string) => {
                 available: "CATFrmAvailable"
             });
             let toolbar = addin.toolbars.toolbar[0];
+            if(toolbar.children == undefined) {
+                toolbar.children = [];
+            }
             addin.toolbars.accesses.push({
                 className: "CATCmdStarter",
                 variableName: name,
