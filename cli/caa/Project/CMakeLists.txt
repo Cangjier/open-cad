@@ -23,17 +23,21 @@ endforeach()
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 ## 1.4 添加头文件路径
-file(GLOB TEMP_INCLUDE_DIRS LIST_DIRECTORIES true "${CMAKE_SOURCE_DIR}/*")
+file(GLOB_RECURSE FOUND_INTERFACE_FILES 
+    "${CMAKE_SOURCE_DIR}/*/PublicInterfaces/*"
+    "${CMAKE_SOURCE_DIR}/*/ProtectedInterfaces/*"
+    "${CMAKE_SOURCE_DIR}/*/LocalInterfaces/*"
+    "${CMAKE_SOURCE_DIR}/*/PrivateInterfaces/*"
+    "${CMAKE_SOURCE_DIR}/*/*/PublicInterfaces/*"
+    "${CMAKE_SOURCE_DIR}/*/*/ProtectedInterfaces/*"
+    "${CMAKE_SOURCE_DIR}/*/*/PrivateInterfaces/*"
+    "${CMAKE_SOURCE_DIR}/*/*/LocalInterfaces/*")
 set(INCLUDE_DIRS "")
-foreach(path ${TEMP_INCLUDE_DIRS})
-    if(IS_DIRECTORY "${path}")
-        list(APPEND INCLUDE_DIRS "${path}")
-    endif()
+foreach(file_path ${FOUND_INTERFACE_FILES})
+    get_filename_component(dir_path ${file_path} DIRECTORY)
+    list(APPEND INCLUDE_DIRS ${dir_path})
 endforeach()
-foreach(IGNORE_DIR ${IGNORED_DIRS})
-    list(FILTER INCLUDE_DIRS EXCLUDE REGEX "${CMAKE_SOURCE_DIR}(/|\\\\)${IGNORE_DIR}((/|\\\\).*)*")
-endforeach()
-
+list(REMOVE_DUPLICATES INCLUDE_DIRS)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 # 2. 三方库
