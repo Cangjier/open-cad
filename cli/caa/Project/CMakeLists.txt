@@ -24,14 +24,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 ## 1.4 添加头文件路径
 file(GLOB_RECURSE FOUND_INTERFACE_FILES 
-    "${CMAKE_SOURCE_DIR}/*/PublicInterfaces/*"
-    "${CMAKE_SOURCE_DIR}/*/ProtectedInterfaces/*"
-    "${CMAKE_SOURCE_DIR}/*/LocalInterfaces/*"
-    "${CMAKE_SOURCE_DIR}/*/PrivateInterfaces/*"
-    "${CMAKE_SOURCE_DIR}/*/*/PublicInterfaces/*"
-    "${CMAKE_SOURCE_DIR}/*/*/ProtectedInterfaces/*"
-    "${CMAKE_SOURCE_DIR}/*/*/PrivateInterfaces/*"
-    "${CMAKE_SOURCE_DIR}/*/*/LocalInterfaces/*")
+    "${CMAKE_SOURCE_DIR}/*.h")
 set(INCLUDE_DIRS "")
 foreach(file_path ${FOUND_INTERFACE_FILES})
     get_filename_component(dir_path ${file_path} DIRECTORY)
