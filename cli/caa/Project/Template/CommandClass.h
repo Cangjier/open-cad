@@ -1,0 +1,24 @@
+#ifndef __COMMAND_CLASS_NAME___H
+#define __COMMAND_CLASS_NAME___H
+
+#include "CATCommand.h"
+
+class __COMMAND_CLASS_NAME__ : public CATCommand
+{
+public:
+    __COMMAND_CLASS_NAME__();
+    virtual ~__COMMAND_CLASS_NAME__();
+
+    virtual CATStatusChangeRC Activate(
+        CATCommand *iFromClient,
+        CATNotification *iEvtDat);
+
+    virtual CATStatusChangeRC Desactivate(
+        CATCommand *iFromClient,
+        CATNotification *iEvtDat);
+
+    virtual CATStatusChangeRC Cancel(
+        CATCommand *iFromClient,
+        CATNotification *iEvtDat);
+};
+#endif

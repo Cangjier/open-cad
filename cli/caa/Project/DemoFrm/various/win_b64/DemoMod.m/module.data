@@ -1,6 +1,0 @@
-!<mkRTViewData> v1.0.0
-INT/000/CUS .\win_b64\code\lib\DemoMod.exp|.\DemoFrm\DemoMod.m
-INT/000/CUS .\win_b64\code\bin\DemoMod.pdb|.\DemoFrm\DemoMod.m
-RTV/001/CUS .\win_b64\code\bin\DemoMod.dll|.\DemoFrm\DemoMod.m
-CSC/000/DSI .\DemoFrm\DemoMod.m\Objects\win_b64\mkcsc\DemoMod.cscdb|.\DemoFrm\DemoMod.m
-BTV/000/CUS .\win_b64\code\lib\DemoMod.lib|.\DemoFrm\DemoMod.m

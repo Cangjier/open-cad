@@ -1,24 +1,24 @@
-#ifndef OyyDemoAddin_H
-#define OyyDemoAddin_H
+#ifndef __Addin___H
+#define __Addin___H
 
 #include "CATIAfrGeneralWksAddin.h"
 #include "CATBaseUnknown.h"
 #include "CATCreateWorkshop.h"
 #include "CATCmdContainer.h"
 
-class OyyDemoAddin : public CATBaseUnknown
+class __Addin__ : public CATBaseUnknown
 {
   CATDeclareClass;
 
 public:
-  OyyDemoAddin();
-  virtual ~OyyDemoAddin();
+  __Addin__();
+  virtual ~__Addin__();
   void CreateCommands();
   CATCmdContainer *CreateToolbars();
 
 private:
-  OyyDemoAddin(OyyDemoAddin &);
-  OyyDemoAddin &operator=(OyyDemoAddin &);
+  __Addin__(__Addin__ &);
+  __Addin__ &operator=(__Addin__ &);
 };
 
 //-----------------------------------------------------------------------

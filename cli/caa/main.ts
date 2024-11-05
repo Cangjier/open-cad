@@ -10,6 +10,7 @@ import { Regex } from "../.tsc/System/Text/RegularExpressions/Regex";
 import { Encoding } from "../.tsc/System/Text/Encoding";
 import { ICATNls, IDictionary, IPrereqComponent, Languages, Visiblity } from "./Inerfaces";
 import { Match } from "../.tsc/System/Text/RegularExpressions/Match";
+import { code } from '../.tsc/Cangjie/TypeSharp/System/code';
 let utf8 = new UTF8Encoding(false);
 let gb2312 = Encoding.GetEncoding("gb2312");
 
@@ -31,10 +32,220 @@ if (Directory.Exists(sdkDirectory) == false) {
     Directory.CreateDirectory(sdkDirectory);
 }
 
+let cppAnalyser = () => {
+    let isStatement = (node: any) => {
+        return node.type == 'Statement' || node.type == 'PreprocessorDirectives' || node.type == 'LineAnnotation' || node.type == 'AreaAnnotation'
+    }
+    let getStatementStart = (codeTree: any, index: number) => {
+        for (let i = index; i >= 0; i--) {
+            let node = codeTree[i];
+            if (isStatement(node)) {
+                return i + 1;
+            }
+        }
+        return 0;
+    };
+    let getPreviousIndex = (codeTree: any, index: number) => {
+        for (let i = index - 1; i >= 0; i--) {
+            let node = codeTree[i];
+            if (node.type == 'WrapSymbol' || node.type == 'LineAnnotation' || node.type == 'AreaAnnotation') {
+                continue;
+            }
+            return i;
+        }
+        return -1;
+    };
+    let getPrevious = (codeTree: any, index: number) => {
+        let previousIndex = getPreviousIndex(codeTree, index);
+        return codeTree[previousIndex];
+    };
+    let getNextIndex = (codeTree: any, index: number) => {
+        for (let i = index + 1; i < codeTree.length; i++) {
+            let node = codeTree[i];
+            if (node.type == 'WrapSymbol') {
+                continue;
+            }
+            return i;
+        }
+        return -1;
+    };
+    let getNext = (codeTree: any, index: number) => {
+        let nextIndex = getNextIndex(codeTree, index);
+        return codeTree[nextIndex];
+    };
+    let createParameters = (script: string, codeTree: any) => {
+        console.log(`createParameters not implemented`);
+    };
+    let pickParametersToStatement = (script: string, codeTree: any) => {
+        for (let i = 0; i < codeTree.length; i++) {
+            let node = codeTree[i];
+            if (node.type != 'Statement') continue;
+            let children = node.children;
+            if (children == undefined) continue;
+            let bracketIndex = children.findIndex((node: any) => node.type == 'Bracket' && node.startBracketChar == '(');
+            if (bracketIndex == -1) continue;
+            let commonIndex = getPreviousIndex(children, bracketIndex);
+            if (commonIndex == -1) continue;
+            if (children[commonIndex].type != 'Common') continue;
+            if (commonIndex != -1 && bracketIndex != -1) {
+                let common = children[commonIndex];
+                let bracket = children[bracketIndex];
+                if (bracket.parameters && common.value && node.caller == undefined) {
+                    node.parameters = bracket.parameters;
+                    node.caller = common.value;
+                }
+                else {
+                    console.log(`common: ${common.value}, bracket: ${bracket}`);
+                }
+            }
+            else {
+                console.log(`commonIndex: ${commonIndex}, bracketIndex: ${bracketIndex}`);
+            }
+        }
+    };
+    let createStatement = (script: string, codeTree: any) => {
+        for (let i = 0; i < codeTree.length; i++) {
+            let node = codeTree[i];
+            if (node.type == 'WrapSymbol') {
+                if (i == 0) {
+                    codeTree.splice(i, 1);
+                    i--;
+                }
+                else {
+                    let previous = codeTree[i - 1];
+                    if (isStatement(previous)) {
+                        codeTree.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+            else if (node.type == 'Symbol' && node.value == ';') {
+                let start = getStatementStart(codeTree, i);
+                let startNode = codeTree[start];
+                let statement = codeTree.slice(start, i);
+                createParameters(script, statement);
+                codeTree.splice(start, i - start + 1, {
+                    type: 'Statement',
+                    children: statement,
+                    source: script.substring(startNode.range[0], node.range[1]),
+                    range: [startNode.range[0], node.range[1]]
+                });
+                i = start;
+            }
+            else if (node.type == 'Bracket' && node.startBracketChar == '{') {
+                let previousIndex = getPreviousIndex(codeTree, i);
+                let previous = codeTree[previousIndex];
+                if (previous.type == 'Bracket' && previous.startBracketChar == '(') {
+                    let start = getStatementStart(codeTree, i);
+                    let startNode = codeTree[start];
+                    let end = i;
+                    let statement = codeTree.slice(start, end + 1);
+                    createParameters(script, statement);
+                    codeTree.splice(start, end - start + 1, {
+                        type: 'Statement',
+                        children: statement,
+                        source: script.substring(startNode.range[0], node.range[1] + 1),
+                        range: [startNode.range[0], node.range[1] + 1]
+                    });
+                    i = start;
+                }
+            }
+            else if (i == codeTree.length - 1) {
+                let start = getStatementStart(codeTree, i);
+                if (start >= codeTree.length) continue;
+                let startNode = codeTree[start];
+                let statement = codeTree.slice(start, i + 1);
+                if (statement.length == 1 && statement[0].type == 'Statement') {
+                    continue;
+                }
+                createParameters(script, statement);
+                codeTree.splice(start, i - start + 1, {
+                    type: 'Statement',
+                    children: statement,
+                    source: script.substring(startNode.range[0], node.range[1] + 1),
+                    range: [startNode.range[0], node.range[1] + 1]
+                });
+            }
+        }
+    };
+
+    let createMethods = (script: string, codeTree: any) => {
+        for (let i = 0; i < codeTree.length; i++) {
+            let node = codeTree[i];
+            if (node.type != 'Statement') continue;
+            let children = node.children;
+            let bodyIndex = children.findIndex((node: any) => node.type == 'Bracket' && node.startBracketChar == '{');
+            if (bodyIndex == -1) continue;
+            let body = children[bodyIndex];
+            let parametersIndex = getPreviousIndex(children, bodyIndex);
+            if (parametersIndex == -1) continue;
+            let parameters = children[parametersIndex];
+            if (parameters.type != 'Bracket' || parameters.startBracketChar != '(') continue;
+            let nameIndex = getPreviousIndex(children, parametersIndex);
+            if (nameIndex == -1) continue;
+            let name = children[nameIndex];
+            if (name.type != 'Common') continue;
+            createStatement(script, body.children);
+            pickParametersToStatement(script, body.children);
+            let method = {
+                type: 'Method',
+                name: name.value,
+                parameters: parameters.children ?? [],
+                body: body.children,
+                source: node.source,
+                range: node.range,
+                bodyRange: body.range
+            }
+            codeTree.splice(i, 1, method);
+        }
+    };
+    createParameters = (script: string, codeTree: any) => {
+        for (let i = 0; i < codeTree.length; i++) {
+            let node = codeTree[i];
+            if (node.type != 'Bracket' || node.startBracketChar != '(') continue;
+            let previousIndex = getPreviousIndex(codeTree, i);
+            if (previousIndex == -1) continue;
+            let previous = codeTree[previousIndex];
+            if (previous.type != 'Common') continue;
+            let parameters = [] as string[];
+            let lastStart = -1;
+            if (node.children == undefined) continue;
+            for (let j = 0; j < node.children.length; j++) {
+                if (lastStart == -1) {
+                    lastStart = node.children[j].range[0];
+                }
+                let child = node.children[j];
+                if (child.type == 'WrapSymbol') continue;
+                if (child.type == 'Symbol' && child.value == ',') {
+                    parameters.push(script.substring(lastStart, child.range[0]));
+                    lastStart = -1;
+                }
+                else if (j == node.children.length - 1) {
+                    parameters.push(script.substring(lastStart, child.range[1] + 1));
+                    lastStart = -1;
+                }
+            }
+            node.parameters = parameters;
+        }
+    };
+    let analyse = (script: string) => {
+        let codeTree = code.analyse(script);
+        createStatement(script, codeTree);
+        createMethods(script, codeTree);
+        createParameters(script, codeTree);
+        pickParametersToStatement(script, codeTree);
+        return codeTree;
+    };
+    return {
+        analyse: analyse
+    };
+};
+
 let catnlsRegex = new Regex("(?<MacDeclareHeader>.*)\\.(?<CommandHeader>.*)\\.(?<Property>.*)=\"(?<Value>.*)\"");
 let identityCardRegex = new Regex("AddPrereqComponent\\(\"(?<Framework>.*)\",(?<Visiblity>.*)\\);");
 let imakefileRegex = (/^(?!#)(\w+)\s*=\s*(.*?)(?:\s*\\\s*\n\s*(.*?))*\s*(?=\n|$)/gm) as any as Regex;
 let macDeclareHeaderRegex = (/MacDeclareHeader\((\w+)\);/) as any as Regex;
+let catCommandRegex = (/.*:.*CATCommand.*\(.*\).*/) as any as Regex;
 let ProjectV1 = (projectDirectory: string) => {
     let Dictionary = (dicoPath: string) => {
         let getTIEs = () => {
@@ -112,7 +323,7 @@ let ProjectV1 = (projectDirectory: string) => {
             initialize
         };
     };
-    let CATNls = (catnlsPath: string, language: Languages) => {
+    let CATNls = (catnlsPath: string, language: Languages, macDeclareHeader: string) => {
         let encoding = language == "Simplified_Chinese" ? gb2312 : utf8;
         let getNls = () => {
             if (File.Exists(catnlsPath) == false) {
@@ -142,9 +353,7 @@ let ProjectV1 = (projectDirectory: string) => {
                 return `${item.MacDeclareHeader}.${item.CommandHeader}.${item.Property}="${item.Value}";`;
             }).join("\n"), encoding);
         };
-        let setProperty = (macDeclareHeader: string, commandHeader: string, titleValue: string, shortHelpValue: string, longHelpValue: string) => {
-            let properties = ["Title", "ShortHelp", "LongHelp"];
-            let values = [titleValue, shortHelpValue, longHelpValue];
+        let setProperties = (commandHeader: string, properties: string[], values: string[]) => {
             let nls = getNls();
             for (let property of properties) {
                 let index = nls.findIndex(item => item.MacDeclareHeader == macDeclareHeader && item.CommandHeader == commandHeader && item.Property == property);
@@ -162,7 +371,16 @@ let ProjectV1 = (projectDirectory: string) => {
             }
             setNls(nls);
         };
-        let getProperty = (macDeclareHeader: string, commandHeader: string) => {
+        let setTitle = (commandHeader: string, titleValue: string) => {
+            setProperties(commandHeader, ["Title"], [titleValue]);
+        };
+        let setShortHelp = (commandHeader: string, shortHelpValue: string) => {
+            setProperties(commandHeader, ["ShortHelp"], [shortHelpValue]);
+        };
+        let setLongHelp = (commandHeader: string, longHelpValue: string) => {
+            setProperties(commandHeader, ["LongHelp"], [longHelpValue]);
+        };
+        let getProperties = (commandHeader: string) => {
             let properties = ["Title", "ShortHelp", "LongHelp"];
             let nls = getNls();
             let result = {} as {
@@ -178,8 +396,11 @@ let ProjectV1 = (projectDirectory: string) => {
         return {
             getNls,
             setNls,
-            setProperty,
-            getProperty
+            setProperties,
+            getProperties,
+            setTitle,
+            setShortHelp,
+            setLongHelp
         };
     };
     let Msgcatalog = (msgcatalogDirectory: string) => {
@@ -189,7 +410,7 @@ let ProjectV1 = (projectDirectory: string) => {
             if (language == "Simplified_Chinese") {
                 filePath = Path.Combine(simplifiedChineseDirectory, `${macDeclareHeader}.CATNls`);
             };
-            return CATNls(filePath, language);
+            return CATNls(filePath, language, macDeclareHeader);
         };
         return {
             getCATNls
@@ -302,7 +523,7 @@ let ProjectV1 = (projectDirectory: string) => {
             if (File.Exists(imakeFilePath)) {
                 throw "Imakefile already exists";
             }
-            let templatePath = Path.Combine(script_directory, "Template", "Imakefile.mk");
+            let templatePath = Path.Combine(script_directory, "Project/Template", "Imakefile.mk");
             if (File.Exists(templatePath) == false) {
                 throw "Template not found";
             }
@@ -319,21 +540,248 @@ let ProjectV1 = (projectDirectory: string) => {
         let moduleSrcDirectory = Path.Combine(module.getModuleDirectory(), "src");
         let headerPath = Path.Combine(moduleLocalInterfacesDirectory, `${name}.h`);
         let srcPath = Path.Combine(moduleSrcDirectory, `${name}.cpp`);
-        let getMacDeclareHeader = () => {
-            if (File.Exists(srcPath) == false) {
-                console.error(`Header file not found: ${srcPath}`);
-                return "";
+        let getMacDeclareHeaderByCodeTree = (codeTree: any) => {
+            let macDeclareHeaderStatement = codeTree.find(item => item.type == "Statement" && item.caller == 'MacDeclareHeader');
+            if (macDeclareHeaderStatement == undefined) {
+                throw `MacDeclareHeader not found in ${srcPath}`;
             }
-            let text = File.ReadAllText(srcPath, utf8);
-            let match = macDeclareHeaderRegex.Match(text);
-            if (match.Success) {
-                return match.Groups[1].Value;
+            return macDeclareHeaderStatement.parameters[0];
+        };
+        let create = () => {
+            let templateHeaderPath = Path.Combine(script_directory, "Project/Template", "Addin.h");
+            let templateSrcPath = Path.Combine(script_directory, "Project/Template", "Addin.cpp");
+            if (File.Exists(headerPath)) {
+                throw `${headerPath} already exists`;
             }
-            console.error(`MacDeclareHeader not found in header file: ${srcPath}`);
-            return "";
+            if (File.Exists(srcPath)) {
+                throw `${srcPath} already exists`;
+            }
+            var templateHeader = File.ReadAllText(templateHeaderPath, utf8);
+            var templateSrc = File.ReadAllText(templateSrcPath, utf8);
+            templateHeader = templateHeader.replace("__ADDIN_NAME__", name);
+            templateSrc = templateSrc.replace("__ADDIN_NAME__", name);
+            File.WriteAllText(headerPath, templateHeader, utf8);
+            File.WriteAllText(srcPath, templateSrc, utf8);
+        };
+        let getCommandsByCodeTree = (codeTree: any) => {
+            let macDeclareHeader = getMacDeclareHeaderByCodeTree(codeTree);
+            let method = codeTree.find(item => item.type == "Method" && item.name == "CreateCommands");
+            if (method == undefined) {
+                throw `CreateCommands not found in ${srcPath}`;
+            }
+            if (method.body == undefined) {
+                throw `CreateCommands body not found in ${srcPath}`;
+            }
+            return {
+                commands: method.body.filter(item => item.caller == macDeclareHeader).map(item => {
+                    return {
+                        header: item.parameters[0].trim('"'),
+                        module: item.parameters[1].trim('"'),
+                        commandClass: item.parameters[2].trim('"'),
+                        input: item.parameters[3],
+                        available: item.parameters[4]
+                    }
+                }),
+                range: method.bodyRange
+            };
+        };
+        let getToolbarsByCodeTree = (codeTree: any) => {
+            let macDeclareHeader = getMacDeclareHeaderByCodeTree(codeTree);
+            let method = codeTree.find(item => item.type == "Method" && item.name == "CreateToolbars");
+            if (method == undefined) {
+                throw `CreateToolbars not found in ${srcPath}`;
+            }
+            if (method.body == undefined) {
+                throw `CreateToolbars body not found in ${srcPath}`;
+            }
+            let accesses = [] as any[];
+            let toolbar = [] as any[];
+            for (let item of method.body) {
+                if (item.caller == 'NewAccess') {
+                    let access = {
+                        className: item.parameters[0],
+                        variableName: item.parameters[1],
+                        objectName: item.parameters[2],
+                    }
+                    accesses.push(access);
+                }
+                else if (item.caller == 'AddToolbarView') {
+                    let access = accesses.find(access => access.variableName == item.parameters[0]);
+                    access.toolbar = {
+                        visible: item.parameters[1],
+                        where: item.parameters[2],
+                    }
+                    toolbar.push(access);
+                }
+                else if (item.caller == 'SetAccessCommand') {
+                    let access = accesses.find(access => access.variableName == item.parameters[0]);
+                    access.commandName = item.parameters[1].trim('"');
+                }
+                else if (item.caller == 'SetAccessChild') {
+                    let access = accesses.find(access => access.variableName == item.parameters[0]);
+                    if (access.children == undefined) {
+                        access.children = [];
+                    }
+                    access.children.push(item.parameters[1]);
+                }
+            }
+            return {
+                accesses,
+                toolbar,
+                range: method.bodyRange
+            }
+        };
+        let commandToString = (macDeclareHeader: string, commands: any[]) => {
+            let lines = [] as string[];
+            for (let command of commands) {
+                lines.push(`new ${macDeclareHeader} ("${command.header}", "${command.module}", "${command.commandClass}", ${command.input}, ${command.available});`);
+            }
+            return lines.join("\r\n");
+        };
+        let toolbarsToString = (toolbars: any) => {
+            let lines = [] as string[];
+            for (let access of toolbars.accesses) {
+                lines.push(`NewAccess(${access.className}, ${access.variableName}, ${access.objectName});`);
+                if (access.toolbar) {
+                    lines.push(`AddToolbarView(${access.variableName}, ${access.toolbar.visible}, ${access.toolbar.where});`);
+                }
+                if (access.commandName) {
+                    lines.push(`SetAccessCommand(${access.variableName}, "${access.commandName}");`);
+                }
+                lines.push("");
+            }
+            lines.push("");
+            for (let access of toolbars.accesses) {
+                if (access.children) {
+                    for (let child of access.children) {
+                        lines.push(`SetAccessChild(${access.variableName}, ${child});`);
+                    }
+                }
+            }
+            lines.push("");
+            lines.push(`return ${toolbars.toolbar[0].variableName};`);
+            return lines.join("\r\n");
+        };
+        let setByCodeTree = (script: string, codeTree: any, commands: any, toolbars: any) => {
+            let lines = [] as string[];
+            lines.push(script.substring(0, commands.range[0] + 1));
+            lines.push(commandToString(getMacDeclareHeaderByCodeTree(codeTree), commands.commands));
+            lines.push(script.substring(commands.range[1], toolbars.range[0] + 1));
+            lines.push(toolbarsToString(toolbars));
+            lines.push(script.substring(toolbars.range[1]));
+            File.WriteAllText(srcPath, lines.join("\r\n"), utf8);
+        };
+        let get = () => {
+            let content = File.ReadAllText(srcPath, utf8);
+            let codeTree = cppAnalyser().analyse(content);
+            let commands = getCommandsByCodeTree(codeTree);
+            let toolbars = getToolbarsByCodeTree(codeTree);
+            return {
+                commands,
+                toolbars,
+                set: (commands: any, toolbars: any) => {
+                    setByCodeTree(content, codeTree, commands, toolbars);
+                }
+            };
+        };
+        let addCommandToFirstToolbar = (name: string, moduleName: string, className: string) => {
+            let addin = get();
+            let isContains = addin.commands.commands.findIndex(item => item.header == name || item.header == `${name}Header`) != -1;
+            if (isContains) {
+                throw `${name} already exists`;
+            }
+            addin.commands.commands.push({
+                header: name,
+                module: moduleName,
+                commandClass: className,
+                input: "(void *)NULL",
+                available: "CATFrmAvailable"
+            });
+            let toolbar = addin.toolbars.toolbar[0];
+            addin.toolbars.accesses.push({
+                className: "CATCmdStarter",
+                variableName: name,
+                objectName: `o_${name}`,
+                commandName: name,
+            });
+            toolbar.children.push(name);
+            addin.set(addin.commands, addin.toolbars);
+        };
+        let addCommand = (name: string, moduleName: string, className: string, toolbarName: string) => {
+            let addin = get();
+            let isContains = addin.commands.commands.findIndex(item => item.header == name || item.header == `${name}Header`) != -1;
+            if (isContains) {
+                throw `${name} already exists`;
+            }
+            addin.commands.commands.push({
+                header: name,
+                module: moduleName,
+                commandClass: className,
+                input: "(void *)NULL",
+                available: "CATFrmAvailable"
+            });
+            let toolbar = addin.toolbars.toolbar.find(item => item.variableName == toolbarName || item.variableName == `p_${toolbarName}` || item.variableName == `p${toolbarName}`);
+            addin.toolbars.accesses.push({
+                className: "CATCmdStarter",
+                variableName: name,
+                objectName: `o_${name}`,
+                commandName: name,
+            });
+            if (toolbar.children == undefined) {
+                toolbar.children = [];
+            }
+            toolbar.children.push(name);
+            addin.set(addin.commands, addin.toolbars);
+        };
+        let addToolbar = (name: string, where: string) => {
+            let addin = get();
+            let isContains = addin.toolbars.toolbar.findIndex(item => item.variableName == name || item.variableName == `p_${name}` || item.variableName == `p${name}`) != -1;
+            if (isContains) {
+                throw `${name} already exists`;
+            }
+            addin.toolbars.accesses.push({
+                className: "CATCmdContainer",
+                variableName: name,
+                objectName: `o_${name}`,
+                toolbar: {
+                    visible: '1',
+                    where: where
+                }
+            });
+            addin.set(addin.commands, addin.toolbars);
         };
         return {
-            getMacDeclareHeader
+            create,
+            get,
+            addCommandToFirstToolbar,
+            addCommand,
+            addToolbar
+        };
+    };
+    let CommandClass = (module: any, name: string) => {
+        let _this = {};
+        let moduleLocalInterfacesDirectory = Path.Combine(module.getModuleDirectory(), "LocalInterfaces");
+        let moduleSrcDirectory = Path.Combine(module.getModuleDirectory(), "src");
+        let headerPath = Path.Combine(moduleLocalInterfacesDirectory, `${name}.h`);
+        let srcPath = Path.Combine(moduleSrcDirectory, `${name}.cpp`);
+        let create = () => {
+            let templateHeaderPath = Path.Combine(script_directory, "Project/Template", "CommandClass.h");
+            let templateSrcPath = Path.Combine(script_directory, "Project/Template", "CommandClass.cpp");
+            if (File.Exists(headerPath)) {
+                throw `${headerPath} already exists`;
+            }
+            if (File.Exists(srcPath)) {
+                throw `${srcPath} already exists`;
+            }
+            var templateHeader = File.ReadAllText(templateHeaderPath, utf8);
+            var templateSrc = File.ReadAllText(templateSrcPath, utf8);
+            templateHeader = templateHeader.replace("__COMMAND_CLASS_NAME__", name);
+            templateSrc = templateSrc.replace("__COMMAND_CLASS_NAME__", name);
+            File.WriteAllText(headerPath, templateHeader, utf8);
+            File.WriteAllText(srcPath, templateSrc, utf8);
+        };
+        return {
+            create
         };
     };
     let Module = (framework: any, moduleDirectory: string) => {
@@ -374,11 +822,61 @@ let ProjectV1 = (projectDirectory: string) => {
         let getAddin = (name: string) => {
             return Addin(_this, name);
         };
+        let createAddin = (name: string) => {
+            let addin = Addin(_this, name);
+            addin.create();
+        };
+        let containsAddin = (name: string) => {
+            let moduleSrcDirectory = Path.Combine(moduleDirectory, "src");
+            let files = Directory.GetFiles(moduleSrcDirectory, "*.cpp");
+            for (let file of files) {
+                if (Path.GetFileNameWithoutExtension(file) == name) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        let getCommandClasses = () => {
+            let moduleSrcDirectory = Path.Combine(moduleDirectory, "src");
+            let files = Directory.GetFiles(moduleSrcDirectory, "*.cpp");
+            let result = [] as string[];
+            for (let file of files) {
+                let content = File.ReadAllText(file, utf8);
+                let match = catCommandRegex.Match(content);
+                if (match.Success) {
+                    result.push(Path.GetFileNameWithoutExtension(file));
+                }
+            }
+            return result;
+        }
+        let getCommandClass = (name: string) => {
+            return CommandClass(_this, name);
+        };
+        let createCommandClass = (name: string) => {
+            let commandClass = CommandClass(_this, name);
+            commandClass.create();
+        };
+        let containsCommandClass = (name: string) => {
+            let moduleSrcDirectory = Path.Combine(moduleDirectory, "src");
+            let files = Directory.GetFiles(moduleSrcDirectory, "*.cpp");
+            for (let file of files) {
+                if (Path.GetFileNameWithoutExtension(file) == name) {
+                    return true;
+                }
+            }
+            return false;
+        };
         let self = {
             getModuleDirectory: () => moduleDirectory,
             addModuleHeader,
             getAddins,
             getAddin,
+            createAddin,
+            containsAddin,
+            getCommandClasses,
+            getCommandClass,
+            createCommandClass,
+            containsCommandClass,
             imakefile
         };
         _this = self;
@@ -414,7 +912,6 @@ let ProjectV1 = (projectDirectory: string) => {
         _this = self;
         return self;
     };
-
     let getFramework = (frameworkName: string) => {
         return Framework(Path.Combine(projectDirectory, frameworkName));
     };
@@ -491,9 +988,10 @@ let cmd_package_sdk = async () => {
     templateContent = templateContent.replace("__PROJECT_NAME__", projectName);
     await File.WriteAllTextAsync(Path.Combine(outputDirectory, "CMakeLists.txt"), templateContent, utf8);
 };
+
 let cmd_init = async () => {
     if (args.length < 2) {
-        console.log("Usage: caa init <sdk_name> [project_directory]");
+        console.log("Usage: caa init <sdk_name>");
         return;
     }
     console.log(`args: ${args}`);
@@ -548,14 +1046,12 @@ let main = async () => {
     if (command.toLowerCase() == "package-sdk") {
         await cmd_package_sdk();
     }
+    else if (command.toLowerCase() == "init") {
+        await cmd_init();
+    }
     else {
         console.log("Unknown command");
     }
 };
 
-// await main();
-//tscl run E:\Downloads\Temp\open-cad\cli\caa\main.ts package-sdk C:\Users\ELEAD-33\Downloads\李东明\B21  E:\Downloads\李东明\SDK
-
-let project = ProjectV1("E:\\Downloads\\Temp\\open-cad\\cli\\caa\\Project");
-let framework = project.getFramework("DemoFrm");
-console.log(framework.getModule(framework.getModules()[0]).getAddin("OyyDemoAddin").getMacDeclareHeader());
+await main();
