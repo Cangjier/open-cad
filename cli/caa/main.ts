@@ -1132,11 +1132,8 @@ let cmd_init = async () => {
     let module = framework.getModule(projectName);
     module.createAddin("Addin");
     let addin = module.getAddin("Addin");
-    console.log(`addin: ${addin}`);
     addin.addCommandToFirstToolbar("HelloWorld", "HelloWorldCmd");
-    console.log(`add command HelloWorld`);
     module.createCommandClass("HelloWorldCmd");
-    console.log(`create command HelloWorldCmd`);
 };
 
 
