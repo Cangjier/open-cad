@@ -1,20 +1,24 @@
 add_library(__PROJECT_NAME__ INTERFACE)
-target_sources(${PROJECT_NAME} INTERFACE)
-set(${PROJECT_NAME}_DIR ${CMAKE_CURRENT_LIST_DIR})
+target_sources(__PROJECT_NAME__ INTERFACE)
+set(__PROJECT_NAME___DIR ${CMAKE_CURRENT_LIST_DIR})
 
-set(${PROJECT_NAME}_INCLUDE_DIRS "")
-file(GLOB_RECURSE FOUND_PUBLIC_INTERFACES_DIRS
-     "${${PROJECT_NAME}_DIR}/*/PublicInterfaces"
-     "${${PROJECT_NAME}_DIR}/PublicInterfaces")
-foreach(dir ${FOUND_PUBLIC_INTERFACES_DIRS})
-    if(IS_DIRECTORY ${dir})
-        list(APPEND ${PROJECT_NAME}_INCLUDE_DIRS ${dir})
-    endif()
+# 首先查找所有文件
+file(GLOB_RECURSE FOUND_PUBLIC_INTERFACE_FILES 
+    "${__PROJECT_NAME___DIR}/*/PublicInterfaces/*"
+    "${__PROJECT_NAME___DIR}/*/*/PublicInterfaces/*")
+
+# 提取父目录路径
+set(__PROJECT_NAME___INCLUDE_DIRS "")
+foreach(file_path ${FOUND_PUBLIC_INTERFACE_FILES})
+    get_filename_component(dir_path ${file_path} DIRECTORY)
+    list(APPEND __PROJECT_NAME___INCLUDE_DIRS ${dir_path})
 endforeach()
-target_include_directories(${PROJECT_NAME} INTERFACE ${${PROJECT_NAME}_INCLUDE_DIRS})
 
-file(GLOB_RECURSE LIBS "${${PROJECT_NAME}_DIR}/*.lib")
-target_link_libraries(${PROJECT_NAME} ${LIBS})
+# 移除重复项
+list(REMOVE_DUPLICATES __PROJECT_NAME___INCLUDE_DIRS)
 
+target_include_directories(__PROJECT_NAME__ INTERFACE ${__PROJECT_NAME___INCLUDE_DIRS})
 
+file(GLOB_RECURSE LIBS "${__PROJECT_NAME___DIR}/*.lib")
+target_link_libraries(__PROJECT_NAME__ ${LIBS})
 

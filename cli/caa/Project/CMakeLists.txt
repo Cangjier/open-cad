@@ -65,5 +65,5 @@ else()
 endif()
 
 ## 3.3 预处理宏
-target_compile_definitions(${PROJECT_NAME} PRIVATE MY_DEFINE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE _WINDOWS_SOURCE)
 
