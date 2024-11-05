@@ -1,24 +1,24 @@
-#ifndef __Addin___H
-#define __Addin___H
+#ifndef __ADDIN_NAME__H
+#define __ADDIN_NAME__H
 
 #include "CATIAfrGeneralWksAddin.h"
 #include "CATBaseUnknown.h"
 #include "CATCreateWorkshop.h"
 #include "CATCmdContainer.h"
 
-class __Addin__ : public CATBaseUnknown
+class __ADDIN_NAME__ : public CATBaseUnknown
 {
   CATDeclareClass;
 
 public:
-  __Addin__();
-  virtual ~__Addin__();
+  __ADDIN_NAME__();
+  virtual ~__ADDIN_NAME__();
   void CreateCommands();
   CATCmdContainer *CreateToolbars();
 
 private:
-  __Addin__(__Addin__ &);
-  __Addin__ &operator=(__Addin__ &);
+  __ADDIN_NAME__(__ADDIN_NAME__ &);
+  __ADDIN_NAME__ &operator=(__ADDIN_NAME__ &);
 };
 
 //-----------------------------------------------------------------------

@@ -1,22 +1,22 @@
-#include "__Addin__.h"
+#include "__ADDIN_NAME__.h"
 
 #include "CATCommandHeader.h"
-MacDeclareHeader(__Addin__Header);
-CATImplementClass(__Addin__, Implementation, CATBaseUnknown, CATnull);
+MacDeclareHeader(__ADDIN_NAME__Header);
+CATImplementClass(__ADDIN_NAME__, Implementation, CATBaseUnknown, CATnull);
 
-__Addin__::__Addin__() : CATBaseUnknown()
+__ADDIN_NAME__::__ADDIN_NAME__() : CATBaseUnknown()
 {
 }
 
-__Addin__::~__Addin__()
+__ADDIN_NAME__::~__ADDIN_NAME__()
 {
 }
 
-void __Addin__::CreateCommands()
+void __ADDIN_NAME__::CreateCommands()
 {
 }
 
-CATCmdContainer *__Addin__::CreateToolbars()
+CATCmdContainer *__ADDIN_NAME__::CreateToolbars()
 {
     NewAccess(CATCmdContainer, toolbar, toolbar);
     AddToolbarView(toolbar, 1, Top);
@@ -25,6 +25,6 @@ CATCmdContainer *__Addin__::CreateToolbars()
 
 // TIE or TIEchain definitions
 #include "TIE_CATIAfrGeneralWksAddin.h"
-TIE_CATIAfrGeneralWksAddin(__Addin__);
+TIE_CATIAfrGeneralWksAddin(__ADDIN_NAME__);
 
 // Methods implementation
