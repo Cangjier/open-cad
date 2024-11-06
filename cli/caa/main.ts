@@ -972,6 +972,7 @@ let ProjectV1 = (projectDirectory: string) => {
                 }
             }
             imakefile.initialize();
+            addModuleHeader();
         };
         let self = {
             getFramework: () => framework,
