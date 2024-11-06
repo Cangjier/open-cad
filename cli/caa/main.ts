@@ -1183,9 +1183,9 @@ let cmd_init = async () => {
     let addin = module.getAddin("Addin");
     addin.addCommandToFirstToolbar("HelloWorld", "HelloWorldCmd");
     module.createCommandClass("HelloWorldCmd");
-    addin.setCommandTitle("HelloWorldCmd", "Hello-World", "English");
-    addin.setCommandShortHelp("HelloWorldCmd", "Hello-World", "English");
-    addin.setCommandLongHelp("HelloWorldCmd", "Hello-World", "English");
+    addin.setCommandTitle("HelloWorld", "Hello-World", "English");
+    addin.setCommandShortHelp("HelloWorld", "Hello-World", "English");
+    addin.setCommandLongHelp("HelloWorld", "Hello-World", "English");
 };
 
 
