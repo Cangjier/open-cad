@@ -115,7 +115,7 @@ let gitManager = GitManager();
 
 let CMakeManager = () => {
     let checkInstalled = async () => {
-        let output = {} as { lines: string[] };
+        let output = {lines:[]} as { lines: string[] };
         await cmdAsync(Environment.CurrentDirectory, "cmake --version", output);
         if (output.lines && output.lines.length > 0) {
             return true;
@@ -158,7 +158,7 @@ let cmakeManager = CMakeManager();
 
 let VsCodeManager = () => {
     let checkInstalled = async () => {
-        let output = {} as { lines: string[] };
+        let output = {lines:[]} as { lines: string[] };
         await cmdAsync(Environment.CurrentDirectory, "code --version", output);
         if (output.lines && output.lines.length > 0) {
             return true;
