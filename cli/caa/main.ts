@@ -599,6 +599,9 @@ let ProjectV1 = (projectDirectory: string) => {
             templateSrc = templateSrc.replace("__ADDIN_NAME__", name);
             File.WriteAllText(headerPath, templateHeader, utf8);
             File.WriteAllText(srcPath, templateSrc, utf8);
+            let framework = module.getFramework();
+            let addin = get();
+            framework.cnext.dictionary.addAddin(name, addin.workshopName, module.getModuleName());
         };
         let getCommandsByCodeTree = (codeTree: any) => {
             let macDeclareHeader = getMacDeclareHeaderByCodeTree(codeTree);
