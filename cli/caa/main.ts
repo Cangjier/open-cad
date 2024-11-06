@@ -275,7 +275,7 @@ let catia = CATIA();
 
 let ProjectV1 = (projectDirectory: string) => {
     let Dictionary = (dicoPath: string) => {
-        let getTIEs = () => {
+        let getAddins = () => {
             if (File.Exists(dicoPath) == false) {
                 return [];
             };
@@ -285,7 +285,7 @@ let ProjectV1 = (projectDirectory: string) => {
                 let items = line.trim().split(" ");
                 if (items.length == 3) {
                     result.push({
-                        TieName: items[0],
+                        AddinName: items[0],
                         WorkshopName: items[1],
                         ModuleName: items[2].substring(3)
                     });
@@ -293,23 +293,23 @@ let ProjectV1 = (projectDirectory: string) => {
             }
             return result;
         };
-        let setTIEs = (ties: IDictionary[]) => {
+        let setAddins = (addins: IDictionary[]) => {
             let dictionaryDirectory = Path.GetDirectoryName(dicoPath);
             if (Directory.Exists(dictionaryDirectory) == false) {
                 Directory.CreateDirectory(dictionaryDirectory);
             }
             let lines = [] as string[];
-            for (let item of ties) {
-                lines.push(`${item.TieName} ${item.WorkshopName} lib${item.ModuleName}`);
+            for (let item of addins) {
+                lines.push(`${item.AddinName} ${item.WorkshopName} lib${item.ModuleName}`);
             }
             File.WriteAllText(dicoPath, lines.join("\n"), utf8);
         };
-        let addTIE = (tieName: string, workshopName: string, moduleName: string) => {
-            let ties = getTIEs();
-            let index = ties.findIndex(item => item.TieName == tieName);
+        let addAddin = (addinName: string, workshopName: string, moduleName: string) => {
+            let ties = getAddins();
+            let index = ties.findIndex(item => item.AddinName == addinName);
             if (index == -1) {
                 ties.push({
-                    TieName: tieName,
+                    AddinName: addinName,
                     WorkshopName: workshopName,
                     ModuleName: moduleName
                 });
@@ -318,22 +318,22 @@ let ProjectV1 = (projectDirectory: string) => {
                 ties[index].WorkshopName = workshopName;
                 ties[index].ModuleName = moduleName;
             }
-            setTIEs(ties);
+            setAddins(ties);
         };
-        let removeTIE = (tieName: string) => {
-            let ties = getTIEs();
-            let index = ties.findIndex(item => item.TieName == tieName);
+        let removeAddin = (addinName: string) => {
+            let ties = getAddins();
+            let index = ties.findIndex(item => item.AddinName == addinName);
             if (index != -1) {
                 ties.splice(index, 1);
-                setTIEs(ties);
+                setAddins(ties);
             }
         };
 
         return {
-            getTIEs,
-            setTIEs,
-            addTIE,
-            removeTIE
+            getAddins: getAddins,
+            setAddins: setAddins,
+            addAddin: addAddin,
+            removeAddin: removeAddin
         };
     };
     let Icons = (iconsDirectory: string) => {
@@ -668,6 +668,13 @@ let ProjectV1 = (projectDirectory: string) => {
                 range: method.bodyRange
             }
         };
+        let getWorkShopNameByCodeTree = (codeTree: any) => {
+            let tie = codeTree.find(item => item.type == "Statement" && item.caller.startsWith("TIE_"));
+            if (tie == undefined) {
+                throw `TIE not found in ${srcPath}`;
+            }
+            return tie.caller.substring(4);
+        };
         let commandToString = (macDeclareHeader: string, commands: any[]) => {
             let lines = [] as string[];
             for (let command of commands) {
@@ -713,9 +720,11 @@ let ProjectV1 = (projectDirectory: string) => {
             let codeTree = cppAnalyser().analyse(content);
             let commands = getCommandsByCodeTree(codeTree);
             let toolbars = getToolbarsByCodeTree(codeTree);
+            let workshopName = getWorkShopNameByCodeTree(codeTree);
             return {
                 commands,
                 toolbars,
+                workshopName,
                 set: (commands: any, toolbars: any) => {
                     setByCodeTree(content, codeTree, commands, toolbars);
                 }
@@ -736,7 +745,7 @@ let ProjectV1 = (projectDirectory: string) => {
                 available: "CATFrmAvailable"
             });
             let toolbar = addin.toolbars.toolbar[0];
-            if(toolbar.children == undefined) {
+            if (toolbar.children == undefined) {
                 toolbar.children = [];
             }
             addin.toolbars.accesses.push({
@@ -792,12 +801,20 @@ let ProjectV1 = (projectDirectory: string) => {
             });
             addin.set(addin.commands, addin.toolbars);
         };
+        let getWorkShopName = () => {
+            let content = File.ReadAllText(srcPath, utf8);
+            let codeTree = cppAnalyser().analyse(content);
+            return getWorkShopNameByCodeTree(codeTree);
+        };
+        
         return {
+            getName: () => name,
             create,
             get,
             addCommandToFirstToolbar,
             addCommand,
-            addToolbar
+            addToolbar,
+            getWorkShopName
         };
     };
     let CommandClass = (module: any, name: string) => {
@@ -1134,6 +1151,7 @@ let cmd_init = async () => {
     let addin = module.getAddin("Addin");
     addin.addCommandToFirstToolbar("HelloWorld", "HelloWorldCmd");
     module.createCommandClass("HelloWorldCmd");
+    framework.cnext.dictionary.addAddin(addin.getName(), addin.getWorkShopName(), module.getModuleName());
 };
 
 

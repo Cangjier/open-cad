@@ -15,7 +15,7 @@ export interface IPrereqComponent {
 export type Visiblity = 'Public' | 'Private';
 
 export interface IDictionary {
-    TieName: string,
+    AddinName: string,
     WorkshopName: string,
     ModuleName: string
 }
