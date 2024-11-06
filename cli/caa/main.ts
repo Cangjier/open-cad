@@ -572,7 +572,7 @@ let ProjectV1 = (projectDirectory: string) => {
         };
     };
     let Addin = (module: any, name: string) => {
-        let _this = {};
+        let _this = {} as any;
         let moduleLocalInterfacesDirectory = Path.Combine(module.getModuleDirectory(), "LocalInterfaces");
         let moduleSrcDirectory = Path.Combine(module.getModuleDirectory(), "src");
         let headerPath = Path.Combine(moduleLocalInterfacesDirectory, `${name}.h`);
@@ -600,7 +600,7 @@ let ProjectV1 = (projectDirectory: string) => {
             File.WriteAllText(headerPath, templateHeader, utf8);
             File.WriteAllText(srcPath, templateSrc, utf8);
             let framework = module.getFramework();
-            let addin = get();
+            let addin = _this.get();
             framework.cnext.dictionary.addAddin(name, addin.workshopName, module.getModuleName());
         };
         let getCommandsByCodeTree = (codeTree: any) => {
@@ -835,8 +835,7 @@ let ProjectV1 = (projectDirectory: string) => {
         let setCommandLongHelp = (name: string, longHelp: string, language: Languages) => {
             setCommandProperties(name, language, ["LongHelp"], [longHelp]);
         };
-
-        return {
+        let self = {
             getName: () => name,
             create,
             get,
@@ -850,6 +849,8 @@ let ProjectV1 = (projectDirectory: string) => {
             setCommandShortHelp,
             setCommandLongHelp
         };
+        _this = self;
+        return self;
     };
     let CommandClass = (module: any, name: string) => {
         let _this = {};
