@@ -721,10 +721,12 @@ let ProjectV1 = (projectDirectory: string) => {
             let commands = getCommandsByCodeTree(codeTree);
             let toolbars = getToolbarsByCodeTree(codeTree);
             let workshopName = getWorkShopNameByCodeTree(codeTree);
+            let macDeclareHeader = getMacDeclareHeaderByCodeTree(codeTree);
             return {
                 commands,
                 toolbars,
                 workshopName,
+                macDeclareHeader,
                 set: (commands: any, toolbars: any) => {
                     setByCodeTree(content, codeTree, commands, toolbars);
                 }
@@ -806,7 +808,31 @@ let ProjectV1 = (projectDirectory: string) => {
             let codeTree = cppAnalyser().analyse(content);
             return getWorkShopNameByCodeTree(codeTree);
         };
-        
+        let getMacDeclareHeader = () => {
+            let content = File.ReadAllText(srcPath, utf8);
+            let codeTree = cppAnalyser().analyse(content);
+            return getMacDeclareHeaderByCodeTree(codeTree);
+        };
+        let setCommandProperties = (name: string, language: Languages, properties: string[], values: string[]) => {
+            let addin = get();
+            let command = addin.commands.commands.find(item => item.header == name || item.header == `${name}Header`);
+            if (command == undefined) {
+                throw `${name} not found`;
+            }
+            let framework = module.getFramework();
+            let catnls = framework.cnext.msgcatalog.getCATNls(addin.macDeclareHeader, language);
+            catnls.setProperties(command.header, properties, values);
+        };
+        let setCommandTitle = (name: string, title: string, language: Languages) => {
+            setCommandProperties(name, language, ["Title"], [title]);
+        };
+        let setCommandShortHelp = (name: string, shortHelp: string, language: Languages) => {
+            setCommandProperties(name, language, ["ShortHelp"], [shortHelp]);
+        };
+        let setCommandLongHelp = (name: string, longHelp: string, language: Languages) => {
+            setCommandProperties(name, language, ["LongHelp"], [longHelp]);
+        };
+
         return {
             getName: () => name,
             create,
@@ -814,7 +840,12 @@ let ProjectV1 = (projectDirectory: string) => {
             addCommandToFirstToolbar,
             addCommand,
             addToolbar,
-            getWorkShopName
+            getWorkShopName,
+            getMacDeclareHeader,
+            setCommandProperties,
+            setCommandTitle,
+            setCommandShortHelp,
+            setCommandLongHelp
         };
     };
     let CommandClass = (module: any, name: string) => {
@@ -939,6 +970,7 @@ let ProjectV1 = (projectDirectory: string) => {
             imakefile.initialize();
         };
         let self = {
+            getFramework: () => framework,
             getModuleDirectory: () => moduleDirectory,
             getModuleName: () => moduleName,
             addModuleHeader,
@@ -1151,7 +1183,9 @@ let cmd_init = async () => {
     let addin = module.getAddin("Addin");
     addin.addCommandToFirstToolbar("HelloWorld", "HelloWorldCmd");
     module.createCommandClass("HelloWorldCmd");
-    framework.cnext.dictionary.addAddin(addin.getName(), addin.getWorkShopName(), module.getModuleName());
+    addin.setCommandTitle("HelloWorldCmd", "Hello-World", "English");
+    addin.setCommandShortHelp("HelloWorldCmd", "Hello-World", "English");
+    addin.setCommandLongHelp("HelloWorldCmd", "Hello-World", "English");
 };
 
 
