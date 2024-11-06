@@ -245,7 +245,7 @@ let visualStudioManager = VisualStudioManager();
 
 let VcpkgManager = () => {
     let checkInstalled = async () => {
-        let output = {} as { lines: string[] };
+        let output = {lines:[]} as { lines: string[] };
         await cmdAsync(Environment.CurrentDirectory, "vcpkg version", output);
         if (output.lines && output.lines.length > 0) {
             return true;
