@@ -342,20 +342,18 @@ let SDKManager = () => {
 let sdkManager = SDKManager();
 
 let main = async () => {
+    
+
     if (await gitManager.clone() == false) {
         return;
-    }
-
-    let proxyInfo = await gitManager.getHttpProxy();
-    if (proxyInfo != "") {
-        console.log(`http.proxy: ${proxyInfo}`);
-        axios.setProxy(proxyInfo);
     }
 
     if (args.length < 1) {
         help();
         return;
     }
+
+    axios.setDefaultProxy();
 
     let cadName = args[0];
 

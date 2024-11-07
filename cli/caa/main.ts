@@ -11,6 +11,8 @@ import { Encoding } from "../.tsc/System/Text/Encoding";
 import { ICATNls, IDictionary, IPrereqComponent, Languages, Visiblity } from "./Inerfaces";
 import { Match } from "../.tsc/System/Text/RegularExpressions/Match";
 import { code } from '../.tsc/Cangjie/TypeSharp/System/code';
+import { env } from "../.tsc/context";
+import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 let utf8 = new UTF8Encoding(false);
 let gb2312 = Encoding.GetEncoding("gb2312");
 
@@ -264,6 +266,8 @@ let CATIA = () => {
                 }
             }
         }
+        let desktopShortcuts = Directory.GetFiles(env("desktop"), "*.lnk");
+ 
         return result;
     };
     return {
@@ -1199,6 +1203,7 @@ let main = async () => {
         console.log("Usage: caa <command>");
         return;
     }
+    axios.setDefaultProxy();
     let command = args[0];
     if (command.toLowerCase() == "package-sdk") {
         await cmd_package_sdk();

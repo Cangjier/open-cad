@@ -14,6 +14,8 @@ export const execAsync:(path?: string, ...args: string[]) => Promise<number> = 0
 export const start:(path?: string, ...args: string[]) => void = 0 as any
 export const cmd:(workingDirectory?: string, commandLine?: string) => number = 0 as any
 export const cmdAsync:(workingDirectory?: string, commandLine?: string, output?: any) => Promise<number> = 0 as any
+export const getCmdOutputAsync:(workingDirectory?: string, commandLine?: string) => Promise<string> = 0 as any
+export const getCmdOutput:(workingDirectory?: string, commandLine?: string) => string = 0 as any
 export const startCmd:(workingDirectory?: string, commandLine?: string) => void = 0 as any
 export const parseFloat:(value?: string) => number = 0 as any
 export const parseInt:(value?: string) => number = 0 as any
@@ -28,3 +30,4 @@ export const locate:(searchDirectory_or_path?: string, path?: string) => string 
 export const lock:(id?: Guid) => void = 0 as any
 export const lockAsync:(id?: Guid) => Promise<void> = 0 as any
 export const unlock:(id?: Guid) => void = 0 as any
+export const env:(environmentVariable?: string) => string = 0 as any

@@ -22,6 +22,9 @@ export class axios {
     public static unsetProxy(): void {
         return {} as any;
     }
+    public static setDefaultProxy(): void {
+        return {} as any;
+    }
     public static get(url?: string, config?: axiosConfig): Promise<axiosResponse> {
         return {} as any;
     }

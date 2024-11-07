@@ -28,6 +28,12 @@ export class context {
     public static cmdAsync(workingDirectory?: string, commandLine?: string, output?: any): Promise<number> {
         return {} as any;
     }
+    public static getCmdOutputAsync(workingDirectory?: string, commandLine?: string): Promise<string> {
+        return {} as any;
+    }
+    public static getCmdOutput(workingDirectory?: string, commandLine?: string): string {
+        return {} as any;
+    }
     public static startCmd(workingDirectory?: string, commandLine?: string): void {
         return {} as any;
     }
@@ -68,6 +74,9 @@ export class context {
         return {} as any;
     }
     public static unlock(id?: Guid): void {
+        return {} as any;
+    }
+    public static env(environmentVariable?: string): string {
         return {} as any;
     }
     public static args: string[];
