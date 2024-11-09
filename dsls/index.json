@@ -1,0 +1,42 @@
+{
+    "DSLS": [
+        {
+            "name": "V6R2017",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/DSLS_SSQ_V6R2017x_Installer_20170620.exe"
+        }
+    ],
+    "DSLS.Gen": [
+        {
+            "name": "v1.6",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/DSLS.LicGen.v1.6.SSQ.exe"
+        }
+    ],
+    "RADE.SSQ": [
+        {
+            "name": "V5R21",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/CAA.Rade.V5R21-V5R22.SSQ"
+        },
+        {
+            "name": "V5R22",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/CAA.Rade.V5R21-V5R22.SSQ"
+        },
+        {
+            "name": "V5R26",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/CAA.Rade.V5R26.SSQ"
+        }
+    ],
+    "CATIA.SSQ": [
+        {
+            "name": "V5R21",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/CATIA.V5R21-V5R22-V23.SSQ"
+        },
+        {
+            "name": "V5R22",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/CATIA.V5R21-V5R22-V23.SSQ"
+        },
+        {
+            "name": "V5R23",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/CATIA.V5R21-V5R22-V23.SSQ"
+        }
+    ]
+}
