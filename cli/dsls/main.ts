@@ -228,7 +228,7 @@ let SSQManager = () => {
         }
         return liczFiles;
     };
-    let create = async (serverName: string, serverID: string, outputPath: string) => {
+    let create = async (serverName: string, serverID: string, ssqName: string, outputPath: string) => {
         deleteLiczFiles();
         let generator = getGenFilePaths()[0];
         let startResult = await startGenerator(generator);
@@ -272,14 +272,15 @@ let main = async () => {
         await ssqManager.download();
     }
     else if (command == "create") {
-        if (args.length < 4) {
-            console.log("Usage: dsls create <serverName> <serverID> <outputPath>");
+        if (args.length < 5) {
+            console.log("Usage: dsls create <serverName> <serverID> <ssqName> <outputPath>");
             return;
         }
         let serverName = args[1];
         let serverID = args[2];
-        let outputPath = args[3];
-        await ssqManager.create(serverName, serverID, outputPath);
+        let ssqName = args[3];
+        let outputPath = args[4];
+        await ssqManager.create(serverName, serverID, ssqName, outputPath);
     }
 };
 
