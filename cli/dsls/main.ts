@@ -236,7 +236,8 @@ let SSQManager = () => {
         let pid = startResult.pid;
         // await setServerName(mainWindow, "WIN-IGMS40QQ1BC", "WFY-414910016C204D6A");
         await setServerName(mainWindow, serverName, serverID);
-        await selectSSQByIndex(mainWindow, 1);
+        // await selectSSQByIndex(mainWindow, 1);
+        await selectSSQByName(mainWindow, ssqName);
         await sureGenerate(mainWindow);
         await autoDo();
         await Task.Delay(500);
