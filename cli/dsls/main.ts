@@ -175,24 +175,35 @@ let SSQManager = () => {
         }
         return false;
     };
-    let generate = async (hwnd: string) => {
+    let sureGenerate = async (hwnd: string) => {
         let childWindows = await wclManager.getChildrenWindows(hwnd);
         let buttons = childWindows.filter((item: any) => item.ClassName == "TButton");
         if (buttons.length == 1) {
             await wclManager.click(buttons[0].hWnd);
         }
     };
+    let saveGenerate = async (hwnd: string) => {
+        let matchResult = await wclManager.match(genPath);
+        // console.log(matchResult);
+        if (matchResult.Save) {
+            wclManager.click(matchResult.Save[matchResult.Save.length - 1].Window.hWnd);
+            return true;
+        }
+        return false;
+    };
     let create = async () => {
         let generator = getGenFilePaths()[0];
         let mainWindow = await startGenerator(generator);
         await setServerName(mainWindow, "WIN-IGMS40QQ1BC", "WFY-414910016C204D6A");
         await selectSSQByIndex(mainWindow, 1);
-        await generate(mainWindow);
+        await sureGenerate(mainWindow);
         await Task.Delay(200);
         if (await isCheckMessage()) {
             console.log("Server name or id is invalid");
             return;
         }
+        await Task.Delay(1000);
+        await saveGenerate(mainWindow);
     };
     return {
         create,
@@ -218,5 +229,5 @@ let main = async () => {
 // await main();
 
 // await wclManager.install();
-await ssqManager.download();
+// await ssqManager.download();
 await ssqManager.create();

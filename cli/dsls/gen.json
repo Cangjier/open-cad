@@ -11,5 +11,15 @@
             "ClassName": "TButton",
             "Title": "OK"
         }
+    ],
+    "Save": [
+        {
+            "ClassName": "#32770",
+            "Title": "另存为"
+        },
+        {
+            "ClassName": "Button",
+            "Title": "保存"
+        }
     ]
 }
