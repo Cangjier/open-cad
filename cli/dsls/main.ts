@@ -221,9 +221,9 @@ let SSQManager = () => {
         }
         await Task.Delay(500);
         await saveGenerate(mainWindow);
-        await Task.Delay(500);
+        await Task.Delay(2000);
         await clickEnjoy();
-        await Task.Delay(500);
+        await Task.Delay(2000);
         await wclManager.close(mainWindow);
         let desktopPath = env("desktop");
         liczFiles = Directory.GetFiles(desktopPath, "*.licz");
