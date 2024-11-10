@@ -206,12 +206,32 @@ let SSQManager = () => {
         }
         return false;
     };
-    let create = async (outputPath: string) => {
-        let desktopPath = env("desktop");
-        let liczFiles = Directory.GetFiles(desktopPath, "*.licz");
-        for (let file of liczFiles) {
-            File.Delete(file);
+    let deleteLiczFiles = () => {
+        let directories = [
+            env("desktop"),
+            env("mydocuments")
+        ];
+        for (let directory of directories) {
+            let liczFiles = Directory.GetFiles(directory, "*.licz");
+            for (let file of liczFiles) {
+                File.Delete(file);
+            }
         }
+    };
+    let getLiczFiles = () => {
+        let directories = [
+            env("desktop"),
+            env("mydocuments")
+        ];
+        let liczFiles: string[] = [];
+        for (let directory of directories) {
+            let files = Directory.GetFiles(directory, "*.licz");
+            liczFiles = liczFiles.concat(files);
+        }
+        return liczFiles;
+    };
+    let create = async (outputPath: string) => {
+        deleteLiczFiles();
         let generator = getGenFilePaths()[0];
         let startResult = await startGenerator(generator);
         let mainWindow = startResult.hwnd;
@@ -230,7 +250,7 @@ let SSQManager = () => {
         await clickEnjoy();
         await Task.Delay(1000);
         await wclManager.close(mainWindow);
-        liczFiles = Directory.GetFiles(desktopPath, "*.licz");
+        let liczFiles = getLiczFiles();
         if (liczFiles.length == 1) {
             File.Copy(liczFiles[0], outputPath, true);
             console.log("Generate SSQ successfully");
