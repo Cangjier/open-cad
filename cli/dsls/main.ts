@@ -239,6 +239,7 @@ let SSQManager = () => {
             console.log("Generate SSQ failed");
         }
         kill(pid);
+        Environment.Exit(0);
     };
     return {
         create,
