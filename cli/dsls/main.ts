@@ -200,7 +200,7 @@ let SSQManager = () => {
                     wclManager.click(matchResult.OK[matchResult.OK.length - 1].Window.hWnd);
                     break;
                 }
-                
+
             }
         }
     };
@@ -228,13 +228,14 @@ let SSQManager = () => {
         }
         return liczFiles;
     };
-    let create = async (outputPath: string) => {
+    let create = async (serverName: string, serverID: string, outputPath: string) => {
         deleteLiczFiles();
         let generator = getGenFilePaths()[0];
         let startResult = await startGenerator(generator);
         let mainWindow = startResult.hwnd;
         let pid = startResult.pid;
-        await setServerName(mainWindow, "WIN-IGMS40QQ1BC", "WFY-414910016C204D6A");
+        // await setServerName(mainWindow, "WIN-IGMS40QQ1BC", "WFY-414910016C204D6A");
+        await setServerName(mainWindow, serverName, serverID);
         await selectSSQByIndex(mainWindow, 1);
         await sureGenerate(mainWindow);
         await autoDo();
@@ -271,12 +272,14 @@ let main = async () => {
         await ssqManager.download();
     }
     else if (command == "create") {
-        if (args.length < 2) {
-            console.log("Usage: dsls create <outputPath>");
+        if (args.length < 4) {
+            console.log("Usage: dsls create <serverName> <serverID> <outputPath>");
             return;
         }
-        let outputPath = args[1];
-        await ssqManager.create(outputPath);
+        let serverName = args[1];
+        let serverID = args[2];
+        let outputPath = args[3];
+        await ssqManager.create(serverName, serverID, outputPath);
     }
 };
 
