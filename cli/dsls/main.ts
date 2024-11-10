@@ -166,7 +166,7 @@ let SSQManager = () => {
         let comboboxes = childWindows.filter((item: any) => item.ClassName == "TComboBox");
         if (comboboxes.length == 1) {
             let items = await wclManager.getComboboxItems(comboboxes[0].hWnd);
-            let index = items.findIndex((item: string) => item.toLowerCase().includes(name));
+            let index = items.findIndex((item: string) => item.toLowerCase().includes(name.toLowerCase()));
             if (index == -1) {
                 console.log(`Cannot find ${name}`);
                 return;
