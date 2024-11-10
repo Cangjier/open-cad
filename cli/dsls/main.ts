@@ -190,12 +190,17 @@ let SSQManager = () => {
                     wclManager.click(matchResult.Save[matchResult.Save.length - 1].Window.hWnd);
                     flag = "toClickOK";
                 }
+                else if (matchResult.OK) {
+                    wclManager.click(matchResult.OK[matchResult.OK.length - 1].Window.hWnd);
+                    break;
+                }
             }
             else if (flag == "toClickOK") {
                 if (matchResult.OK) {
                     wclManager.click(matchResult.OK[matchResult.OK.length - 1].Window.hWnd);
                     break;
                 }
+                
             }
         }
     };
