@@ -188,7 +188,6 @@ let SSQManager = () => {
     };
     let saveGenerate = async (hwnd: string) => {
         let matchResult = await wclManager.match(genPath);
-        // console.log(matchResult);
         if (matchResult.Save) {
             wclManager.click(matchResult.Save[matchResult.Save.length - 1].Window.hWnd);
             return true;
@@ -197,7 +196,6 @@ let SSQManager = () => {
     };
     let clickEnjoy = async () => {
         let matchResult = await wclManager.match(genPath);
-        console.log(matchResult);
         if (matchResult.Enjoy) {
             wclManager.click(matchResult.Enjoy[matchResult.Enjoy.length - 1].Window.hWnd);
             return true;
@@ -205,7 +203,8 @@ let SSQManager = () => {
         return false;
     };
     let create = async (outputPath: string) => {
-        let liczFiles = Directory.GetFiles(ssqDirectory, "*.licz");
+        let desktopPath = env("desktop");
+        let liczFiles = Directory.GetFiles(desktopPath, "*.licz");
         for (let file of liczFiles) {
             File.Delete(file);
         }
@@ -223,9 +222,9 @@ let SSQManager = () => {
         await saveGenerate(mainWindow);
         await Task.Delay(2000);
         await clickEnjoy();
-        await Task.Delay(2000);
+        await Task.Delay(1000);
         await wclManager.close(mainWindow);
-        let desktopPath = env("desktop");
+        
         liczFiles = Directory.GetFiles(desktopPath, "*.licz");
         if (liczFiles.length == 1) {
             File.Copy(liczFiles[0], outputPath, true);
