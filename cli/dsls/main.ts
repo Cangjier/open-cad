@@ -15,6 +15,9 @@ let dsls_directory = Path.Combine(repositoryDirectory, "dsls");
 let dslsIndexPath = Path.Combine(dsls_directory, "index.json");
 let opencadDirectory = "C:\\OPEN_CAD";
 let downloadDirectory = Path.Combine(opencadDirectory, "download");
+if(!Directory.Exists(downloadDirectory)) {
+    Directory.CreateDirectory(downloadDirectory);
+}
 let ssqDirectory = Path.Combine(opencadDirectory, "CATIA", "SSQ");
 if (!Directory.Exists(ssqDirectory)) {
     Directory.CreateDirectory(ssqDirectory);
