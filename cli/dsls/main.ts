@@ -190,7 +190,7 @@ let SSQManager = () => {
             await wclManager.click(buttons[0].hWnd);
         }
     };
-    let saveGenerate = async (hwnd: string) => {
+    let saveGenerate = async () => {
         let matchResult = await wclManager.match(genPath);
         if (matchResult.Save) {
             wclManager.click(matchResult.Save[matchResult.Save.length - 1].Window.hWnd);
@@ -225,7 +225,7 @@ let SSQManager = () => {
             return;
         }
         await Task.Delay(500);
-        await saveGenerate(mainWindow);
+        await saveGenerate();
         await Task.Delay(2000);
         await clickEnjoy();
         await Task.Delay(1000);
