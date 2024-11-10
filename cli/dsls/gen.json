@@ -2,7 +2,7 @@
     "SSQ": {
         "Title": "DS LicGen .*"
     },
-    "CheckMessage": [
+    "OK": [
         {
             "ClassName": "TMessageForm",
             "Title": "Dsls"
@@ -20,16 +20,6 @@
         {
             "ClassName": "Button",
             "Title": "保存"
-        }
-    ],
-    "Enjoy": [
-        {
-            "ClassName": "TMessageForm",
-            "Title": "Dsls"
-        },
-        {
-            "ClassName": "TButton",
-            "Title": "OK"
         }
     ]
 }

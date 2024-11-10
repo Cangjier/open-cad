@@ -103,6 +103,7 @@ let wclManager = WCLManager();
 
 let SSQManager = () => {
     let genPath = Path.Combine(script_directory, "gen.json");
+    let flag = 'toSave';
     let download = async () => {
         let indexJson = await Json.LoadAsync(dslsIndexPath);
         for (let item of indexJson["DSLS.Gen"]) {
@@ -174,15 +175,6 @@ let SSQManager = () => {
             await wclManager.selectComboboxIndex(comboboxes[0].hWnd, index);
         }
     };
-    let isCheckMessage = async () => {
-        let matchResult = await wclManager.match(genPath);
-        // console.log(matchResult);
-        if (matchResult.CheckMessage) {
-            wclManager.click(matchResult.CheckMessage[matchResult.CheckMessage.length - 1].Window.hWnd);
-            return true;
-        }
-        return false;
-    };
     let sureGenerate = async (hwnd: string) => {
         let childWindows = await wclManager.getChildrenWindows(hwnd);
         let buttons = childWindows.filter((item: any) => item.ClassName == "TButton");
@@ -190,21 +182,22 @@ let SSQManager = () => {
             await wclManager.click(buttons[0].hWnd);
         }
     };
-    let saveGenerate = async () => {
-        let matchResult = await wclManager.match(genPath);
-        if (matchResult.Save) {
-            wclManager.click(matchResult.Save[matchResult.Save.length - 1].Window.hWnd);
-            return true;
+    let autoDo = async () => {
+        while (true) {
+            let matchResult = await wclManager.match(genPath);
+            if (flag == "toSave") {
+                if (matchResult.Save) {
+                    wclManager.click(matchResult.Save[matchResult.Save.length - 1].Window.hWnd);
+                    flag = "toClickOK";
+                }
+            }
+            else if (flag == "toClickOK") {
+                if (matchResult.OK) {
+                    wclManager.click(matchResult.OK[matchResult.OK.length - 1].Window.hWnd);
+                    break;
+                }
+            }
         }
-        return false;
-    };
-    let clickEnjoy = async () => {
-        let matchResult = await wclManager.match(genPath);
-        if (matchResult.Enjoy) {
-            wclManager.click(matchResult.Enjoy[matchResult.Enjoy.length - 1].Window.hWnd);
-            return true;
-        }
-        return false;
     };
     let deleteLiczFiles = () => {
         let directories = [
@@ -226,7 +219,7 @@ let SSQManager = () => {
         let liczFiles: string[] = [];
         for (let directory of directories) {
             let files = Directory.GetFiles(directory, "*.licz");
-            liczFiles = liczFiles.concat(files);
+            liczFiles = [...liczFiles, ...files];
         }
         return liczFiles;
     };
@@ -239,17 +232,8 @@ let SSQManager = () => {
         await setServerName(mainWindow, "WIN-IGMS40QQ1BC", "WFY-414910016C204D6A");
         await selectSSQByIndex(mainWindow, 1);
         await sureGenerate(mainWindow);
+        await autoDo();
         await Task.Delay(500);
-        if (await isCheckMessage()) {
-            console.log("Server name or id is invalid");
-            return;
-        }
-        await Task.Delay(500);
-        await saveGenerate();
-        await Task.Delay(2000);
-        await clickEnjoy();
-        await Task.Delay(1000);
-        await wclManager.close(mainWindow);
         let liczFiles = getLiczFiles();
         if (liczFiles.length == 1) {
             File.Copy(liczFiles[0], outputPath, true);
