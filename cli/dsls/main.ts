@@ -197,7 +197,6 @@ let SSQManager = () => {
     };
     let clickEnjoy = async () => {
         let matchResult = await wclManager.match(genPath);
-        console.log(matchResult);
         if (matchResult.Enjoy) {
             wclManager.click(matchResult.Enjoy[matchResult.Enjoy.length - 1].Window.hWnd);
             return true;
