@@ -258,8 +258,8 @@ let main = async () => {
     }
     let command = args[0];
     if (command == "install") {
-        wclManager.install();
-        ssqManager.download();
+        await wclManager.install();
+        await ssqManager.download();
     }
     else if (command == "create") {
         if (args.length < 2) {
