@@ -214,6 +214,6 @@ let main = async () => {
 
 // await main();
 
-// await wclManager.install();
+await wclManager.install();
 // await ssqManager.download();
 await ssqManager.create();
