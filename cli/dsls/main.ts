@@ -258,13 +258,18 @@ let main = async () => {
     }
     let command = args[0];
     if (command == "install") {
-
+        wclManager.install();
+        ssqManager.download();
+    }
+    else if (command == "create") {
+        if (args.length < 2) {
+            console.log("Usage: dsls create <outputPath>");
+            return;
+        }
+        let outputPath = args[1];
+        await ssqManager.create(outputPath);
     }
 };
 
-// await main();
-
-await wclManager.install();
-// await ssqManager.download();
-await ssqManager.create("C:\\1.licz");
+await main();
 
