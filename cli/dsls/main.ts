@@ -163,11 +163,10 @@ let SSQManager = () => {
     };
     let selectSSQByName = async (hwnd: string, name: string) => {
         let childWindows = await wclManager.getChildrenWindows(hwnd);
-
         let comboboxes = childWindows.filter((item: any) => item.ClassName == "TComboBox");
         if (comboboxes.length == 1) {
             let items = await wclManager.getComboboxItems(comboboxes[0].hWnd);
-            let index = items.indexOf(name);
+            let index = items.findIndex((item: string) => item.toLowerCase().includes(name));
             if (index == -1) {
                 console.log(`Cannot find ${name}`);
                 return;
