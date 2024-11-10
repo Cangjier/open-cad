@@ -195,11 +195,11 @@ let SSQManager = () => {
         }
         return false;
     };
-    let clickEnjoy = async (hwnd: string) => {
+    let clickEnjoy = async () => {
         let matchResult = await wclManager.match(genPath);
         console.log(matchResult);
         if (matchResult.Enjoy) {
-            wclManager.click(matchResult.Save[matchResult.Enjoy.length - 1].Window.hWnd);
+            wclManager.click(matchResult.Enjoy[matchResult.Enjoy.length - 1].Window.hWnd);
             return true;
         }
         return false;
@@ -222,7 +222,7 @@ let SSQManager = () => {
         await Task.Delay(500);
         await saveGenerate(mainWindow);
         await Task.Delay(500);
-        await clickEnjoy(mainWindow);
+        await clickEnjoy();
         await Task.Delay(500);
         await wclManager.close(mainWindow);
         let desktopPath = env("desktop");
