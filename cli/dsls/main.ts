@@ -1,6 +1,6 @@
 import { Path } from "../.tsc/System/IO/Path";
 import { Directory } from "../.tsc/System/IO/Directory";
-import { args, cmdAsync, copyDirectory, deleteDirectory, deleteFile, execAsync, script_path, start } from "../.tsc/context";
+import { args, cmdAsync, copyDirectory, deleteDirectory, deleteFile, env, execAsync, script_path, start } from "../.tsc/context";
 import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
 import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
@@ -15,7 +15,7 @@ let dsls_directory = Path.Combine(repositoryDirectory, "dsls");
 let dslsIndexPath = Path.Combine(dsls_directory, "index.json");
 let opencadDirectory = "C:\\OPEN_CAD";
 let downloadDirectory = Path.Combine(opencadDirectory, "download");
-if(!Directory.Exists(downloadDirectory)) {
+if (!Directory.Exists(downloadDirectory)) {
     Directory.CreateDirectory(downloadDirectory);
 }
 let ssqDirectory = Path.Combine(opencadDirectory, "CATIA", "SSQ");
@@ -191,7 +191,16 @@ let SSQManager = () => {
         }
         return false;
     };
-    let create = async () => {
+    let clickEnjoy = async (hwnd: string) => {
+        let matchResult = await wclManager.match(genPath);
+        console.log(matchResult);
+        if (matchResult.Enjoy) {
+            wclManager.click(matchResult.Save[matchResult.Enjoy.length - 1].Window.hWnd);
+            return true;
+        }
+        return false;
+    };
+    let create = async (outputPath: string) => {
         let generator = getGenFilePaths()[0];
         let mainWindow = await startGenerator(generator);
         await setServerName(mainWindow, "WIN-IGMS40QQ1BC", "WFY-414910016C204D6A");
@@ -204,6 +213,12 @@ let SSQManager = () => {
         }
         await Task.Delay(1000);
         await saveGenerate(mainWindow);
+        let desktopPath = env("desktop");
+        let liczFiles = Directory.GetFiles(desktopPath, "*.licz");
+        if (liczFiles.length == 1) {
+            File.Copy(liczFiles[0], outputPath, true);
+        }
+        console.log("Generate SSQ successfully");
     };
     return {
         create,
@@ -230,4 +245,5 @@ let main = async () => {
 
 // await wclManager.install();
 // await ssqManager.download();
-await ssqManager.create();
+await ssqManager.create("C:\\1.licz");
+

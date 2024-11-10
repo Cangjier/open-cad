@@ -21,5 +21,15 @@
             "ClassName": "Button",
             "Title": "保存"
         }
+    ],
+    "Enjoy": [
+        {
+            "ClassName": "TMessageForm",
+            "Title": "Dsls"
+        },
+        {
+            "ClassName": "TButton",
+            "Title": "OK"
+        }
     ]
 }
