@@ -1,10 +1,5 @@
 import { Type } from "../../../../System/Type";
 export class UrlResponse {
-    public static get DefaultContentEncoding(): string {
-        return {} as any;
-    }
-    public static set DefaultContentEncoding(value: string) {
-    }
     public ToString(): string {
         return {} as any;
     }
@@ -25,5 +20,10 @@ export class UrlResponse {
     }
     public static op_Equality(left?: UrlResponse, right?: UrlResponse): boolean {
         return {} as any;
+    }
+    public static get DefaultContentEncoding(): string {
+        return {} as any;
+    }
+    public static set DefaultContentEncoding(value: string) {
     }
 }

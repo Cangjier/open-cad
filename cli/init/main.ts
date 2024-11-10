@@ -59,7 +59,7 @@ let GitManager = () => {
         if (Directory.Exists(gitDirectory)) {
             let cmd = `git pull origin master`;
             console.log(cmd);
-            if (await cmdAsync(repositoryDirectory, cmd) != 0) {
+            if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
                 console.log("pull failed");
                 return false;
             }
@@ -67,7 +67,7 @@ let GitManager = () => {
         else {
             let cmd = `git clone https://github.com/Cangjier/open-cad.git .`;
             console.log(cmd);
-            if (await cmdAsync(repositoryDirectory, cmd) != 0) {
+            if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
                 console.log("clone failed");
                 return false;
             }
@@ -79,12 +79,7 @@ let GitManager = () => {
         return await Json.LoadAsync(indexJsonPath);
     };
     let getHttpProxy = async () => {
-        let output = {} as { lines: string[] };
-        await cmdAsync(Environment.CurrentDirectory, "git config --get http.proxy", output);
-        if (output.lines && output.lines.length > 0) {
-            return output.lines[0];
-        }
-        return "";
+        return (await cmdAsync(Environment.CurrentDirectory, "git config --get http.proxy")).output ?? "";
     };
     let getLatestSdkName = async (cadName: string) => {
         cadName = cadName.toUpperCase();
@@ -115,12 +110,7 @@ let gitManager = GitManager();
 
 let CMakeManager = () => {
     let checkInstalled = async () => {
-        let output = { lines: [] } as { lines: string[] };
-        await cmdAsync(Environment.CurrentDirectory, "cmake --version", output);
-        if (output.lines && output.lines.length > 0) {
-            return true;
-        }
-        return false;
+        return (await cmdAsync(Environment.CurrentDirectory, "cmake --version")).output?.includes("cmake version") == true;
     };
     let install = async () => {
         try {
@@ -158,10 +148,11 @@ let cmakeManager = CMakeManager();
 
 let VsCodeManager = () => {
     let checkInstalled = async () => {
-        let output = { lines: [] } as { lines: string[] };
-        await cmdAsync(Environment.CurrentDirectory, "code --version", output);
-        if (output.lines && output.lines.length > 0) {
-            return true;
+        let output = (await cmdAsync(Environment.CurrentDirectory, "code --version")).output;
+        if (output) {
+            if (output.length > 0) {
+                return true;
+            }
         }
         return false;
     };
@@ -201,10 +192,9 @@ let VisualStudioManager = () => {
             return;
         }
         console.log(`resgiterEnvironment`);
-        let output = {} as { lines: string[] };
-        await cmdAsync(Path.GetDirectoryName(vswhere), `${Path.GetFileName(vswhere)} -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`, output);
-        if (output.lines && output.lines.length > 0) {
-            let installationPath = output.lines[0];
+        let cmdResult = await cmdAsync(Path.GetDirectoryName(vswhere), `${Path.GetFileName(vswhere)} -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`);
+        if (cmdResult.output && cmdResult.output.length > 0) {
+            let installationPath = cmdResult.output;
             console.log(`installationPath: ${installationPath}`);
             let vcvarsall = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join("\\");
             let vcvarsallx86 = [installationPath, "VC", "Auxiliary", "Build", "vcvarsall.bat"].join("\\");
@@ -247,9 +237,8 @@ let visualStudioManager = VisualStudioManager();
 
 let VcpkgManager = () => {
     let checkInstalled = async () => {
-        let output = { lines: [] } as { lines: string[] };
-        await cmdAsync(Environment.CurrentDirectory, "vcpkg version", output);
-        if (output.lines && output.lines.length > 0) {
+        let cmdResult = await cmdAsync(Environment.CurrentDirectory, "vcpkg version");
+        if (cmdResult.output && cmdResult.output.trim().length > 0) {
             return true;
         }
         return false;
@@ -264,7 +253,7 @@ let VcpkgManager = () => {
             console.log("vcpkg Installing...");
             let cmd = `git clone --depth 1 https://github.com/microsoft/vcpkg.git .`;
             console.log(cmd);
-            if (await cmdAsync(vcpkgDirectory, cmd) != 0) {
+            if ((await cmdAsync(vcpkgDirectory, cmd)).exitCode != 0) {
                 console.log("clone failed");
                 return;
             }

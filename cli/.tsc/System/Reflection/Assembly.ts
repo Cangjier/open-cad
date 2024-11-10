@@ -15,48 +15,6 @@ import { StreamingContext } from "../Runtime/Serialization/StreamingContext";
 import { AssemblyHashAlgorithm } from "../Configuration/Assemblies/AssemblyHashAlgorithm";
 import { SecurityRuleSet } from "../Security/SecurityRuleSet";
 export class Assembly {
-    public get CodeBase(): string {
-        return {} as any;
-    }
-    public get EntryPoint(): MethodInfo {
-        return {} as any;
-    }
-    public get FullName(): string {
-        return {} as any;
-    }
-    public get ImageRuntimeVersion(): string {
-        return {} as any;
-    }
-    public get IsDynamic(): boolean {
-        return {} as any;
-    }
-    public get Location(): string {
-        return {} as any;
-    }
-    public get ReflectionOnly(): boolean {
-        return {} as any;
-    }
-    public get IsCollectible(): boolean {
-        return {} as any;
-    }
-    public get IsFullyTrusted(): boolean {
-        return {} as any;
-    }
-    public get EscapedCodeBase(): string {
-        return {} as any;
-    }
-    public get ManifestModule(): Module {
-        return {} as any;
-    }
-    public get GlobalAssemblyCache(): boolean {
-        return {} as any;
-    }
-    public get HostContext(): number {
-        return {} as any;
-    }
-    public get SecurityRuleSet(): SecurityRuleSet {
-        return {} as any;
-    }
     public GetTypes(): Type[] {
         return {} as any;
     }
@@ -175,6 +133,48 @@ export class Assembly {
         return {} as any;
     }
     public static ReflectionOnlyLoadFrom(assemblyFile?: string): Assembly {
+        return {} as any;
+    }
+    public get CodeBase(): string {
+        return {} as any;
+    }
+    public get EntryPoint(): MethodInfo {
+        return {} as any;
+    }
+    public get FullName(): string {
+        return {} as any;
+    }
+    public get ImageRuntimeVersion(): string {
+        return {} as any;
+    }
+    public get IsDynamic(): boolean {
+        return {} as any;
+    }
+    public get Location(): string {
+        return {} as any;
+    }
+    public get ReflectionOnly(): boolean {
+        return {} as any;
+    }
+    public get IsCollectible(): boolean {
+        return {} as any;
+    }
+    public get IsFullyTrusted(): boolean {
+        return {} as any;
+    }
+    public get EscapedCodeBase(): string {
+        return {} as any;
+    }
+    public get ManifestModule(): Module {
+        return {} as any;
+    }
+    public get GlobalAssemblyCache(): boolean {
+        return {} as any;
+    }
+    public get HostContext(): number {
+        return {} as any;
+    }
+    public get SecurityRuleSet(): SecurityRuleSet {
         return {} as any;
     }
 }

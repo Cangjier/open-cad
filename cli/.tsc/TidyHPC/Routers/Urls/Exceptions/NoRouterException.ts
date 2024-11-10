@@ -5,6 +5,26 @@ import { SerializationInfo } from "../../../../System/Runtime/Serialization/Seri
 import { StreamingContext } from "../../../../System/Runtime/Serialization/StreamingContext";
 import { Type } from "../../../../System/Type";
 export class NoRouterException {
+    public GetBaseException(): Exception {
+        return {} as any;
+    }
+    public GetObjectData(info?: SerializationInfo, context?: StreamingContext): void {
+        return {} as any;
+    }
+    public ToString(): string {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public Equals(obj?: any): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public constructor(url?: string) {
+    }
     public get Url(): string {
         return {} as any;
     }
@@ -37,25 +57,5 @@ export class NoRouterException {
     }
     public get StackTrace(): string {
         return {} as any;
-    }
-    public GetBaseException(): Exception {
-        return {} as any;
-    }
-    public GetObjectData(info?: SerializationInfo, context?: StreamingContext): void {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public Equals(obj?: any): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public constructor(url?: string) {
     }
 }

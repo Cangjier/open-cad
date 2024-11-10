@@ -2,27 +2,6 @@ import { MemberTypes } from "./MemberTypes";
 import { Type } from "../Type";
 import { Module } from "./Module";
 export class MemberInfo {
-    public get MemberType(): MemberTypes {
-        return {} as any;
-    }
-    public get Name(): string {
-        return {} as any;
-    }
-    public get DeclaringType(): Type {
-        return {} as any;
-    }
-    public get ReflectedType(): Type {
-        return {} as any;
-    }
-    public get Module(): Module {
-        return {} as any;
-    }
-    public get IsCollectible(): boolean {
-        return {} as any;
-    }
-    public get MetadataToken(): number {
-        return {} as any;
-    }
     public HasSameMetadataDefinitionAs(other?: MemberInfo): boolean {
         return {} as any;
     }
@@ -48,6 +27,27 @@ export class MemberInfo {
         return {} as any;
     }
     public static op_Inequality(left?: MemberInfo, right?: MemberInfo): boolean {
+        return {} as any;
+    }
+    public get MemberType(): MemberTypes {
+        return {} as any;
+    }
+    public get Name(): string {
+        return {} as any;
+    }
+    public get DeclaringType(): Type {
+        return {} as any;
+    }
+    public get ReflectedType(): Type {
+        return {} as any;
+    }
+    public get Module(): Module {
+        return {} as any;
+    }
+    public get IsCollectible(): boolean {
+        return {} as any;
+    }
+    public get MetadataToken(): number {
         return {} as any;
     }
 }

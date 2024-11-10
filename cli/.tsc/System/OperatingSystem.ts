@@ -4,18 +4,6 @@ import { PlatformID } from "./PlatformID";
 import { Version } from "./Version";
 import { Type } from "./Type";
 export class OperatingSystem {
-    public get Platform(): PlatformID {
-        return {} as any;
-    }
-    public get ServicePack(): string {
-        return {} as any;
-    }
-    public get Version(): Version {
-        return {} as any;
-    }
-    public get VersionString(): string {
-        return {} as any;
-    }
     public GetObjectData(info?: SerializationInfo, context?: StreamingContext): void {
         return {} as any;
     }
@@ -97,6 +85,18 @@ export class OperatingSystem {
         return {} as any;
     }
     public static IsWindowsVersionAtLeast(major?: number, minor?: number, build?: number, revision?: number): boolean {
+        return {} as any;
+    }
+    public get Platform(): PlatformID {
+        return {} as any;
+    }
+    public get ServicePack(): string {
+        return {} as any;
+    }
+    public get Version(): Version {
+        return {} as any;
+    }
+    public get VersionString(): string {
         return {} as any;
     }
 }

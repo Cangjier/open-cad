@@ -7,6 +7,45 @@ import { OperatingSystem } from "./OperatingSystem";
 import { Version } from "./Version";
 import { Type } from "./Type";
 export class Environment {
+    public GetType(): Type {
+        return {} as any;
+    }
+    public ToString(): string {
+        return {} as any;
+    }
+    public Equals(obj?: any): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public static Exit(exitCode?: number): void {
+        return {} as any;
+    }
+    public static FailFast(message?: string, exception?: Exception): void {
+        return {} as any;
+    }
+    public static GetEnvironmentVariable(variable?: string, target?: EnvironmentVariableTarget): string {
+        return {} as any;
+    }
+    public static GetEnvironmentVariables(target?: EnvironmentVariableTarget): IDictionary {
+        return {} as any;
+    }
+    public static SetEnvironmentVariable(variable?: string, value?: string, target?: EnvironmentVariableTarget): void {
+        return {} as any;
+    }
+    public static GetCommandLineArgs(): string[] {
+        return {} as any;
+    }
+    public static ExpandEnvironmentVariables(name?: string): string {
+        return {} as any;
+    }
+    public static GetFolderPath(folder?: SpecialFolder, option?: SpecialFolderOption): string {
+        return {} as any;
+    }
+    public static GetLogicalDrives(): string[] {
+        return {} as any;
+    }
     public static get CurrentManagedThreadId(): number {
         return {} as any;
     }
@@ -81,45 +120,6 @@ export class Environment {
         return {} as any;
     }
     public static get WorkingSet(): number {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public Equals(obj?: any): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public static Exit(exitCode?: number): void {
-        return {} as any;
-    }
-    public static FailFast(message?: string, exception?: Exception): void {
-        return {} as any;
-    }
-    public static GetEnvironmentVariable(variable?: string, target?: EnvironmentVariableTarget): string {
-        return {} as any;
-    }
-    public static GetEnvironmentVariables(target?: EnvironmentVariableTarget): IDictionary {
-        return {} as any;
-    }
-    public static SetEnvironmentVariable(variable?: string, value?: string, target?: EnvironmentVariableTarget): void {
-        return {} as any;
-    }
-    public static GetCommandLineArgs(): string[] {
-        return {} as any;
-    }
-    public static ExpandEnvironmentVariables(name?: string): string {
-        return {} as any;
-    }
-    public static GetFolderPath(folder?: SpecialFolder, option?: SpecialFolderOption): string {
-        return {} as any;
-    }
-    public static GetLogicalDrives(): string[] {
         return {} as any;
     }
 }

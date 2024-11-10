@@ -1,12 +1,6 @@
 import { UrlMethods } from "./UrlMethods";
 import { Type } from "../../../System/Type";
 export class UrlMethodAttribute {
-    public get Method(): UrlMethods {
-        return {} as any;
-    }
-    public get TypeId(): any {
-        return {} as any;
-    }
     public Equals(obj?: any): boolean {
         return {} as any;
     }
@@ -26,5 +20,11 @@ export class UrlMethodAttribute {
         return {} as any;
     }
     public constructor(method?: UrlMethods) {
+    }
+    public get Method(): UrlMethods {
+        return {} as any;
+    }
+    public get TypeId(): any {
+        return {} as any;
     }
 }

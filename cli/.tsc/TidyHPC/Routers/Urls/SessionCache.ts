@@ -3,19 +3,6 @@ import { UrlFilterStatus } from "./Responses/UrlFilterStatus";
 import { Type } from "../../../System/Type";
 import { Session } from "./Session";
 export class SessionCache {
-    public get Completed(): boolean {
-        return {} as any;
-    }
-    public set Completed(value: boolean) {
-    }
-    public get FilterStatus(): UrlFilterStatus {
-        return {} as any;
-    }
-    public set FilterStatus(value: UrlFilterStatus) {
-    }
-    public get Data(): { [key: string]: any } {
-        return {} as any;
-    }
     public TrySetUrlRegexMatchGroups(groupCollection?: GroupCollection): void {
         return {} as any;
     }
@@ -44,5 +31,18 @@ export class SessionCache {
         return {} as any;
     }
     public constructor(session?: Session) {
+    }
+    public get Completed(): boolean {
+        return {} as any;
+    }
+    public set Completed(value: boolean) {
+    }
+    public get FilterStatus(): UrlFilterStatus {
+        return {} as any;
+    }
+    public set FilterStatus(value: UrlFilterStatus) {
+    }
+    public get Data(): { [key: string]: any } {
+        return {} as any;
     }
 }

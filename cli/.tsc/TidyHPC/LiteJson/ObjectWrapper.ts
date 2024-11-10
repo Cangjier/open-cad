@@ -1,22 +1,5 @@
 import { Type } from "../../System/Type";
 export class ObjectWrapper {
-    public get Target(): any {
-        return {} as any;
-    }
-    public get Item(): any {
-        return {} as any;
-    }
-    public set Item(key: string, value: any) {
-    }
-    public get Keys(): string[] {
-        return {} as any;
-    }
-    public get Values(): any[] {
-        return {} as any;
-    }
-    public get Count(): number {
-        return {} as any;
-    }
     public ContainsKey(key?: string): boolean {
         return {} as any;
     }
@@ -47,6 +30,23 @@ export class ObjectWrapper {
     public constructor(target?: any) {
     }
     public static op_Implicit(target?: any): ObjectWrapper {
+        return {} as any;
+    }
+    public get Target(): any {
+        return {} as any;
+    }
+    public get Item(): any {
+        return {} as any;
+    }
+    public set Item(value: any) {
+    }
+    public get Keys(): string[] {
+        return {} as any;
+    }
+    public get Values(): any[] {
+        return {} as any;
+    }
+    public get Count(): number {
         return {} as any;
     }
 }

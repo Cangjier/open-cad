@@ -3,6 +3,29 @@ import { CacheControlHeaderValue } from "../../../../System/Net/Http/Headers/Cac
 import { UrlResponse } from "./UrlResponse";
 import { Type } from "../../../../System/Type";
 export class MultiplyStreamAttachment {
+    public ToString(): string {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public Equals(obj_or_other?: any | MultiplyStreamFile | MultiplyStreamAttachment | UrlResponse): boolean {
+        return {} as any;
+    }
+    public <Clone>$(): MultiplyStreamAttachment | MultiplyStreamFile | UrlResponse {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public constructor(Streams?: Stream[], FileName?: string, CacheControl?: CacheControlHeaderValue) {
+    }
+    public static op_Inequality(left?: MultiplyStreamAttachment, right?: MultiplyStreamAttachment): boolean {
+        return {} as any;
+    }
+    public static op_Equality(left?: MultiplyStreamAttachment, right?: MultiplyStreamAttachment): boolean {
+        return {} as any;
+    }
     public get FileName(): string {
         return {} as any;
     }
@@ -37,28 +60,5 @@ export class MultiplyStreamAttachment {
         return {} as any;
     }
     public set CacheControl(value: CacheControlHeaderValue) {
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public Equals(obj_or_other?: any | MultiplyStreamFile | MultiplyStreamAttachment | UrlResponse): boolean {
-        return {} as any;
-    }
-    public <Clone>$(): MultiplyStreamAttachment | MultiplyStreamFile | UrlResponse {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public constructor(Streams?: Stream[], FileName?: string, CacheControl?: CacheControlHeaderValue) {
-    }
-    public static op_Inequality(left?: MultiplyStreamAttachment, right?: MultiplyStreamAttachment): boolean {
-        return {} as any;
-    }
-    public static op_Equality(left?: MultiplyStreamAttachment, right?: MultiplyStreamAttachment): boolean {
-        return {} as any;
     }
 }

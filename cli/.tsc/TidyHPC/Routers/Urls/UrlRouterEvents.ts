@@ -1,9 +1,6 @@
 import { UrlRouter } from "./UrlRouter";
 import { Type } from "../../../System/Type";
 export class UrlRouterEvents {
-    public get UrlRouter(): UrlRouter {
-        return {} as any;
-    }
     public GetType(): Type {
         return {} as any;
     }
@@ -17,5 +14,8 @@ export class UrlRouterEvents {
         return {} as any;
     }
     public constructor(urlRouter?: UrlRouter) {
+    }
+    public get UrlRouter(): UrlRouter {
+        return {} as any;
     }
 }

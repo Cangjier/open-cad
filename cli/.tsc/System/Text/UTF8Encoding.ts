@@ -5,52 +5,6 @@ import { DecoderFallback } from "./DecoderFallback";
 import { NormalizationForm } from "./NormalizationForm";
 import { Type } from "../Type";
 export class UTF8Encoding {
-    public get BodyName(): string {
-        return {} as any;
-    }
-    public get EncodingName(): string {
-        return {} as any;
-    }
-    public get HeaderName(): string {
-        return {} as any;
-    }
-    public get WebName(): string {
-        return {} as any;
-    }
-    public get WindowsCodePage(): number {
-        return {} as any;
-    }
-    public get IsBrowserDisplay(): boolean {
-        return {} as any;
-    }
-    public get IsBrowserSave(): boolean {
-        return {} as any;
-    }
-    public get IsMailNewsDisplay(): boolean {
-        return {} as any;
-    }
-    public get IsMailNewsSave(): boolean {
-        return {} as any;
-    }
-    public get IsSingleByte(): boolean {
-        return {} as any;
-    }
-    public get EncoderFallback(): EncoderFallback {
-        return {} as any;
-    }
-    public set EncoderFallback(value: EncoderFallback) {
-    }
-    public get DecoderFallback(): DecoderFallback {
-        return {} as any;
-    }
-    public set DecoderFallback(value: DecoderFallback) {
-    }
-    public get IsReadOnly(): boolean {
-        return {} as any;
-    }
-    public get CodePage(): number {
-        return {} as any;
-    }
     public GetByteCount(chars_or_s?: string[] | string, index?: number, count?: number): number {
         return {} as any;
     }
@@ -100,5 +54,51 @@ export class UTF8Encoding {
         return {} as any;
     }
     public constructor(encoderShouldEmitUTF8Identifier?: boolean, throwOnInvalidBytes?: boolean) {
+    }
+    public get BodyName(): string {
+        return {} as any;
+    }
+    public get EncodingName(): string {
+        return {} as any;
+    }
+    public get HeaderName(): string {
+        return {} as any;
+    }
+    public get WebName(): string {
+        return {} as any;
+    }
+    public get WindowsCodePage(): number {
+        return {} as any;
+    }
+    public get IsBrowserDisplay(): boolean {
+        return {} as any;
+    }
+    public get IsBrowserSave(): boolean {
+        return {} as any;
+    }
+    public get IsMailNewsDisplay(): boolean {
+        return {} as any;
+    }
+    public get IsMailNewsSave(): boolean {
+        return {} as any;
+    }
+    public get IsSingleByte(): boolean {
+        return {} as any;
+    }
+    public get EncoderFallback(): EncoderFallback {
+        return {} as any;
+    }
+    public set EncoderFallback(value: EncoderFallback) {
+    }
+    public get DecoderFallback(): DecoderFallback {
+        return {} as any;
+    }
+    public set DecoderFallback(value: DecoderFallback) {
+    }
+    public get IsReadOnly(): boolean {
+        return {} as any;
+    }
+    public get CodePage(): number {
+        return {} as any;
     }
 }

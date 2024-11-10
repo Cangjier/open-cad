@@ -16,6 +16,74 @@ import { XmlWhitespace } from "../../System/Xml/XmlWhitespace";
 import { XmlSignificantWhitespace } from "../../System/Xml/XmlSignificantWhitespace";
 import { Type } from "../../System/Type";
 export class Xml {
+    public ContainsAttribute(name?: string): boolean {
+        return {} as any;
+    }
+    public SetAttribute(name?: string, value?: string): void {
+        return {} as any;
+    }
+    public AddAttribute(name?: string, value?: string): void {
+        return {} as any;
+    }
+    public GetAttribute(name?: string, defaultValue?: string): string {
+        return {} as any;
+    }
+    public GetOrCreateAttribute(name?: string, defaultValue?: string): string {
+        return {} as any;
+    }
+    public GetElementByName(name?: string): Xml {
+        return {} as any;
+    }
+    public FirstElementByName(name?: string): Xml {
+        return {} as any;
+    }
+    public GetOrCreateElementByName(name?: string): Xml {
+        return {} as any;
+    }
+    public ContainsElementByName(name?: string): boolean {
+        return {} as any;
+    }
+    public GetElementByNameAndAttribute(name?: string, attributeName?: string, attributeValue?: string): boolean {
+        return {} as any;
+    }
+    public GetOrCreateElementByNameAndAttribute(name?: string, attributeName?: string, attributeValue?: string): Xml {
+        return {} as any;
+    }
+    public AddElement(name?: string): Xml {
+        return {} as any;
+    }
+    public Clear(): void {
+        return {} as any;
+    }
+    public Save(path?: string): void {
+        return {} as any;
+    }
+    public GetOrCreateRoot(name?: string): Xml {
+        return {} as any;
+    }
+    public ToString(): string {
+        return {} as any;
+    }
+    public Equals(obj?: any): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public constructor(node?: XmlNode) {
+    }
+    public static Load(path?: string): Xml {
+        return {} as any;
+    }
+    public static Parse(xml?: string): Xml {
+        return {} as any;
+    }
+    public static New(): Xml {
+        return {} as any;
+    }
     public get Node(): XmlNode {
         return {} as any;
     }
@@ -161,78 +229,7 @@ export class Xml {
     public get Count(): number {
         return {} as any;
     }
-    public get Item(): Xml {
-        return {} as any;
-    }
     public get Root(): Xml {
-        return {} as any;
-    }
-    public ContainsAttribute(name?: string): boolean {
-        return {} as any;
-    }
-    public SetAttribute(name?: string, value?: string): void {
-        return {} as any;
-    }
-    public AddAttribute(name?: string, value?: string): void {
-        return {} as any;
-    }
-    public GetAttribute(name?: string, defaultValue?: string): string {
-        return {} as any;
-    }
-    public GetOrCreateAttribute(name?: string, defaultValue?: string): string {
-        return {} as any;
-    }
-    public GetElementByName(name?: string): Xml {
-        return {} as any;
-    }
-    public FirstElementByName(name?: string): Xml {
-        return {} as any;
-    }
-    public GetOrCreateElementByName(name?: string): Xml {
-        return {} as any;
-    }
-    public ContainsElementByName(name?: string): boolean {
-        return {} as any;
-    }
-    public GetElementByNameAndAttribute(name?: string, attributeName?: string, attributeValue?: string): boolean {
-        return {} as any;
-    }
-    public GetOrCreateElementByNameAndAttribute(name?: string, attributeName?: string, attributeValue?: string): Xml {
-        return {} as any;
-    }
-    public AddElement(name?: string): Xml {
-        return {} as any;
-    }
-    public Clear(): void {
-        return {} as any;
-    }
-    public Save(path?: string): void {
-        return {} as any;
-    }
-    public GetOrCreateRoot(name?: string): Xml {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public Equals(obj?: any): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public constructor(node?: XmlNode) {
-    }
-    public static Load(path?: string): Xml {
-        return {} as any;
-    }
-    public static Parse(xml?: string): Xml {
-        return {} as any;
-    }
-    public static New(): Xml {
         return {} as any;
     }
 }

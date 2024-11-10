@@ -2,51 +2,6 @@ import { IFormatProvider } from "./IFormatProvider";
 import { TimeSpanStyles } from "./Globalization/TimeSpanStyles";
 import { Type } from "./Type";
 export class TimeSpan {
-    public get Ticks(): number {
-        return {} as any;
-    }
-    public get Days(): number {
-        return {} as any;
-    }
-    public get Hours(): number {
-        return {} as any;
-    }
-    public get Milliseconds(): number {
-        return {} as any;
-    }
-    public get Microseconds(): number {
-        return {} as any;
-    }
-    public get Nanoseconds(): number {
-        return {} as any;
-    }
-    public get Minutes(): number {
-        return {} as any;
-    }
-    public get Seconds(): number {
-        return {} as any;
-    }
-    public get TotalDays(): number {
-        return {} as any;
-    }
-    public get TotalHours(): number {
-        return {} as any;
-    }
-    public get TotalMilliseconds(): number {
-        return {} as any;
-    }
-    public get TotalMicroseconds(): number {
-        return {} as any;
-    }
-    public get TotalNanoseconds(): number {
-        return {} as any;
-    }
-    public get TotalMinutes(): number {
-        return {} as any;
-    }
-    public get TotalSeconds(): number {
-        return {} as any;
-    }
     public Add(ts?: TimeSpan): TimeSpan {
         return {} as any;
     }
@@ -161,4 +116,49 @@ export class TimeSpan {
     public static TicksPerMinute: number;
     public static TicksPerHour: number;
     public static TicksPerDay: number;
+    public get Ticks(): number {
+        return {} as any;
+    }
+    public get Days(): number {
+        return {} as any;
+    }
+    public get Hours(): number {
+        return {} as any;
+    }
+    public get Milliseconds(): number {
+        return {} as any;
+    }
+    public get Microseconds(): number {
+        return {} as any;
+    }
+    public get Nanoseconds(): number {
+        return {} as any;
+    }
+    public get Minutes(): number {
+        return {} as any;
+    }
+    public get Seconds(): number {
+        return {} as any;
+    }
+    public get TotalDays(): number {
+        return {} as any;
+    }
+    public get TotalHours(): number {
+        return {} as any;
+    }
+    public get TotalMilliseconds(): number {
+        return {} as any;
+    }
+    public get TotalMicroseconds(): number {
+        return {} as any;
+    }
+    public get TotalNanoseconds(): number {
+        return {} as any;
+    }
+    public get TotalMinutes(): number {
+        return {} as any;
+    }
+    public get TotalSeconds(): number {
+        return {} as any;
+    }
 }

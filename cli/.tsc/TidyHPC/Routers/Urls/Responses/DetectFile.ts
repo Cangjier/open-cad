@@ -2,6 +2,29 @@ import { BinaryFile } from "./BinaryFile";
 import { UrlResponse } from "./UrlResponse";
 import { Type } from "../../../../System/Type";
 export class DetectFile {
+    public ToString(): string {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public Equals(obj_or_other?: any | BinaryFile | DetectFile | UrlResponse): boolean {
+        return {} as any;
+    }
+    public <Clone>$(): DetectFile | BinaryFile | UrlResponse {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public constructor(FilePath?: string, RelativePath?: string) {
+    }
+    public static op_Inequality(left?: DetectFile, right?: DetectFile): boolean {
+        return {} as any;
+    }
+    public static op_Equality(left?: DetectFile, right?: DetectFile): boolean {
+        return {} as any;
+    }
     public get RelativePath(): string {
         return {} as any;
     }
@@ -36,28 +59,5 @@ export class DetectFile {
         return {} as any;
     }
     public set RelativeFilePath(value: string) {
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public Equals(obj_or_other?: any | BinaryFile | DetectFile | UrlResponse): boolean {
-        return {} as any;
-    }
-    public <Clone>$(): DetectFile | BinaryFile | UrlResponse {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public constructor(FilePath?: string, RelativePath?: string) {
-    }
-    public static op_Inequality(left?: DetectFile, right?: DetectFile): boolean {
-        return {} as any;
-    }
-    public static op_Equality(left?: DetectFile, right?: DetectFile): boolean {
-        return {} as any;
     }
 }

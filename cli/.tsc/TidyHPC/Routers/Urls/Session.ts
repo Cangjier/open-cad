@@ -4,18 +4,6 @@ import { SessionCache } from "./SessionCache";
 import { SessionSetter } from "./SessionSetter";
 import { Type } from "../../../System/Type";
 export class Session {
-    public get Request(): IRequest {
-        return {} as any;
-    }
-    public get Response(): IResponse {
-        return {} as any;
-    }
-    public get Cache(): SessionCache {
-        return {} as any;
-    }
-    public get Setter(): SessionSetter {
-        return {} as any;
-    }
     public Complete(onComplete?: ()=>void): void {
         return {} as any;
     }
@@ -35,5 +23,17 @@ export class Session {
         return {} as any;
     }
     public constructor(request?: IRequest, response?: IResponse) {
+    }
+    public get Request(): IRequest {
+        return {} as any;
+    }
+    public get Response(): IResponse {
+        return {} as any;
+    }
+    public get Cache(): SessionCache {
+        return {} as any;
+    }
+    public get Setter(): SessionSetter {
+        return {} as any;
     }
 }

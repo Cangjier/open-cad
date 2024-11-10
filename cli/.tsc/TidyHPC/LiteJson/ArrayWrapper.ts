@@ -1,16 +1,5 @@
 import { Type } from "../../System/Type";
 export class ArrayWrapper {
-    public get Target(): any {
-        return {} as any;
-    }
-    public get Count(): number {
-        return {} as any;
-    }
-    public get Item(): any {
-        return {} as any;
-    }
-    public set Item(index: number, value: any) {
-    }
     public Add(value?: any): ArrayWrapper {
         return {} as any;
     }
@@ -42,5 +31,16 @@ export class ArrayWrapper {
     }
     public static op_Implicit(target?: any): ArrayWrapper {
         return {} as any;
+    }
+    public get Target(): any {
+        return {} as any;
+    }
+    public get Count(): number {
+        return {} as any;
+    }
+    public get Item(): any {
+        return {} as any;
+    }
+    public set Item(value: any) {
     }
 }

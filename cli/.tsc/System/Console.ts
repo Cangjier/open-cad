@@ -7,6 +7,81 @@ import { ConsoleCancelEventHandler } from "./ConsoleCancelEventHandler";
 import { Stream } from "./IO/Stream";
 import { Type } from "./Type";
 export class Console {
+    public GetType(): Type {
+        return {} as any;
+    }
+    public ToString(): string {
+        return {} as any;
+    }
+    public Equals(obj?: any): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public static ReadKey(intercept?: boolean): ConsoleKeyInfo {
+        return {} as any;
+    }
+    public static ResetColor(): void {
+        return {} as any;
+    }
+    public static SetBufferSize(width?: number, height?: number): void {
+        return {} as any;
+    }
+    public static SetWindowPosition(left?: number, top?: number): void {
+        return {} as any;
+    }
+    public static SetWindowSize(width?: number, height?: number): void {
+        return {} as any;
+    }
+    public static Beep(frequency?: number, duration?: number): void {
+        return {} as any;
+    }
+    public static MoveBufferArea(sourceLeft?: number, sourceTop?: number, sourceWidth?: number, sourceHeight?: number, targetLeft?: number, targetTop?: number, sourceChar?: string, sourceForeColor?: ConsoleColor, sourceBackColor?: ConsoleColor): void {
+        return {} as any;
+    }
+    public static Clear(): void {
+        return {} as any;
+    }
+    public static SetCursorPosition(left?: number, top?: number): void {
+        return {} as any;
+    }
+    public static add_CancelKeyPress(value?: ConsoleCancelEventHandler): void {
+        return {} as any;
+    }
+    public static remove_CancelKeyPress(value?: ConsoleCancelEventHandler): void {
+        return {} as any;
+    }
+    public static OpenStandardInput(bufferSize?: number): Stream {
+        return {} as any;
+    }
+    public static OpenStandardOutput(bufferSize?: number): Stream {
+        return {} as any;
+    }
+    public static OpenStandardError(bufferSize?: number): Stream {
+        return {} as any;
+    }
+    public static SetIn(newIn?: TextReader): void {
+        return {} as any;
+    }
+    public static SetOut(newOut?: TextWriter): void {
+        return {} as any;
+    }
+    public static SetError(newError?: TextWriter): void {
+        return {} as any;
+    }
+    public static Read(): number {
+        return {} as any;
+    }
+    public static ReadLine(): string {
+        return {} as any;
+    }
+    public static WriteLine(value_or_buffer_or_format?: boolean | string | string[] | number | any, index_or_arg0_or_arg?: number | any | any[], count_or_arg1?: number | any, arg2?: any): void {
+        return {} as any;
+    }
+    public static Write(format_or_value_or_buffer?: string | boolean | string[] | number | any, arg0_or_arg_or_index?: any | any[] | number, arg1_or_count?: any | number, arg2?: any): void {
+        return {} as any;
+    }
     public static get In(): TextReader {
         return {} as any;
     }
@@ -119,80 +194,5 @@ export class Console {
         return {} as any;
     }
     public static set TreatControlCAsInput(value: boolean) {
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public Equals(obj?: any): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public static ReadKey(intercept?: boolean): ConsoleKeyInfo {
-        return {} as any;
-    }
-    public static ResetColor(): void {
-        return {} as any;
-    }
-    public static SetBufferSize(width?: number, height?: number): void {
-        return {} as any;
-    }
-    public static SetWindowPosition(left?: number, top?: number): void {
-        return {} as any;
-    }
-    public static SetWindowSize(width?: number, height?: number): void {
-        return {} as any;
-    }
-    public static Beep(frequency?: number, duration?: number): void {
-        return {} as any;
-    }
-    public static MoveBufferArea(sourceLeft?: number, sourceTop?: number, sourceWidth?: number, sourceHeight?: number, targetLeft?: number, targetTop?: number, sourceChar?: string, sourceForeColor?: ConsoleColor, sourceBackColor?: ConsoleColor): void {
-        return {} as any;
-    }
-    public static Clear(): void {
-        return {} as any;
-    }
-    public static SetCursorPosition(left?: number, top?: number): void {
-        return {} as any;
-    }
-    public static add_CancelKeyPress(value?: ConsoleCancelEventHandler): void {
-        return {} as any;
-    }
-    public static remove_CancelKeyPress(value?: ConsoleCancelEventHandler): void {
-        return {} as any;
-    }
-    public static OpenStandardInput(bufferSize?: number): Stream {
-        return {} as any;
-    }
-    public static OpenStandardOutput(bufferSize?: number): Stream {
-        return {} as any;
-    }
-    public static OpenStandardError(bufferSize?: number): Stream {
-        return {} as any;
-    }
-    public static SetIn(newIn?: TextReader): void {
-        return {} as any;
-    }
-    public static SetOut(newOut?: TextWriter): void {
-        return {} as any;
-    }
-    public static SetError(newError?: TextWriter): void {
-        return {} as any;
-    }
-    public static Read(): number {
-        return {} as any;
-    }
-    public static ReadLine(): string {
-        return {} as any;
-    }
-    public static WriteLine(value_or_buffer_or_format?: boolean | string | string[] | number | any, index_or_arg0_or_arg?: number | any | any[], count_or_arg1?: number | any, arg2?: any): void {
-        return {} as any;
-    }
-    public static Write(format_or_value_or_buffer?: string | boolean | string[] | number | any, arg0_or_arg_or_index?: any | any[] | number, arg1_or_count?: any | number, arg2?: any): void {
-        return {} as any;
     }
 }

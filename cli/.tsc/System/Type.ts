@@ -22,6 +22,210 @@ import { InterfaceMapping } from "./Reflection/InterfaceMapping";
 import { TypeFilter } from "./Reflection/TypeFilter";
 import { MemberFilter } from "./Reflection/MemberFilter";
 export class Type {
+    public GetType(): Type {
+        return {} as any;
+    }
+    public GetElementType(): Type {
+        return {} as any;
+    }
+    public GetArrayRank(): number {
+        return {} as any;
+    }
+    public GetGenericTypeDefinition(): Type {
+        return {} as any;
+    }
+    public GetGenericArguments(): Type[] {
+        return {} as any;
+    }
+    public GetOptionalCustomModifiers(): Type[] {
+        return {} as any;
+    }
+    public GetRequiredCustomModifiers(): Type[] {
+        return {} as any;
+    }
+    public GetGenericParameterConstraints(): Type[] {
+        return {} as any;
+    }
+    public IsAssignableTo(targetType?: Type): boolean {
+        return {} as any;
+    }
+    public GetConstructor(types_or_bindingAttr?: Type[] | BindingFlags, types_or_binder?: Type[] | Binder, types_or_callConvention?: Type[] | CallingConventions, modifiers_or_types?: ParameterModifier[] | Type[], modifiers?: ParameterModifier[]): ConstructorInfo {
+        return {} as any;
+    }
+    public GetConstructors(bindingAttr?: BindingFlags): ConstructorInfo[] {
+        return {} as any;
+    }
+    public GetEvent(name?: string, bindingAttr?: BindingFlags): EventInfo {
+        return {} as any;
+    }
+    public GetEvents(bindingAttr?: BindingFlags): EventInfo[] {
+        return {} as any;
+    }
+    public GetField(name?: string, bindingAttr?: BindingFlags): FieldInfo {
+        return {} as any;
+    }
+    public GetFields(bindingAttr?: BindingFlags): FieldInfo[] {
+        return {} as any;
+    }
+    public GetFunctionPointerCallingConventions(): Type[] {
+        return {} as any;
+    }
+    public GetFunctionPointerReturnType(): Type {
+        return {} as any;
+    }
+    public GetFunctionPointerParameterTypes(): Type[] {
+        return {} as any;
+    }
+    public GetMember(name?: string, bindingAttr_or_type?: BindingFlags | MemberTypes, bindingAttr?: BindingFlags): MemberInfo[] {
+        return {} as any;
+    }
+    public GetMembers(bindingAttr?: BindingFlags): MemberInfo[] {
+        return {} as any;
+    }
+    public GetMemberWithSameMetadataDefinitionAs(member?: MemberInfo): MemberInfo {
+        return {} as any;
+    }
+    public GetMethod(name?: string, bindingAttr_or_types_or_genericParameterCount?: BindingFlags | Type[] | number, types_or_modifiers_or_binder_or_bindingAttr?: Type[] | ParameterModifier[] | Binder | BindingFlags, types_or_callConvention_or_modifiers_or_binder?: Type[] | CallingConventions | ParameterModifier[] | Binder, modifiers_or_types_or_callConvention?: ParameterModifier[] | Type[] | CallingConventions, modifiers_or_types?: ParameterModifier[] | Type[], modifiers?: ParameterModifier[]): MethodInfo {
+        return {} as any;
+    }
+    public GetMethods(bindingAttr?: BindingFlags): MethodInfo[] {
+        return {} as any;
+    }
+    public GetNestedType(name?: string, bindingAttr?: BindingFlags): Type {
+        return {} as any;
+    }
+    public GetNestedTypes(bindingAttr?: BindingFlags): Type[] {
+        return {} as any;
+    }
+    public GetProperty(name?: string, bindingAttr_or_returnType_or_types?: BindingFlags | Type | Type[], types_or_binder?: Type[] | Binder, modifiers_or_returnType?: ParameterModifier[] | Type, types?: Type[], modifiers?: ParameterModifier[]): PropertyInfo {
+        return {} as any;
+    }
+    public GetProperties(bindingAttr?: BindingFlags): PropertyInfo[] {
+        return {} as any;
+    }
+    public GetDefaultMembers(): MemberInfo[] {
+        return {} as any;
+    }
+    public InvokeMember(name?: string, invokeAttr?: BindingFlags, binder?: Binder, target?: any, args?: any[], culture_or_modifiers?: CultureInfo | ParameterModifier[], culture?: CultureInfo, namedParameters?: string[]): any {
+        return {} as any;
+    }
+    public GetInterface(name?: string, ignoreCase?: boolean): Type {
+        return {} as any;
+    }
+    public GetInterfaces(): Type[] {
+        return {} as any;
+    }
+    public GetInterfaceMap(interfaceType?: Type): InterfaceMapping {
+        return {} as any;
+    }
+    public IsInstanceOfType(o?: any): boolean {
+        return {} as any;
+    }
+    public IsEquivalentTo(other?: Type): boolean {
+        return {} as any;
+    }
+    public GetEnumUnderlyingType(): Type {
+        return {} as any;
+    }
+    public GetEnumValues(): any[] {
+        return {} as any;
+    }
+    public GetEnumValuesAsUnderlyingType(): any[] {
+        return {} as any;
+    }
+    public MakeArrayType(rank?: number): Type {
+        return {} as any;
+    }
+    public MakeByRefType(): Type {
+        return {} as any;
+    }
+    public MakeGenericType(typeArguments?: Type[]): Type {
+        return {} as any;
+    }
+    public MakePointerType(): Type {
+        return {} as any;
+    }
+    public ToString(): string {
+        return {} as any;
+    }
+    public Equals(o?: any | Type): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public IsEnumDefined(value?: any): boolean {
+        return {} as any;
+    }
+    public GetEnumName(value?: any): string {
+        return {} as any;
+    }
+    public GetEnumNames(): string[] {
+        return {} as any;
+    }
+    public FindInterfaces(filter?: TypeFilter, filterCriteria?: any): Type[] {
+        return {} as any;
+    }
+    public FindMembers(memberType?: MemberTypes, bindingAttr?: BindingFlags, filter?: MemberFilter, filterCriteria?: any): MemberInfo[] {
+        return {} as any;
+    }
+    public IsSubclassOf(c?: Type): boolean {
+        return {} as any;
+    }
+    public IsAssignableFrom(c?: Type): boolean {
+        return {} as any;
+    }
+    public HasSameMetadataDefinitionAs(other?: MemberInfo): boolean {
+        return {} as any;
+    }
+    public IsDefined(attributeType?: Type, inherit?: boolean): boolean {
+        return {} as any;
+    }
+    public GetCustomAttributes(inherit_or_attributeType?: boolean | Type, inherit?: boolean): any[] {
+        return {} as any;
+    }
+    public static GetType(typeName?: string, throwOnError?: boolean, ignoreCase?: boolean): Type {
+        return {} as any;
+    }
+    public static GetTypeFromHandle(handle?: RuntimeTypeHandle): Type {
+        return {} as any;
+    }
+    public static GetTypeHandle(o?: any): RuntimeTypeHandle {
+        return {} as any;
+    }
+    public static GetTypeArray(args?: any[]): Type[] {
+        return {} as any;
+    }
+    public static GetTypeCode(type?: Type): TypeCode {
+        return {} as any;
+    }
+    public static GetTypeFromCLSID(clsid?: Guid, throwOnError_or_server?: boolean | string, throwOnError?: boolean): Type {
+        return {} as any;
+    }
+    public static GetTypeFromProgID(progID?: string, throwOnError_or_server?: boolean | string, throwOnError?: boolean): Type {
+        return {} as any;
+    }
+    public static MakeGenericSignatureType(genericTypeDefinition?: Type, typeArguments?: Type[]): Type {
+        return {} as any;
+    }
+    public static MakeGenericMethodParameter(position?: number): Type {
+        return {} as any;
+    }
+    public static op_Equality(left?: Type, right?: Type): boolean {
+        return {} as any;
+    }
+    public static op_Inequality(left?: Type, right?: Type): boolean {
+        return {} as any;
+    }
+    public static ReflectionOnlyGetType(typeName?: string, throwIfNotFound?: boolean, ignoreCase?: boolean): Type {
+        return {} as any;
+    }
+    public static Delimiter: string;
+    public static EmptyTypes: Type[];
+    public static Missing: any;
+    public static FilterAttribute: MemberFilter;
+    public static FilterName: MemberFilter;
+    public static FilterNameIgnoreCase: MemberFilter;
     public get IsInterface(): boolean {
         return {} as any;
     }
@@ -235,217 +439,10 @@ export class Type {
     public get Name(): string {
         return {} as any;
     }
-    public get Module(): Module {
-        return {} as any;
-    }
     public get IsCollectible(): boolean {
         return {} as any;
     }
     public get MetadataToken(): number {
         return {} as any;
     }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public GetElementType(): Type {
-        return {} as any;
-    }
-    public GetArrayRank(): number {
-        return {} as any;
-    }
-    public GetGenericTypeDefinition(): Type {
-        return {} as any;
-    }
-    public GetGenericArguments(): Type[] {
-        return {} as any;
-    }
-    public GetOptionalCustomModifiers(): Type[] {
-        return {} as any;
-    }
-    public GetRequiredCustomModifiers(): Type[] {
-        return {} as any;
-    }
-    public GetGenericParameterConstraints(): Type[] {
-        return {} as any;
-    }
-    public IsAssignableTo(targetType?: Type): boolean {
-        return {} as any;
-    }
-    public GetConstructor(types_or_bindingAttr?: Type[] | BindingFlags, types_or_binder?: Type[] | Binder, types_or_callConvention?: Type[] | CallingConventions, modifiers_or_types?: ParameterModifier[] | Type[], modifiers?: ParameterModifier[]): ConstructorInfo {
-        return {} as any;
-    }
-    public GetConstructors(bindingAttr?: BindingFlags): ConstructorInfo[] {
-        return {} as any;
-    }
-    public GetEvent(name?: string, bindingAttr?: BindingFlags): EventInfo {
-        return {} as any;
-    }
-    public GetEvents(bindingAttr?: BindingFlags): EventInfo[] {
-        return {} as any;
-    }
-    public GetField(name?: string, bindingAttr?: BindingFlags): FieldInfo {
-        return {} as any;
-    }
-    public GetFields(bindingAttr?: BindingFlags): FieldInfo[] {
-        return {} as any;
-    }
-    public GetFunctionPointerCallingConventions(): Type[] {
-        return {} as any;
-    }
-    public GetFunctionPointerReturnType(): Type {
-        return {} as any;
-    }
-    public GetFunctionPointerParameterTypes(): Type[] {
-        return {} as any;
-    }
-    public GetMember(name?: string, bindingAttr_or_type?: BindingFlags | MemberTypes, bindingAttr?: BindingFlags): MemberInfo[] {
-        return {} as any;
-    }
-    public GetMembers(bindingAttr?: BindingFlags): MemberInfo[] {
-        return {} as any;
-    }
-    public GetMemberWithSameMetadataDefinitionAs(member?: MemberInfo): MemberInfo {
-        return {} as any;
-    }
-    public GetMethod(name?: string, bindingAttr_or_types_or_genericParameterCount?: BindingFlags | Type[] | number, types_or_modifiers_or_binder_or_bindingAttr?: Type[] | ParameterModifier[] | Binder | BindingFlags, types_or_callConvention_or_modifiers_or_binder?: Type[] | CallingConventions | ParameterModifier[] | Binder, modifiers_or_types_or_callConvention?: ParameterModifier[] | Type[] | CallingConventions, modifiers_or_types?: ParameterModifier[] | Type[], modifiers?: ParameterModifier[]): MethodInfo {
-        return {} as any;
-    }
-    public GetMethods(bindingAttr?: BindingFlags): MethodInfo[] {
-        return {} as any;
-    }
-    public GetNestedType(name?: string, bindingAttr?: BindingFlags): Type {
-        return {} as any;
-    }
-    public GetNestedTypes(bindingAttr?: BindingFlags): Type[] {
-        return {} as any;
-    }
-    public GetProperty(name?: string, bindingAttr_or_returnType_or_types?: BindingFlags | Type | Type[], types_or_binder?: Type[] | Binder, modifiers_or_returnType?: ParameterModifier[] | Type, types?: Type[], modifiers?: ParameterModifier[]): PropertyInfo {
-        return {} as any;
-    }
-    public GetProperties(bindingAttr?: BindingFlags): PropertyInfo[] {
-        return {} as any;
-    }
-    public GetDefaultMembers(): MemberInfo[] {
-        return {} as any;
-    }
-    public InvokeMember(name?: string, invokeAttr?: BindingFlags, binder?: Binder, target?: any, args?: any[], culture_or_modifiers?: CultureInfo | ParameterModifier[], culture?: CultureInfo, namedParameters?: string[]): any {
-        return {} as any;
-    }
-    public GetInterface(name?: string, ignoreCase?: boolean): Type {
-        return {} as any;
-    }
-    public GetInterfaces(): Type[] {
-        return {} as any;
-    }
-    public GetInterfaceMap(interfaceType?: Type): InterfaceMapping {
-        return {} as any;
-    }
-    public IsInstanceOfType(o?: any): boolean {
-        return {} as any;
-    }
-    public IsEquivalentTo(other?: Type): boolean {
-        return {} as any;
-    }
-    public GetEnumUnderlyingType(): Type {
-        return {} as any;
-    }
-    public GetEnumValues(): any[] {
-        return {} as any;
-    }
-    public GetEnumValuesAsUnderlyingType(): any[] {
-        return {} as any;
-    }
-    public MakeArrayType(rank?: number): Type {
-        return {} as any;
-    }
-    public MakeByRefType(): Type {
-        return {} as any;
-    }
-    public MakeGenericType(typeArguments?: Type[]): Type {
-        return {} as any;
-    }
-    public MakePointerType(): Type {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public Equals(o?: any | Type): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public IsEnumDefined(value?: any): boolean {
-        return {} as any;
-    }
-    public GetEnumName(value?: any): string {
-        return {} as any;
-    }
-    public GetEnumNames(): string[] {
-        return {} as any;
-    }
-    public FindInterfaces(filter?: TypeFilter, filterCriteria?: any): Type[] {
-        return {} as any;
-    }
-    public FindMembers(memberType?: MemberTypes, bindingAttr?: BindingFlags, filter?: MemberFilter, filterCriteria?: any): MemberInfo[] {
-        return {} as any;
-    }
-    public IsSubclassOf(c?: Type): boolean {
-        return {} as any;
-    }
-    public IsAssignableFrom(c?: Type): boolean {
-        return {} as any;
-    }
-    public HasSameMetadataDefinitionAs(other?: MemberInfo): boolean {
-        return {} as any;
-    }
-    public IsDefined(attributeType?: Type, inherit?: boolean): boolean {
-        return {} as any;
-    }
-    public GetCustomAttributes(inherit_or_attributeType?: boolean | Type, inherit?: boolean): any[] {
-        return {} as any;
-    }
-    public static GetType(typeName?: string, throwOnError?: boolean, ignoreCase?: boolean): Type {
-        return {} as any;
-    }
-    public static GetTypeFromHandle(handle?: RuntimeTypeHandle): Type {
-        return {} as any;
-    }
-    public static GetTypeHandle(o?: any): RuntimeTypeHandle {
-        return {} as any;
-    }
-    public static GetTypeArray(args?: any[]): Type[] {
-        return {} as any;
-    }
-    public static GetTypeCode(type?: Type): TypeCode {
-        return {} as any;
-    }
-    public static GetTypeFromCLSID(clsid?: Guid, throwOnError_or_server?: boolean | string, throwOnError?: boolean): Type {
-        return {} as any;
-    }
-    public static GetTypeFromProgID(progID?: string, throwOnError_or_server?: boolean | string, throwOnError?: boolean): Type {
-        return {} as any;
-    }
-    public static MakeGenericSignatureType(genericTypeDefinition?: Type, typeArguments?: Type[]): Type {
-        return {} as any;
-    }
-    public static MakeGenericMethodParameter(position?: number): Type {
-        return {} as any;
-    }
-    public static op_Equality(left?: Type, right?: Type): boolean {
-        return {} as any;
-    }
-    public static op_Inequality(left?: Type, right?: Type): boolean {
-        return {} as any;
-    }
-    public static ReflectionOnlyGetType(typeName?: string, throwIfNotFound?: boolean, ignoreCase?: boolean): Type {
-        return {} as any;
-    }
-    public static Delimiter: string;
-    public static EmptyTypes: Type[];
-    public static Missing: any;
-    public static FilterAttribute: MemberFilter;
-    public static FilterName: MemberFilter;
-    public static FilterNameIgnoreCase: MemberFilter;
 }

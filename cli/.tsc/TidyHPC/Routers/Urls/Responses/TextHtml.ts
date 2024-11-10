@@ -1,11 +1,6 @@
 import { UrlResponse } from "./UrlResponse";
 import { Type } from "../../../../System/Type";
 export class TextHtml {
-    public get Content(): string {
-        return {} as any;
-    }
-    public set Content(value: string) {
-    }
     public ToString(): string {
         return {} as any;
     }
@@ -28,5 +23,10 @@ export class TextHtml {
     }
     public static op_Equality(left?: TextHtml, right?: TextHtml): boolean {
         return {} as any;
+    }
+    public get Content(): string {
+        return {} as any;
+    }
+    public set Content(value: string) {
     }
 }

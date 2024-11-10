@@ -2,11 +2,6 @@ import { NetMessageInterface } from "../../../LiteJson/NetMessageInterface";
 import { UrlResponse } from "./UrlResponse";
 import { Type } from "../../../../System/Type";
 export class ApplicationJson {
-    public get Content(): any {
-        return {} as any;
-    }
-    public set Content(value: any) {
-    }
     public ToString(): string {
         return {} as any;
     }
@@ -32,5 +27,10 @@ export class ApplicationJson {
     }
     public static op_Equality(left?: ApplicationJson, right?: ApplicationJson): boolean {
         return {} as any;
+    }
+    public get Content(): any {
+        return {} as any;
+    }
+    public set Content(value: any) {
     }
 }

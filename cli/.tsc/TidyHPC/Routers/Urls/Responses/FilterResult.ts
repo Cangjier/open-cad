@@ -2,9 +2,6 @@ import { UrlFilterStatus } from "./UrlFilterStatus";
 import { UrlResponse } from "./UrlResponse";
 import { Type } from "../../../../System/Type";
 export class FilterResult {
-    public get Status(): UrlFilterStatus {
-        return {} as any;
-    }
     public ToString(): string {
         return {} as any;
     }
@@ -29,6 +26,9 @@ export class FilterResult {
         return {} as any;
     }
     public static op_Equality(left?: FilterResult, right?: FilterResult): boolean {
+        return {} as any;
+    }
+    public get Status(): UrlFilterStatus {
         return {} as any;
     }
 }

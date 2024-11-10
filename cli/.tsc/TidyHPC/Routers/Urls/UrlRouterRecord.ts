@@ -1,16 +1,6 @@
 import { Regex } from "../../../System/Text/RegularExpressions/Regex";
 import { Type } from "../../../System/Type";
 export class UrlRouterRecord {
-    public get Pattern(): string {
-        return {} as any;
-    }
-    public set Pattern(value: string) {
-    }
-    public get Regex(): Regex {
-        return {} as any;
-    }
-    public set Regex(value: Regex) {
-    }
     public ToString(): string {
         return {} as any;
     }
@@ -31,5 +21,15 @@ export class UrlRouterRecord {
     }
     public static op_Equality(left?: UrlRouterRecord, right?: UrlRouterRecord): boolean {
         return {} as any;
+    }
+    public get Pattern(): string {
+        return {} as any;
+    }
+    public set Pattern(value: string) {
+    }
+    public get Regex(): Regex {
+        return {} as any;
+    }
+    public set Regex(value: Regex) {
     }
 }

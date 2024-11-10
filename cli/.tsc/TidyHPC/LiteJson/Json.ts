@@ -12,134 +12,6 @@ import { Type } from "../../System/Type";
 import { ObjectWrapper } from "./ObjectWrapper";
 import { ArrayWrapper } from "./ArrayWrapper";
 export class Json {
-    public get Node(): any {
-        return {} as any;
-    }
-    public static get Undefined(): any {
-        return {} as any;
-    }
-    public get Count(): number {
-        return {} as any;
-    }
-    public get Item(): any {
-        return {} as any;
-    }
-    public set Item(index: number, value: any) {
-    }
-    public get IsFixedSize(): boolean {
-        return {} as any;
-    }
-    public get IsReadOnly(): boolean {
-        return {} as any;
-    }
-    public get IsSynchronized(): boolean {
-        return {} as any;
-    }
-    public get SyncRoot(): any {
-        return {} as any;
-    }
-    public get Item(): any {
-        return {} as any;
-    }
-    public set Item(key: any, value: any) {
-    }
-    public get IsObject(): boolean {
-        return {} as any;
-    }
-    public get AsObject(): ObjectWrapper {
-        return {} as any;
-    }
-    public get IsArray(): boolean {
-        return {} as any;
-    }
-    public get AsArray(): ArrayWrapper {
-        return {} as any;
-    }
-    public get IsString(): boolean {
-        return {} as any;
-    }
-    public get AsString(): string {
-        return {} as any;
-    }
-    public get IsNumber(): boolean {
-        return {} as any;
-    }
-    public get AsNumber(): number {
-        return {} as any;
-    }
-    public get IsByte(): boolean {
-        return {} as any;
-    }
-    public get AsByte(): number {
-        return {} as any;
-    }
-    public get IsInt32(): boolean {
-        return {} as any;
-    }
-    public get AsInt32(): number {
-        return {} as any;
-    }
-    public get ToInt32(): number {
-        return {} as any;
-    }
-    public get IsInt64(): boolean {
-        return {} as any;
-    }
-    public get AsInt64(): number {
-        return {} as any;
-    }
-    public get IsFloat(): boolean {
-        return {} as any;
-    }
-    public get AsFloat(): number {
-        return {} as any;
-    }
-    public get IsDouble(): boolean {
-        return {} as any;
-    }
-    public get AsDouble(): number {
-        return {} as any;
-    }
-    public get IsBoolean(): boolean {
-        return {} as any;
-    }
-    public get AsBoolean(): boolean {
-        return {} as any;
-    }
-    public get IsTrue(): boolean {
-        return {} as any;
-    }
-    public get IsFalse(): boolean {
-        return {} as any;
-    }
-    public get IsGuid(): boolean {
-        return {} as any;
-    }
-    public get AsGuid(): Guid {
-        return {} as any;
-    }
-    public get IsNull(): boolean {
-        return {} as any;
-    }
-    public get IsUndefined(): boolean {
-        return {} as any;
-    }
-    public get Keys(): string[] {
-        return {} as any;
-    }
-    public get Values(): any[] {
-        return {} as any;
-    }
-    public get Item(): any {
-        return {} as any;
-    }
-    public set Item(key: string, value: any) {
-    }
-    public get Item(): any {
-        return {} as any;
-    }
-    public set Item(index: any, value: any) {
-    }
     public GetValueKind(): JsonValueKind {
         return {} as any;
     }
@@ -286,7 +158,7 @@ export class Json {
     public static Validate(json_or_stream?: string | Stream): boolean {
         return {} as any;
     }
-    public static op_Implicit(value?: string | JsonNode | { [key: string]: any } | JsonElement | number | SByte | Int16 | UInt16 | boolean | DateTime | TimeSpan | Guid): any {
+    public static op_Implicit(value?: string | JsonNode | { [key: string]: any } | string[] | number[] | JsonElement | number | SByte | Int16 | UInt16 | boolean | DateTime | TimeSpan | Guid): any {
         return {} as any;
     }
     public static op_ImplicitFrom(value?: any): any {
@@ -344,4 +216,117 @@ export class Json {
         return {} as any;
     }
     public static Null: any;
+    public get Node(): any {
+        return {} as any;
+    }
+    public static get Undefined(): any {
+        return {} as any;
+    }
+    public get Count(): number {
+        return {} as any;
+    }
+    public get Item(): any {
+        return {} as any;
+    }
+    public set Item(value: any) {
+    }
+    public get IsFixedSize(): boolean {
+        return {} as any;
+    }
+    public get IsReadOnly(): boolean {
+        return {} as any;
+    }
+    public get IsSynchronized(): boolean {
+        return {} as any;
+    }
+    public get SyncRoot(): any {
+        return {} as any;
+    }
+    public get IsObject(): boolean {
+        return {} as any;
+    }
+    public get AsObject(): ObjectWrapper {
+        return {} as any;
+    }
+    public get IsArray(): boolean {
+        return {} as any;
+    }
+    public get AsArray(): ArrayWrapper {
+        return {} as any;
+    }
+    public get IsString(): boolean {
+        return {} as any;
+    }
+    public get AsString(): string {
+        return {} as any;
+    }
+    public get IsNumber(): boolean {
+        return {} as any;
+    }
+    public get AsNumber(): number {
+        return {} as any;
+    }
+    public get IsByte(): boolean {
+        return {} as any;
+    }
+    public get AsByte(): number {
+        return {} as any;
+    }
+    public get IsInt32(): boolean {
+        return {} as any;
+    }
+    public get AsInt32(): number {
+        return {} as any;
+    }
+    public get ToInt32(): number {
+        return {} as any;
+    }
+    public get IsInt64(): boolean {
+        return {} as any;
+    }
+    public get AsInt64(): number {
+        return {} as any;
+    }
+    public get IsFloat(): boolean {
+        return {} as any;
+    }
+    public get AsFloat(): number {
+        return {} as any;
+    }
+    public get IsDouble(): boolean {
+        return {} as any;
+    }
+    public get AsDouble(): number {
+        return {} as any;
+    }
+    public get IsBoolean(): boolean {
+        return {} as any;
+    }
+    public get AsBoolean(): boolean {
+        return {} as any;
+    }
+    public get IsTrue(): boolean {
+        return {} as any;
+    }
+    public get IsFalse(): boolean {
+        return {} as any;
+    }
+    public get IsGuid(): boolean {
+        return {} as any;
+    }
+    public get AsGuid(): Guid {
+        return {} as any;
+    }
+    public get IsNull(): boolean {
+        return {} as any;
+    }
+    public get IsUndefined(): boolean {
+        return {} as any;
+    }
+    public get Keys(): string[] {
+        return {} as any;
+    }
+    public get Values(): any[] {
+        return {} as any;
+    }
 }

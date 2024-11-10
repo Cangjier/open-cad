@@ -9,60 +9,6 @@ import { DateOnly } from "./DateOnly";
 import { TimeOnly } from "./TimeOnly";
 import { Calendar } from "./Globalization/Calendar";
 export class DateTime {
-    public get Date(): DateTime {
-        return {} as any;
-    }
-    public get Day(): number {
-        return {} as any;
-    }
-    public get DayOfWeek(): DayOfWeek {
-        return {} as any;
-    }
-    public get DayOfYear(): number {
-        return {} as any;
-    }
-    public get Hour(): number {
-        return {} as any;
-    }
-    public get Kind(): DateTimeKind {
-        return {} as any;
-    }
-    public get Millisecond(): number {
-        return {} as any;
-    }
-    public get Microsecond(): number {
-        return {} as any;
-    }
-    public get Nanosecond(): number {
-        return {} as any;
-    }
-    public get Minute(): number {
-        return {} as any;
-    }
-    public get Month(): number {
-        return {} as any;
-    }
-    public static get Now(): DateTime {
-        return {} as any;
-    }
-    public get Second(): number {
-        return {} as any;
-    }
-    public get Ticks(): number {
-        return {} as any;
-    }
-    public get TimeOfDay(): TimeSpan {
-        return {} as any;
-    }
-    public static get Today(): DateTime {
-        return {} as any;
-    }
-    public get Year(): number {
-        return {} as any;
-    }
-    public static get UtcNow(): DateTime {
-        return {} as any;
-    }
     public Add(value?: TimeSpan): DateTime {
         return {} as any;
     }
@@ -212,4 +158,58 @@ export class DateTime {
     public static MinValue: DateTime;
     public static MaxValue: DateTime;
     public static UnixEpoch: DateTime;
+    public get Date(): DateTime {
+        return {} as any;
+    }
+    public get Day(): number {
+        return {} as any;
+    }
+    public get DayOfWeek(): DayOfWeek {
+        return {} as any;
+    }
+    public get DayOfYear(): number {
+        return {} as any;
+    }
+    public get Hour(): number {
+        return {} as any;
+    }
+    public get Kind(): DateTimeKind {
+        return {} as any;
+    }
+    public get Millisecond(): number {
+        return {} as any;
+    }
+    public get Microsecond(): number {
+        return {} as any;
+    }
+    public get Nanosecond(): number {
+        return {} as any;
+    }
+    public get Minute(): number {
+        return {} as any;
+    }
+    public get Month(): number {
+        return {} as any;
+    }
+    public static get Now(): DateTime {
+        return {} as any;
+    }
+    public get Second(): number {
+        return {} as any;
+    }
+    public get Ticks(): number {
+        return {} as any;
+    }
+    public get TimeOfDay(): TimeSpan {
+        return {} as any;
+    }
+    public static get Today(): DateTime {
+        return {} as any;
+    }
+    public get Year(): number {
+        return {} as any;
+    }
+    public static get UtcNow(): DateTime {
+        return {} as any;
+    }
 }

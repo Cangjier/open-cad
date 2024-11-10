@@ -2,9 +2,6 @@ import { Session } from "./Session";
 import { UrlRouter } from "./UrlRouter";
 import { Type } from "../../../System/Type";
 export class SessionSetter {
-    public get Session(): Session {
-        return {} as any;
-    }
     public SetResponse(resultValue?: any, urlRouter?: UrlRouter): Promise<boolean> {
         return {} as any;
     }
@@ -21,5 +18,8 @@ export class SessionSetter {
         return {} as any;
     }
     public constructor(session?: Session) {
+    }
+    public get Session(): Session {
+        return {} as any;
     }
 }

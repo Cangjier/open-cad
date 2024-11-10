@@ -1,6 +1,23 @@
 import { StringDictionary } from "../../../../System/Collections/Specialized/StringDictionary";
 import { Type } from "../../../../System/Type";
 export class ContentType {
+    public ToString(): string {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public Equals(obj?: any): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public constructor() {
+    }
+    public static Parse(contentType?: string): ContentType {
+        return {} as any;
+    }
     public get Boundary(): string {
         return {} as any;
     }
@@ -34,23 +51,6 @@ export class ContentType {
     public set Name(value: string) {
     }
     public get Parameters(): StringDictionary {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public Equals(obj?: any): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public constructor() {
-    }
-    public static Parse(contentType?: string): ContentType {
         return {} as any;
     }
 }

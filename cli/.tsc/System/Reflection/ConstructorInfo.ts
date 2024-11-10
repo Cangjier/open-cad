@@ -11,6 +11,50 @@ import { Type } from "../Type";
 import { Module } from "./Module";
 import { MemberInfo } from "./MemberInfo";
 export class ConstructorInfo {
+    public Invoke(parameters_or_invokeAttr_or_obj?: any[] | BindingFlags | any, binder_or_parameters_or_invokeAttr?: Binder | any[] | BindingFlags, parameters_or_binder?: any[] | Binder, culture_or_parameters?: CultureInfo | any[], culture?: CultureInfo): any {
+        return {} as any;
+    }
+    public Equals(obj?: any): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public GetParameters(): ParameterInfo[] {
+        return {} as any;
+    }
+    public GetMethodImplementationFlags(): MethodImplAttributes {
+        return {} as any;
+    }
+    public GetMethodBody(): MethodBody {
+        return {} as any;
+    }
+    public GetGenericArguments(): Type[] {
+        return {} as any;
+    }
+    public HasSameMetadataDefinitionAs(other?: MemberInfo): boolean {
+        return {} as any;
+    }
+    public IsDefined(attributeType?: Type, inherit?: boolean): boolean {
+        return {} as any;
+    }
+    public GetCustomAttributes(inherit_or_attributeType?: boolean | Type, inherit?: boolean): any[] {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public ToString(): string {
+        return {} as any;
+    }
+    public static op_Equality(left?: ConstructorInfo, right?: ConstructorInfo): boolean {
+        return {} as any;
+    }
+    public static op_Inequality(left?: ConstructorInfo, right?: ConstructorInfo): boolean {
+        return {} as any;
+    }
+    public static ConstructorName: string;
+    public static TypeConstructorName: string;
     public get MemberType(): MemberTypes {
         return {} as any;
     }
@@ -104,48 +148,4 @@ export class ConstructorInfo {
     public get MetadataToken(): number {
         return {} as any;
     }
-    public Invoke(parameters_or_invokeAttr_or_obj?: any[] | BindingFlags | any, binder_or_parameters_or_invokeAttr?: Binder | any[] | BindingFlags, parameters_or_binder?: any[] | Binder, culture_or_parameters?: CultureInfo | any[], culture?: CultureInfo): any {
-        return {} as any;
-    }
-    public Equals(obj?: any): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public GetParameters(): ParameterInfo[] {
-        return {} as any;
-    }
-    public GetMethodImplementationFlags(): MethodImplAttributes {
-        return {} as any;
-    }
-    public GetMethodBody(): MethodBody {
-        return {} as any;
-    }
-    public GetGenericArguments(): Type[] {
-        return {} as any;
-    }
-    public HasSameMetadataDefinitionAs(other?: MemberInfo): boolean {
-        return {} as any;
-    }
-    public IsDefined(attributeType?: Type, inherit?: boolean): boolean {
-        return {} as any;
-    }
-    public GetCustomAttributes(inherit_or_attributeType?: boolean | Type, inherit?: boolean): any[] {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public static op_Equality(left?: ConstructorInfo, right?: ConstructorInfo): boolean {
-        return {} as any;
-    }
-    public static op_Inequality(left?: ConstructorInfo, right?: ConstructorInfo): boolean {
-        return {} as any;
-    }
-    public static ConstructorName: string;
-    public static TypeConstructorName: string;
 }

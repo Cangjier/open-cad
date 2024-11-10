@@ -1,24 +1,6 @@
 import { Int16 } from "./Int16";
 import { Type } from "./Type";
 export class Version {
-    public get Major(): number {
-        return {} as any;
-    }
-    public get Minor(): number {
-        return {} as any;
-    }
-    public get Build(): number {
-        return {} as any;
-    }
-    public get Revision(): number {
-        return {} as any;
-    }
-    public get MajorRevision(): Int16 {
-        return {} as any;
-    }
-    public get MinorRevision(): Int16 {
-        return {} as any;
-    }
     public Clone(): any {
         return {} as any;
     }
@@ -58,6 +40,24 @@ export class Version {
         return {} as any;
     }
     public static op_GreaterThanOrEqual(v1?: Version, v2?: Version): boolean {
+        return {} as any;
+    }
+    public get Major(): number {
+        return {} as any;
+    }
+    public get Minor(): number {
+        return {} as any;
+    }
+    public get Build(): number {
+        return {} as any;
+    }
+    public get Revision(): number {
+        return {} as any;
+    }
+    public get MajorRevision(): Int16 {
+        return {} as any;
+    }
+    public get MinorRevision(): Int16 {
         return {} as any;
     }
 }

@@ -2,6 +2,29 @@ import { BinaryFile } from "./BinaryFile";
 import { UrlResponse } from "./UrlResponse";
 import { Type } from "../../../../System/Type";
 export class BrotliFile {
+    public ToString(): string {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public Equals(obj_or_other?: any | BinaryFile | BrotliFile | UrlResponse): boolean {
+        return {} as any;
+    }
+    public <Clone>$(): BrotliFile | BinaryFile | UrlResponse {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public constructor(FilePath?: string, ContentDisposition?: string, RelativeFilePath?: string) {
+    }
+    public static op_Inequality(left?: BrotliFile, right?: BrotliFile): boolean {
+        return {} as any;
+    }
+    public static op_Equality(left?: BrotliFile, right?: BrotliFile): boolean {
+        return {} as any;
+    }
     public get FilePath(): string {
         return {} as any;
     }
@@ -31,28 +54,5 @@ export class BrotliFile {
         return {} as any;
     }
     public set RelativeFilePath(value: string) {
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public Equals(obj_or_other?: any | BinaryFile | BrotliFile | UrlResponse): boolean {
-        return {} as any;
-    }
-    public <Clone>$(): BrotliFile | BinaryFile | UrlResponse {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public constructor(FilePath?: string, ContentDisposition?: string, RelativeFilePath?: string) {
-    }
-    public static op_Inequality(left?: BrotliFile, right?: BrotliFile): boolean {
-        return {} as any;
-    }
-    public static op_Equality(left?: BrotliFile, right?: BrotliFile): boolean {
-        return {} as any;
     }
 }

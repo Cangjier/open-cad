@@ -1,3 +1,5 @@
+import { processResult } from "./processResult";
+import { processConfig } from "./processConfig";
 import { Guid } from "../../../System/Guid";
 import { Type } from "../../../System/Type";
 export class context {
@@ -13,25 +15,19 @@ export class context {
     public GetHashCode(): number {
         return {} as any;
     }
-    public static exec(path?: string, args?: string[]): number {
+    public static exec(config?: processConfig): processResult {
         return {} as any;
     }
-    public static execAsync(path?: string, args?: string[]): Promise<number> {
+    public static execAsync(config?: processConfig): Promise<processResult> {
         return {} as any;
     }
-    public static start(path?: string, args?: string[]): void {
+    public static start(config?: processConfig): void {
         return {} as any;
     }
-    public static cmd(workingDirectory?: string, commandLine?: string): number {
+    public static cmd(workingDirectory?: string, commandLine?: string): processResult {
         return {} as any;
     }
-    public static cmdAsync(workingDirectory?: string, commandLine?: string, output?: any): Promise<number> {
-        return {} as any;
-    }
-    public static getCmdOutputAsync(workingDirectory?: string, commandLine?: string): Promise<string> {
-        return {} as any;
-    }
-    public static getCmdOutput(workingDirectory?: string, commandLine?: string): string {
+    public static cmdAsync(workingDirectory?: string, commandLine?: string): Promise<processResult> {
         return {} as any;
     }
     public static startCmd(workingDirectory?: string, commandLine?: string): void {

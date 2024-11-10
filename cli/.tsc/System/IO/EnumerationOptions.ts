@@ -3,6 +3,20 @@ import { MatchType } from "./MatchType";
 import { MatchCasing } from "./MatchCasing";
 import { Type } from "../Type";
 export class EnumerationOptions {
+    public GetType(): Type {
+        return {} as any;
+    }
+    public ToString(): string {
+        return {} as any;
+    }
+    public Equals(obj?: any): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public constructor() {
+    }
     public get RecurseSubdirectories(): boolean {
         return {} as any;
     }
@@ -42,19 +56,5 @@ export class EnumerationOptions {
         return {} as any;
     }
     public set ReturnSpecialDirectories(value: boolean) {
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public Equals(obj?: any): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public constructor() {
     }
 }

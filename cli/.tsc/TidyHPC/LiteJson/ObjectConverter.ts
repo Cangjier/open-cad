@@ -2,12 +2,6 @@ import { Type } from "../../System/Type";
 import { JsonSerializerOptions } from "../../System/Text/Json/JsonSerializerOptions";
 import { Utf8JsonWriter } from "../../System/Text/Json/Utf8JsonWriter";
 export class ObjectConverter {
-    public get HandleNull(): boolean {
-        return {} as any;
-    }
-    public get Type(): Type {
-        return {} as any;
-    }
     public Write(writer?: Utf8JsonWriter, value?: any, options?: JsonSerializerOptions): void {
         return {} as any;
     }
@@ -30,5 +24,11 @@ export class ObjectConverter {
         return {} as any;
     }
     public constructor() {
+    }
+    public get HandleNull(): boolean {
+        return {} as any;
+    }
+    public get Type(): Type {
+        return {} as any;
     }
 }

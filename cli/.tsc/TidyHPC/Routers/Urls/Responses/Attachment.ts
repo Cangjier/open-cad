@@ -2,6 +2,29 @@ import { BinaryFile } from "./BinaryFile";
 import { UrlResponse } from "./UrlResponse";
 import { Type } from "../../../../System/Type";
 export class Attachment {
+    public ToString(): string {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public Equals(obj_or_other?: any | BinaryFile | Attachment | UrlResponse): boolean {
+        return {} as any;
+    }
+    public <Clone>$(): Attachment | BinaryFile | UrlResponse {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public constructor(FilePath?: string, FileName?: string, RelativeFilePath?: string) {
+    }
+    public static op_Inequality(left?: Attachment, right?: Attachment): boolean {
+        return {} as any;
+    }
+    public static op_Equality(left?: Attachment, right?: Attachment): boolean {
+        return {} as any;
+    }
     public get FileName(): string {
         return {} as any;
     }
@@ -36,28 +59,5 @@ export class Attachment {
         return {} as any;
     }
     public set RelativeFilePath(value: string) {
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public Equals(obj_or_other?: any | BinaryFile | Attachment | UrlResponse): boolean {
-        return {} as any;
-    }
-    public <Clone>$(): Attachment | BinaryFile | UrlResponse {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public constructor(FilePath?: string, FileName?: string, RelativeFilePath?: string) {
-    }
-    public static op_Inequality(left?: Attachment, right?: Attachment): boolean {
-        return {} as any;
-    }
-    public static op_Equality(left?: Attachment, right?: Attachment): boolean {
-        return {} as any;
     }
 }

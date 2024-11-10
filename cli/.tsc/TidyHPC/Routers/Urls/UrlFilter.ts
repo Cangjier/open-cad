@@ -2,9 +2,6 @@ import { UrlRouter } from "./UrlRouter";
 import { MethodInfo } from "../../../System/Reflection/MethodInfo";
 import { Type } from "../../../System/Type";
 export class UrlFilter {
-    public get UrlRouter(): UrlRouter {
-        return {} as any;
-    }
     public Register(order?: number, urlPatterns?: string[], func?: null): void {
         return {} as any;
     }
@@ -21,5 +18,8 @@ export class UrlFilter {
         return {} as any;
     }
     public constructor(urlRouter?: UrlRouter) {
+    }
+    public get UrlRouter(): UrlRouter {
+        return {} as any;
     }
 }

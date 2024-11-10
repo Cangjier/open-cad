@@ -7,20 +7,6 @@ import { MatchEvaluator } from "./MatchEvaluator";
 import { ValueMatchEnumerator } from "./Regex+ValueMatchEnumerator";
 import { Type } from "../../Type";
 export class Regex {
-    public get Options(): RegexOptions {
-        return {} as any;
-    }
-    public get RightToLeft(): boolean {
-        return {} as any;
-    }
-    public static get CacheSize(): number {
-        return {} as any;
-    }
-    public static set CacheSize(value: number) {
-    }
-    public get MatchTimeout(): TimeSpan {
-        return {} as any;
-    }
     public ToString(): string {
         return {} as any;
     }
@@ -93,4 +79,18 @@ export class Regex {
         return {} as any;
     }
     public static InfiniteMatchTimeout: TimeSpan;
+    public get Options(): RegexOptions {
+        return {} as any;
+    }
+    public get RightToLeft(): boolean {
+        return {} as any;
+    }
+    public static get CacheSize(): number {
+        return {} as any;
+    }
+    public static set CacheSize(value: number) {
+    }
+    public get MatchTimeout(): TimeSpan {
+        return {} as any;
+    }
 }

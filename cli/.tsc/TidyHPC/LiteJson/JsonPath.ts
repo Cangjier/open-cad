@@ -1,12 +1,6 @@
 import { JsonIndex } from "./JsonIndex";
 import { Type } from "../../System/Type";
 export class JsonPath {
-    public get Target(): JsonIndex[] {
-        return {} as any;
-    }
-    public get First(): JsonIndex {
-        return {} as any;
-    }
     public Next(index?: JsonIndex): JsonPath {
         return {} as any;
     }
@@ -23,5 +17,11 @@ export class JsonPath {
         return {} as any;
     }
     public constructor(target?: JsonIndex[]) {
+    }
+    public get Target(): JsonIndex[] {
+        return {} as any;
+    }
+    public get First(): JsonIndex {
+        return {} as any;
     }
 }

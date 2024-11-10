@@ -6,12 +6,6 @@ import { MethodInfo } from "../../../System/Reflection/MethodInfo";
 import { Delegate } from "../../../System/Delegate";
 import { Type } from "../../../System/Type";
 export class UrlRouter {
-    public get Filter(): UrlFilter {
-        return {} as any;
-    }
-    public get Events(): UrlRouterEvents {
-        return {} as any;
-    }
     public Route(url?: string, session?: Session): Promise<void> {
         return {} as any;
     }
@@ -34,5 +28,11 @@ export class UrlRouter {
         return {} as any;
     }
     public constructor() {
+    }
+    public get Filter(): UrlFilter {
+        return {} as any;
+    }
+    public get Events(): UrlRouterEvents {
+        return {} as any;
     }
 }

@@ -14,39 +14,6 @@ import { TaskContinuationOptions } from "./TaskContinuationOptions";
 import { Exception } from "../../Exception";
 import { Type } from "../../Type";
 export class Task {
-    public get Id(): number {
-        return {} as any;
-    }
-    public get Exception(): AggregateException {
-        return {} as any;
-    }
-    public get Status(): TaskStatus {
-        return {} as any;
-    }
-    public get IsCanceled(): boolean {
-        return {} as any;
-    }
-    public get IsCompleted(): boolean {
-        return {} as any;
-    }
-    public get IsCompletedSuccessfully(): boolean {
-        return {} as any;
-    }
-    public get CreationOptions(): TaskCreationOptions {
-        return {} as any;
-    }
-    public get AsyncState(): any {
-        return {} as any;
-    }
-    public static get Factory(): TaskFactory {
-        return {} as any;
-    }
-    public static get CompletedTask(): Promise<void> {
-        return {} as any;
-    }
-    public get IsFaulted(): boolean {
-        return {} as any;
-    }
     public Start(scheduler?: TaskScheduler): void {
         return {} as any;
     }
@@ -113,6 +80,39 @@ export class Task {
         return {} as any;
     }
     public static WhenAny(tasks_or_task1?: Promise<void> | null, task2?: Promise<void> | null): Promise<Promise<void>> | null {
+        return {} as any;
+    }
+    public get Id(): number {
+        return {} as any;
+    }
+    public get Exception(): AggregateException {
+        return {} as any;
+    }
+    public get Status(): TaskStatus {
+        return {} as any;
+    }
+    public get IsCanceled(): boolean {
+        return {} as any;
+    }
+    public get IsCompleted(): boolean {
+        return {} as any;
+    }
+    public get IsCompletedSuccessfully(): boolean {
+        return {} as any;
+    }
+    public get CreationOptions(): TaskCreationOptions {
+        return {} as any;
+    }
+    public get AsyncState(): any {
+        return {} as any;
+    }
+    public static get Factory(): TaskFactory {
+        return {} as any;
+    }
+    public static get CompletedTask(): Promise<void> {
+        return {} as any;
+    }
+    public get IsFaulted(): boolean {
         return {} as any;
     }
 }

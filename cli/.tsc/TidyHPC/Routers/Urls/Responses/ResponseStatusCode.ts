@@ -1,9 +1,6 @@
 import { UrlResponse } from "./UrlResponse";
 import { Type } from "../../../../System/Type";
 export class ResponseStatusCode {
-    public get StatusCode(): number {
-        return {} as any;
-    }
     public ToString(): string {
         return {} as any;
     }
@@ -25,6 +22,9 @@ export class ResponseStatusCode {
         return {} as any;
     }
     public static op_Equality(left?: ResponseStatusCode, right?: ResponseStatusCode): boolean {
+        return {} as any;
+    }
+    public get StatusCode(): number {
         return {} as any;
     }
 }

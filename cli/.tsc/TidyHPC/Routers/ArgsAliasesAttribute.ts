@@ -1,11 +1,5 @@
 import { Type } from "../../System/Type";
 export class ArgsAliasesAttribute {
-    public get Aliases(): string[] {
-        return {} as any;
-    }
-    public get TypeId(): any {
-        return {} as any;
-    }
     public Equals(obj?: any): boolean {
         return {} as any;
     }
@@ -25,5 +19,11 @@ export class ArgsAliasesAttribute {
         return {} as any;
     }
     public constructor(firstAlias?: string, aliases?: string[]) {
+    }
+    public get Aliases(): string[] {
+        return {} as any;
+    }
+    public get TypeId(): any {
+        return {} as any;
     }
 }

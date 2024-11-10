@@ -1,8 +1,5 @@
 import { Type } from "../../../System/Type";
 export class ArgsAttribute {
-    public get TypeId(): any {
-        return {} as any;
-    }
     public Equals(obj?: any): boolean {
         return {} as any;
     }
@@ -22,5 +19,8 @@ export class ArgsAttribute {
         return {} as any;
     }
     public constructor() {
+    }
+    public get TypeId(): any {
+        return {} as any;
     }
 }

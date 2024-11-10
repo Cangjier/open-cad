@@ -3,6 +3,12 @@ import { CacheControlHeaderValue } from "../../../../System/Net/Http/Headers/Cac
 import { AuthenticationHeaderValue } from "../../../../System/Net/Http/Headers/AuthenticationHeaderValue";
 import { ContentRangeHeaderValue } from "../../../../System/Net/Http/Headers/ContentRangeHeaderValue";
 export class IResponseHeaders {
+    public GetHeader(key?: string): string {
+        return {} as any;
+    }
+    public SetHeader(key?: string, value?: string): void {
+        return {} as any;
+    }
     public get ContentType(): ContentType {
         return {} as any;
     }
@@ -32,11 +38,5 @@ export class IResponseHeaders {
         return {} as any;
     }
     public set ContentEncoding(value: string) {
-    }
-    public GetHeader(key?: string): string {
-        return {} as any;
-    }
-    public SetHeader(key?: string, value?: string): void {
-        return {} as any;
     }
 }

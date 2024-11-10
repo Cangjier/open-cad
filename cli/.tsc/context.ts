@@ -1,5 +1,7 @@
-import { Guid } from "../../../System/Guid";
-import { Type } from "../../../System/Type";
+import { processResult } from "./Cangjie/TypeSharp/System/processResult";
+import { processConfig } from "./Cangjie/TypeSharp/System/processConfig";
+import { Guid } from "./System/Guid";
+import { Type } from "./System/Type";
 export const args: string[] = 0 as any;
 export const manifest: any = 0 as any;
 export const script_path: string = 0 as any;
@@ -9,13 +11,11 @@ export const GetType:()=> Type = 0 as any
 export const ToString:()=> string = 0 as any
 export const Equals:(obj?: any)=> boolean = 0 as any
 export const GetHashCode:()=> number = 0 as any
-export const exec:(path?: string, ...args: string[]) => number = 0 as any
-export const execAsync:(path?: string, ...args: string[]) => Promise<number> = 0 as any
-export const start:(path?: string, ...args: string[]) => void = 0 as any
-export const cmd:(workingDirectory?: string, commandLine?: string) => number = 0 as any
-export const cmdAsync:(workingDirectory?: string, commandLine?: string, output?: any) => Promise<number> = 0 as any
-export const getCmdOutputAsync:(workingDirectory?: string, commandLine?: string) => Promise<string> = 0 as any
-export const getCmdOutput:(workingDirectory?: string, commandLine?: string) => string = 0 as any
+export const exec:(config?: processConfig) => processResult = 0 as any
+export const execAsync:(config?: processConfig) => Promise<processResult> = 0 as any
+export const start:(config?: processConfig) => void = 0 as any
+export const cmd:(workingDirectory?: string, commandLine?: string) => processResult = 0 as any
+export const cmdAsync:(workingDirectory?: string, commandLine?: string) => Promise<processResult> = 0 as any
 export const startCmd:(workingDirectory?: string, commandLine?: string) => void = 0 as any
 export const parseFloat:(value?: string) => number = 0 as any
 export const parseInt:(value?: string) => number = 0 as any

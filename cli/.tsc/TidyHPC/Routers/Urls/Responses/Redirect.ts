@@ -1,9 +1,6 @@
 import { UrlResponse } from "./UrlResponse";
 import { Type } from "../../../../System/Type";
 export class Redirect {
-    public get Url(): string {
-        return {} as any;
-    }
     public ToString(): string {
         return {} as any;
     }
@@ -25,6 +22,9 @@ export class Redirect {
         return {} as any;
     }
     public static op_Equality(left?: Redirect, right?: Redirect): boolean {
+        return {} as any;
+    }
+    public get Url(): string {
         return {} as any;
     }
 }

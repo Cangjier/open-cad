@@ -1,5 +1,22 @@
 import { Type } from "../../../System/Type";
 export class FullName {
+    public ToString(): string {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public Equals(obj?: any): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public constructor() {
+    }
+    public static Parse(fullName?: string): FullName {
+        return {} as any;
+    }
     public get NameSpace(): string {
         return {} as any;
     }
@@ -41,23 +58,6 @@ export class FullName {
     public set GenericTypes(value: FullName[]) {
     }
     public get Attributes(): { [key: string]: string } {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public Equals(obj?: any): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public constructor() {
-    }
-    public static Parse(fullName?: string): FullName {
         return {} as any;
     }
 }

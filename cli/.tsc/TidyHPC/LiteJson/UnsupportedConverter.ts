@@ -2,12 +2,6 @@ import { Type } from "../../System/Type";
 import { JsonSerializerOptions } from "../../System/Text/Json/JsonSerializerOptions";
 import { Utf8JsonWriter } from "../../System/Text/Json/Utf8JsonWriter";
 export class UnsupportedConverter {
-    public get HandleNull(): boolean {
-        return {} as any;
-    }
-    public get Type(): Type {
-        return {} as any;
-    }
     public CanConvert(typeToConvert?: Type): boolean {
         return {} as any;
     }
@@ -30,5 +24,11 @@ export class UnsupportedConverter {
         return {} as any;
     }
     public constructor() {
+    }
+    public get HandleNull(): boolean {
+        return {} as any;
+    }
+    public get Type(): Type {
+        return {} as any;
     }
 }

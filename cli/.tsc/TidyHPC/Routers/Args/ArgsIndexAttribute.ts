@@ -1,11 +1,5 @@
 import { Type } from "../../../System/Type";
 export class ArgsIndexAttribute {
-    public get Index(): number {
-        return {} as any;
-    }
-    public get TypeId(): any {
-        return {} as any;
-    }
     public Equals(obj?: any): boolean {
         return {} as any;
     }
@@ -25,5 +19,11 @@ export class ArgsIndexAttribute {
         return {} as any;
     }
     public constructor(index?: number) {
+    }
+    public get Index(): number {
+        return {} as any;
+    }
+    public get TypeId(): any {
+        return {} as any;
     }
 }

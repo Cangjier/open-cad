@@ -2,18 +2,6 @@ import { DictionaryEntry } from "../../System/Collections/DictionaryEntry";
 import { Type } from "../../System/Type";
 import { ObjectWrapper } from "./ObjectWrapper";
 export class DictionaryEnumerator {
-    public get Current(): any {
-        return {} as any;
-    }
-    public get Entry(): DictionaryEntry {
-        return {} as any;
-    }
-    public get Key(): any {
-        return {} as any;
-    }
-    public get Value(): any {
-        return {} as any;
-    }
     public MoveNext(): boolean {
         return {} as any;
     }
@@ -33,5 +21,17 @@ export class DictionaryEnumerator {
         return {} as any;
     }
     public constructor(sd?: ObjectWrapper) {
+    }
+    public get Current(): any {
+        return {} as any;
+    }
+    public get Entry(): DictionaryEntry {
+        return {} as any;
+    }
+    public get Key(): any {
+        return {} as any;
+    }
+    public get Value(): any {
+        return {} as any;
     }
 }

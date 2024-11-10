@@ -2,24 +2,6 @@ import { Group } from "./Group";
 import { IEnumerator } from "../../Collections/IEnumerator";
 import { Type } from "../../Type";
 export class GroupCollection {
-    public get IsReadOnly(): boolean {
-        return {} as any;
-    }
-    public get Count(): number {
-        return {} as any;
-    }
-    public get Item(): Group {
-        return {} as any;
-    }
-    public get Item(): Group {
-        return {} as any;
-    }
-    public get IsSynchronized(): boolean {
-        return {} as any;
-    }
-    public get SyncRoot(): any {
-        return {} as any;
-    }
     public GetEnumerator(): IEnumerator {
         return {} as any;
     }
@@ -39,6 +21,21 @@ export class GroupCollection {
         return {} as any;
     }
     public GetHashCode(): number {
+        return {} as any;
+    }
+    public get IsReadOnly(): boolean {
+        return {} as any;
+    }
+    public get Count(): number {
+        return {} as any;
+    }
+    public get Item(): Group {
+        return {} as any;
+    }
+    public get IsSynchronized(): boolean {
+        return {} as any;
+    }
+    public get SyncRoot(): any {
         return {} as any;
     }
 }

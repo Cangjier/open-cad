@@ -14,6 +14,60 @@ import { RuntimeMethodHandle } from "../RuntimeMethodHandle";
 import { Module } from "./Module";
 import { MemberInfo } from "./MemberInfo";
 export class MethodInfo {
+    public GetGenericArguments(): Type[] {
+        return {} as any;
+    }
+    public GetGenericMethodDefinition(): MethodInfo {
+        return {} as any;
+    }
+    public MakeGenericMethod(typeArguments?: Type[]): MethodInfo {
+        return {} as any;
+    }
+    public GetBaseDefinition(): MethodInfo {
+        return {} as any;
+    }
+    public CreateDelegate(delegateType_or_target?: Type | any, target?: any): Delegate | null {
+        return {} as any;
+    }
+    public Equals(obj?: any): boolean {
+        return {} as any;
+    }
+    public GetHashCode(): number {
+        return {} as any;
+    }
+    public GetParameters(): ParameterInfo[] {
+        return {} as any;
+    }
+    public GetMethodImplementationFlags(): MethodImplAttributes {
+        return {} as any;
+    }
+    public GetMethodBody(): MethodBody {
+        return {} as any;
+    }
+    public Invoke(obj?: any, parameters_or_invokeAttr?: any[] | BindingFlags, binder?: Binder, parameters?: any[], culture?: CultureInfo): any {
+        return {} as any;
+    }
+    public HasSameMetadataDefinitionAs(other?: MemberInfo): boolean {
+        return {} as any;
+    }
+    public IsDefined(attributeType?: Type, inherit?: boolean): boolean {
+        return {} as any;
+    }
+    public GetCustomAttributes(inherit_or_attributeType?: boolean | Type, inherit?: boolean): any[] {
+        return {} as any;
+    }
+    public GetType(): Type {
+        return {} as any;
+    }
+    public ToString(): string {
+        return {} as any;
+    }
+    public static op_Equality(left?: MethodInfo, right?: MethodInfo): boolean {
+        return {} as any;
+    }
+    public static op_Inequality(left?: MethodInfo, right?: MethodInfo): boolean {
+        return {} as any;
+    }
     public get MemberType(): MemberTypes {
         return {} as any;
     }
@@ -114,60 +168,6 @@ export class MethodInfo {
         return {} as any;
     }
     public get MetadataToken(): number {
-        return {} as any;
-    }
-    public GetGenericArguments(): Type[] {
-        return {} as any;
-    }
-    public GetGenericMethodDefinition(): MethodInfo {
-        return {} as any;
-    }
-    public MakeGenericMethod(typeArguments?: Type[]): MethodInfo {
-        return {} as any;
-    }
-    public GetBaseDefinition(): MethodInfo {
-        return {} as any;
-    }
-    public CreateDelegate(delegateType_or_target?: Type | any, target?: any): Delegate | null {
-        return {} as any;
-    }
-    public Equals(obj?: any): boolean {
-        return {} as any;
-    }
-    public GetHashCode(): number {
-        return {} as any;
-    }
-    public GetParameters(): ParameterInfo[] {
-        return {} as any;
-    }
-    public GetMethodImplementationFlags(): MethodImplAttributes {
-        return {} as any;
-    }
-    public GetMethodBody(): MethodBody {
-        return {} as any;
-    }
-    public Invoke(obj?: any, parameters_or_invokeAttr?: any[] | BindingFlags, binder?: Binder, parameters?: any[], culture?: CultureInfo): any {
-        return {} as any;
-    }
-    public HasSameMetadataDefinitionAs(other?: MemberInfo): boolean {
-        return {} as any;
-    }
-    public IsDefined(attributeType?: Type, inherit?: boolean): boolean {
-        return {} as any;
-    }
-    public GetCustomAttributes(inherit_or_attributeType?: boolean | Type, inherit?: boolean): any[] {
-        return {} as any;
-    }
-    public GetType(): Type {
-        return {} as any;
-    }
-    public ToString(): string {
-        return {} as any;
-    }
-    public static op_Equality(left?: MethodInfo, right?: MethodInfo): boolean {
-        return {} as any;
-    }
-    public static op_Inequality(left?: MethodInfo, right?: MethodInfo): boolean {
         return {} as any;
     }
 }
