@@ -1,6 +1,6 @@
 import { Path } from "../.tsc/System/IO/Path";
 import { Directory } from "../.tsc/System/IO/Directory";
-import { args, cmdAsync, copyDirectory, deleteDirectory, deleteFile, env, execAsync, script_path, start } from "../.tsc/context";
+import { args, cmdAsync, copyDirectory, deleteDirectory, deleteFile, env, execAsync, kill, script_path, start } from "../.tsc/context";
 import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
 import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
@@ -125,7 +125,7 @@ let SSQManager = () => {
         return Directory.GetFiles(ssqDirectory, "*.exe");
     };
     let startGenerator = async (generator: string) => {
-        start({
+        let pid = start({
             filePath: generator,
             workingDirectory: ssqDirectory
         });
@@ -140,7 +140,10 @@ let SSQManager = () => {
             }
         }
         File.Delete(outputPath);
-        return hwnd;
+        return {
+            pid,
+            hwnd
+        };
     };
     let setServerName = async (hwnd: string, serverName: string, serverID: string) => {
         let childWindows = await wclManager.getChildrenWindows(hwnd);
@@ -210,7 +213,9 @@ let SSQManager = () => {
             File.Delete(file);
         }
         let generator = getGenFilePaths()[0];
-        let mainWindow = await startGenerator(generator);
+        let startResult = await startGenerator(generator);
+        let mainWindow = startResult.hwnd;
+        let pid = startResult.pid;
         await setServerName(mainWindow, "WIN-IGMS40QQ1BC", "WFY-414910016C204D6A");
         await selectSSQByIndex(mainWindow, 1);
         await sureGenerate(mainWindow);
@@ -233,6 +238,7 @@ let SSQManager = () => {
         else {
             console.log("Generate SSQ failed");
         }
+        kill(pid);
     };
     return {
         create,

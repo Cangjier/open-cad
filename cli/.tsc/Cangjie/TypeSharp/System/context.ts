@@ -21,7 +21,10 @@ export class context {
     public static execAsync(config?: processConfig): Promise<processResult> {
         return {} as any;
     }
-    public static start(config?: processConfig): void {
+    public static start(config?: processConfig): number {
+        return {} as any;
+    }
+    public static kill(pid?: number): void {
         return {} as any;
     }
     public static cmd(workingDirectory?: string, commandLine?: string): processResult {
