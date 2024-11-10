@@ -83,6 +83,7 @@ let WCLManager = () => {
         return result;
     };
     let close = async (hwnd: string) => {
+        console.log(`wcl close-window ${hwnd}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl close-window ${hwnd}`);
     };
     return {
@@ -224,7 +225,6 @@ let SSQManager = () => {
         await clickEnjoy();
         await Task.Delay(1000);
         await wclManager.close(mainWindow);
-        
         liczFiles = Directory.GetFiles(desktopPath, "*.licz");
         if (liczFiles.length == 1) {
             File.Copy(liczFiles[0], outputPath, true);
