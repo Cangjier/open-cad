@@ -81,7 +81,10 @@ let WCLManager = () => {
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
         return result;
-    }
+    };
+    let close = async (hwnd: string) => {
+        await cmdAsync(Environment.CurrentDirectory, `wcl close-window ${hwnd}`);
+    };
     return {
         install,
         getChildrenWindows,
@@ -89,7 +92,8 @@ let WCLManager = () => {
         getComboboxItems,
         selectComboboxIndex,
         click,
-        match
+        match,
+        close
     }
 };
 
@@ -201,24 +205,35 @@ let SSQManager = () => {
         return false;
     };
     let create = async (outputPath: string) => {
+        let liczFiles = Directory.GetFiles(ssqDirectory, "*.licz");
+        for (let file of liczFiles) {
+            File.Delete(file);
+        }
         let generator = getGenFilePaths()[0];
         let mainWindow = await startGenerator(generator);
         await setServerName(mainWindow, "WIN-IGMS40QQ1BC", "WFY-414910016C204D6A");
         await selectSSQByIndex(mainWindow, 1);
         await sureGenerate(mainWindow);
-        await Task.Delay(200);
+        await Task.Delay(500);
         if (await isCheckMessage()) {
             console.log("Server name or id is invalid");
             return;
         }
-        await Task.Delay(1000);
+        await Task.Delay(500);
         await saveGenerate(mainWindow);
+        await Task.Delay(500);
+        await clickEnjoy(mainWindow);
+        await Task.Delay(500);
+        await wclManager.close(mainWindow);
         let desktopPath = env("desktop");
-        let liczFiles = Directory.GetFiles(desktopPath, "*.licz");
+        liczFiles = Directory.GetFiles(desktopPath, "*.licz");
         if (liczFiles.length == 1) {
             File.Copy(liczFiles[0], outputPath, true);
+            console.log("Generate SSQ successfully");
         }
-        console.log("Generate SSQ successfully");
+        else {
+            console.log("Generate SSQ failed");
+        }
     };
     return {
         create,
