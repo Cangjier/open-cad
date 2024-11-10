@@ -1,3 +1,15 @@
 {
-    
+    "SSQ": {
+        "Title": "DS LicGen .*"
+    },
+    "CheckMessage": [
+        {
+            "ClassName": "TMessageForm",
+            "Title": "Dsls"
+        },
+        {
+            "ClassName": "TButton",
+            "Title": "OK"
+        }
+    ]
 }
