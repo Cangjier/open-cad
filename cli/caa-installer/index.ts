@@ -101,7 +101,9 @@ let wclManager = WCLManager();
 
 let Installer = () => {
     let installCatia = async (catiaDirectory: string) => {
+        console.log(`Installing CATIA from ${catiaDirectory}`);
         let arctiveFilePaths = Directory.GetFiles(catiaDirectory, "*.7z");
+        console.log(arctiveFilePaths);
         let cd1 = arctiveFilePaths.find(x => x.includes("CD1"));
         let cd2 = arctiveFilePaths.find(x => x.includes("CD2"));
         let cd3 = arctiveFilePaths.find(x => x.includes("CD3"));
@@ -110,6 +112,7 @@ let Installer = () => {
             return;
         }
         let extractDirectory = Path.Combine(catiaDirectory, "extract");
+        console.log(`Extracting ${cd1} to ${extractDirectory}`);
         await wclManager.extract(cd1, extractDirectory);
         let setupPath = Path.Combine(extractDirectory, "setup.exe");
         start({
