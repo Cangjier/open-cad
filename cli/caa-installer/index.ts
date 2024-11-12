@@ -148,7 +148,7 @@ let Installer = () => {
                 }
                 let state = matchResult[key];
                 if (state != undefined) {
-                    if (key != "Message" && key != "InsertCD") {
+                    if (key != "Message") {
                         doneKeys.push(key);
                     }
                     console.log(`Processing ${key}`);
