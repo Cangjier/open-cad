@@ -120,6 +120,9 @@ let Installer = () => {
             return;
         }
         let extractDirectory = Path.Combine(catiaDirectory, "extract");
+        if (Directory.Exists(extractDirectory)) {
+            deleteDirectory(extractDirectory);
+        }
         console.log(`Extracting ${cd1} to ${extractDirectory}`);
         await wclManager.extract(cd1, extractDirectory);
         let setupPaths = Directory.GetFiles(extractDirectory, "setup.exe", SearchOption.AllDirectories);
