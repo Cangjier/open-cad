@@ -1,0 +1,122 @@
+{
+    "Welcome": [
+        {
+            "Title": "Welcome",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "InstallDirectory": [
+        {
+            "Title": "CATIA P3 V5R21 选择目标位置",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "Environment": [
+        {
+            "Title": "Environment",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "InstallType": [
+        {
+            "Title": "CATIA P3 V5R21 安装类型",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "Orbix": [
+        {
+            "Title": "CATIA P3 V5R21 选择 Orbix 配置",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "Timeout": [
+        {
+            "Title": "CATIA P3 V5R21 服务器超时配置",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "Client": [
+        {
+            "Title": "CATIA P3 V5R21 电子仓客户机配置",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "Port": [
+        {
+            "Title": "CATIA P3 V5R21 选择通信端口",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "Shortcut": [
+        {
+            "Title": "CATIA P3 V5R21 创建快捷方式",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "Document": [
+        {
+            "Title": "CATIA P3 V5R21 选择文档",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "CopyFile": [
+        {
+            "Title": "CATIA P3 V5R21 开始复制文件",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "安装",
+            "ClassName": "Button"
+        }
+    ],
+    "Message": [
+        {
+            "Title": "确认创建目录",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "是",
+            "ClassName": "Button"
+        }
+    ]
+}
