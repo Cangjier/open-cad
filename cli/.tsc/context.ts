@@ -31,4 +31,7 @@ export const locate:(searchDirectory_or_path?: string, path?: string) => string 
 export const lock:(id?: Guid) => void = 0 as any
 export const lockAsync:(id?: Guid) => Promise<void> = 0 as any
 export const unlock:(id?: Guid) => void = 0 as any
+export const lockFile:(filePath?: string) => boolean = 0 as any
+export const unlockFile:(filePath?: string) => boolean = 0 as any
 export const env:(environmentVariable?: string) => string = 0 as any
+export const md5:(value?: any) => string = 0 as any

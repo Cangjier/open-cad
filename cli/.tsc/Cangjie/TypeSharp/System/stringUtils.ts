@@ -1,5 +1,5 @@
 import { Type } from "../../../System/Type";
-export class fileUtils {
+export class stringUtils {
     public GetType(): Type {
         return {} as any;
     }
@@ -12,12 +12,13 @@ export class fileUtils {
     public GetHashCode(): number {
         return {} as any;
     }
-    public constructor() {
-    }
-    public static size(path?: string): number {
+    public static trimEnd(self?: any, value?: any): string {
         return {} as any;
     }
-    public static md5(path?: string): string {
+    public static trimStart(self?: any, value?: any): string {
+        return {} as any;
+    }
+    public static trim(self?: any, value?: any): string {
         return {} as any;
     }
 }

@@ -1,5 +1,6 @@
+import { HttpResponseMessage } from "../../../System/Net/Http/HttpResponseMessage";
 import { Type } from "../../../System/Type";
-export class fileUtils {
+export class axiosUtils {
     public GetType(): Type {
         return {} as any;
     }
@@ -12,12 +13,7 @@ export class fileUtils {
     public GetHashCode(): number {
         return {} as any;
     }
-    public constructor() {
-    }
-    public static size(path?: string): number {
-        return {} as any;
-    }
-    public static md5(path?: string): string {
+    public static GetResponseContentAsync(response?: HttpResponseMessage): Promise<string> {
         return {} as any;
     }
 }

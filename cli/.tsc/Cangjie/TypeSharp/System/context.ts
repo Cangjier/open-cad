@@ -75,7 +75,16 @@ export class context {
     public static unlock(id?: Guid): void {
         return {} as any;
     }
+    public static lockFile(filePath?: string): boolean {
+        return {} as any;
+    }
+    public static unlockFile(filePath?: string): boolean {
+        return {} as any;
+    }
     public static env(environmentVariable?: string): string {
+        return {} as any;
+    }
+    public static md5(value?: any): string {
         return {} as any;
     }
     public static args: string[];
