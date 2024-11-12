@@ -132,7 +132,9 @@ let Installer = () => {
             filePath: setupPath
         });
         let catiar21MatchPath = Path.Combine(script_directory, "catiar21.json");
-        let orderKeys = Object.keys(Json.Load(catiar21MatchPath)).reverse();
+        let orderKeys = Object.keys(Json.Load(catiar21MatchPath));
+        console.log(orderKeys);
+        orderKeys = orderKeys.reverse();
         while (true) {
             let matchResult = await wclManager.match(catiar21MatchPath);
             for (let key of orderKeys) {
