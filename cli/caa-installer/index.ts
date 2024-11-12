@@ -19,6 +19,11 @@ if (!Directory.Exists(downloadDirectory)) {
 }
 
 let WCLManager = () => {
+    let isInstalled = () => {
+        let binDirectory = Path.Combine(opencadDirectory, "bin");
+        let wclPath = Path.Combine(binDirectory, "wcl.exe");
+        return File.Exists(wclPath);
+    };
     let install = async () => {
         let binDirectory = Path.Combine(opencadDirectory, "bin");
         // 获取https://github.com/Cangjier/windows-common-cli/最新的release
@@ -85,6 +90,7 @@ let WCLManager = () => {
         await cmdAsync(Environment.CurrentDirectory, `wcl extract ${archiveFilePath} ${outputPath}`);
     };
     return {
+        isInstalled,
         install,
         getChildrenWindows,
         setWindowText,
@@ -98,6 +104,7 @@ let WCLManager = () => {
 };
 
 let wclManager = WCLManager();
+
 
 let Installer = () => {
     let installCatia = async (catiaDirectory: string) => {
@@ -147,6 +154,9 @@ let installer = Installer();
 
 
 let main = async () => {
+    if (wclManager.isInstalled() == false) {
+        await wclManager.install();
+    }
     if (args.length < 1) {
         console.log("Usage: caa-installer installCatia <catiaDirectory>");
         return;
