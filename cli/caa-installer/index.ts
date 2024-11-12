@@ -7,6 +7,7 @@ import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
 import { Task } from "../.tsc/System/Threading/Tasks/Task";
 import { Environment } from "../.tsc/System/Environment";
 import { File } from "../.tsc/System/IO/File";
+import { SearchOption } from "../.tsc/System/IO/SearchOption";
 
 axios.setDefaultProxy();
 let script_directory = Path.GetDirectoryName(script_path);
@@ -121,7 +122,12 @@ let Installer = () => {
         let extractDirectory = Path.Combine(catiaDirectory, "extract");
         console.log(`Extracting ${cd1} to ${extractDirectory}`);
         await wclManager.extract(cd1, extractDirectory);
-        let setupPath = Path.Combine(extractDirectory, "setup.exe");
+        let setupPaths = Directory.GetFiles(extractDirectory, "setup.exe", SearchOption.AllDirectories);
+        if (setupPaths.length == 0) {
+            console.log("setup.exe not found");
+            return;
+        }
+        let setupPath = setupPaths[0];
         start({
             filePath: setupPath
         });
