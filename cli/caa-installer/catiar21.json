@@ -109,6 +109,16 @@
             "ClassName": "Button"
         }
     ],
+    "InsertCD": [
+        {
+            "Title": "插入下一张 CD-ROM",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "确定",
+            "ClassName": "Button"
+        }
+    ],
     "Message": [
         {
             "Title": "确认创建目录",

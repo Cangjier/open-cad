@@ -125,15 +125,18 @@ let Installer = () => {
         }
         console.log(`Extracting ${cd1} to ${extractDirectory}`);
         await wclManager.extract(cd1, extractDirectory);
-        let setupPaths = Directory.GetFiles(extractDirectory, "setup.exe", SearchOption.AllDirectories);
-        if (setupPaths.length == 0) {
-            console.log("setup.exe not found");
+        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
+        Directory.Move(rootDirectory, Path.Combine(extractDirectory, "CATIA"));
+        rootDirectory = Path.Combine(extractDirectory, "CATIA");
+        let setupPath = Path.Combine(rootDirectory, "setup.exe");
+        if (File.Exists(setupPath) == false) {
+            console.log(`setup.exe not found in ${rootDirectory}`);
             return;
         }
-        let setupPath = setupPaths[0];
         start({
             filePath: setupPath
         });
+
         let catiar21MatchPath = Path.Combine(script_directory, "catiar21.json");
         let orderKeys = Object.keys(Json.Load(catiar21MatchPath)).reverse();
         let doneKeys = [] as string[];
@@ -145,12 +148,13 @@ let Installer = () => {
                 }
                 let state = matchResult[key];
                 if (state != undefined) {
-                    if (key != "Message") {
+                    if (key != "Message" && key != "InsertCD") {
                         doneKeys.push(key);
                     }
                     console.log(`Processing ${key}`);
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                     if (key == "CopyFile") {
+                        console.log("Waiting for copy file");
                         break;
                     }
                     else {
