@@ -140,6 +140,7 @@ let Installer = () => {
         let catiar21MatchPath = Path.Combine(script_directory, "catiar21.json");
         let orderKeys = Object.keys(Json.Load(catiar21MatchPath)).reverse();
         let doneKeys = [] as string[];
+        let isDone = false;
         while (true) {
             let matchResult = await wclManager.match(catiar21MatchPath);
             for (let key of orderKeys) {
@@ -155,6 +156,7 @@ let Installer = () => {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                     if (key == "CopyFile") {
                         console.log("Waiting for copy file");
+                        isDone = true;
                         break;
                     }
                     else {
@@ -162,7 +164,11 @@ let Installer = () => {
                     }
                 }
             }
+            if(isDone){
+                break;
+            }
         }
+        console.log("CD1 done");
     }
 
     return {
