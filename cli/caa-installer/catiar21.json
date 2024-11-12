@@ -29,6 +29,16 @@
             "ClassName": "Button"
         }
     ],
+    "InstallProduct": [
+        {
+            "Title": "InstallProduct",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
     "InstallType": [
         {
             "Title": "CATIA P3 V5R21 安装类型",
