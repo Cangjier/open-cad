@@ -107,10 +107,20 @@ let WCLManager = () => {
 let wclManager = WCLManager();
 
 
-let Installer = () => {
-    let installCatia = async (catiaDirectory: string) => {
-        console.log(`Installing CATIA from ${catiaDirectory}`);
-        let arctiveFilePaths = Directory.GetFiles(catiaDirectory, "*.7z");
+let InstallerR21 = () => {
+    let entry = async (archiveDirectory: string) => {
+        let catiaDirectory = Path.Combine(archiveDirectory, "1");
+        let crackArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "2"), "*.7z", SearchOption.AllDirectories)[0];
+        let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
+        let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
+        await installCatia(catiaDirectory);
+        await installCatiaCrack(crackArchivePath);
+        await installCAA(caaArchivePath);
+        await installRade(radeArchivePath);
+    };
+    let installCatia = async (archiveDirectory: string) => {
+        console.log(`Installing CATIA from ${archiveDirectory}`);
+        let arctiveFilePaths = Directory.GetFiles(archiveDirectory, "*.7z");
         console.log(arctiveFilePaths);
         let cd1 = arctiveFilePaths.find(x => x.includes("CD1"));
         let cd2 = arctiveFilePaths.find(x => x.includes("CD2"));
@@ -119,7 +129,7 @@ let Installer = () => {
             console.log("CD1, CD2, CD3 not found");
             return;
         }
-        let extractDirectory = Path.Combine(catiaDirectory, "extract");
+        let extractDirectory = Path.Combine(archiveDirectory, "catia-extract");
         if (Directory.Exists(extractDirectory)) {
             deleteDirectory(extractDirectory);
         }
@@ -137,7 +147,7 @@ let Installer = () => {
             filePath: setupPath
         });
 
-        let catiar21MatchPath = Path.Combine(script_directory, "catiar21.json");
+        let catiar21MatchPath = Path.Combine(script_directory, "catiar21", "catia.json");
         let orderKeys = Object.keys(Json.Load(catiar21MatchPath)).reverse();
         let doneKeys = [] as string[];
         while (true) {
@@ -229,14 +239,153 @@ let Installer = () => {
         await wclManager.click(startCatiahWnd);
         await Task.Delay(1000);
         await wclManager.click(finishhWnd);
-    }
+        deleteDirectory(extractDirectory);
+    };
+    let installCatiaCrack = async (archivePath: string) => {
+        let extractDirectory = Path.Combine(opencadDirectory, "catia-crack-extract");
+        if (Directory.Exists(extractDirectory)) {
+            deleteDirectory(extractDirectory);
+        }
+        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
+        await wclManager.extract(archivePath, extractDirectory);
+        let dlls = Directory.GetFiles(extractDirectory, "*.dll", SearchOption.AllDirectories);
+        let catiaDirectory = "C:/Program Files/Dassault Systemes/B21/win_b64/code/bin";
+        console.log(`Copying ${dlls} to ${catiaDirectory}`);
+        dlls.forEach(dll => {
+            let targetPath = Path.Combine(catiaDirectory, Path.GetFileName(dll));
+            File.Copy(dll, targetPath, true);
+        });
+        deleteDirectory(extractDirectory);
+    };
+    let installCAA = async (archivePath: string) => {
+        let extractDirectory = Path.Combine(opencadDirectory, "caa-crack-extract");
+        if (Directory.Exists(extractDirectory)) {
+            deleteDirectory(extractDirectory);
+        }
+        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
+        await wclManager.extract(archivePath, extractDirectory);
+        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
+        let startcaa = Directory.GetFiles(rootDirectory, "startcaa.exe", SearchOption.AllDirectories)[0];
+        console.log(`Starting ${startcaa}`);
+        start({
+            filePath: startcaa
+        });
+        let matchPath = Path.Combine(script_directory, "catiar21", "caa.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                if (currentKey != "Message") {
+                    doneKeys.push(currentKey);
+                }
+                console.log(`Processing ${currentKey}`);
+                await wclManager.click(state[state.length - 1].Window.hWnd);
+                if (currentKey == "Finish") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
+            }
+        }
+
+        deleteDirectory(extractDirectory);
+    };
+    let installRade = async (archivePath: string) => {
+        let extractDirectory = Path.Combine(opencadDirectory, "rade-crack-extract");
+        if (Directory.Exists(extractDirectory)) {
+            deleteDirectory(extractDirectory);
+        }
+        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
+        await wclManager.extract(archivePath, extractDirectory);
+        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
+        let startcaa = Directory.GetFiles(rootDirectory, "setup.exe", SearchOption.AllDirectories)[0];
+        console.log(`Starting ${startcaa}`);
+        start({
+            filePath: startcaa
+        });
+        let matchPath = Path.Combine(script_directory, "catiar21", "rade.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                if (currentKey != "Message") {
+                    doneKeys.push(currentKey);
+                }
+                console.log(`Processing ${currentKey}`);
+                let end = state[state.length - 1];
+                if (end.Window.ClassName == "edit") {
+                    if (currentKey == "InstallFlagEdit") {
+                        await wclManager.setWindowText(end.Window.hWnd, "CAAR21");
+                    }
+                }
+                else if (end.Window.ClassName.tolower() == "button") {
+                    await wclManager.click(state[state.length - 1].Window.hWnd);
+                }
+
+                if (currentKey == "Finish") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
+            }
+        }
+
+        deleteDirectory(extractDirectory);
+    };
+    let installVS2005 = async (archivePath: string) => {
+    };
 
     return {
-        installCatia
+        installCatia,
+        installCatiaCrack,
+        installCAA,
+        entry
     }
 };
 
-let installer = Installer();
+let installer = InstallerR21();
 
 
 let main = async () => {

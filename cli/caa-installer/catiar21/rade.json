@@ -1,0 +1,107 @@
+{
+    "Welcome": [
+        {
+            "Title": "Welcome",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "InstallDirectory": [
+        {
+            "Title": "CAA RADE V5R21 选择目标位置",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "InstallFlagEdit": [
+        {
+            "Title": "CAA RADE V5R21 为新安装输入标识",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "Ident"
+        },
+        {
+            "Title": "IdentFrame"
+        },
+        {
+            "ClassName": "Edit"
+        }
+    ],
+    "InstallFlagNext": [
+        {
+            "Title": "CAA RADE V5R21 为新安装输入标识",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "Environment": [
+        {
+            "Title": "Environment",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "InstallType": [
+        {
+            "Title": "CAA RADE V5R21 安装类型",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "ToolConfiguration": [
+        {
+            "Title": "CAA RADE V5R21 工具配置管理",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "CopyFiles": [
+        {
+            "Title": "CAA RADE V5R21 开始复制文件",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "安装",
+            "ClassName": "Button"
+        }
+    ],
+    "Finish": [
+        {
+            "Title": "CAA RADE V5R21 安装完成",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "完成",
+            "ClassName": "Button"
+        }
+    ],
+    "Message": [
+        {
+            "Title": "确认创建目录",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "是",
+            "ClassName": "Button"
+        }
+    ]
+}

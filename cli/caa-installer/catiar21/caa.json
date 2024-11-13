@@ -1,0 +1,52 @@
+{
+    "Welcome": [
+        {
+            "Title": "Welcome",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "SetupType": [
+        {
+            "Title": "Setup_Type",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
+    "Resume":[
+        {
+            "Title": "Resume",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "安装",
+            "ClassName": "Button"
+        }
+    ],
+    "Finish": [
+        {
+            "Title": "Finish",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "完成",
+            "ClassName": "Button"
+        }
+    ],
+    "Message": [
+        {
+            "Title": "确认创建目录",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "是",
+            "ClassName": "Button"
+        }
+    ]
+}
