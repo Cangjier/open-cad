@@ -19,6 +19,16 @@
             "ClassName": "Button"
         }
     ],
+    "InstallFlagNext": [
+        {
+            "Title": "CAA RADE V5R21 为新安装输入标识",
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button"
+        }
+    ],
     "InstallFlagEdit": [
         {
             "Title": "CAA RADE V5R21 为新安装输入标识",
@@ -32,16 +42,6 @@
         },
         {
             "ClassName": "Edit"
-        }
-    ],
-    "InstallFlagNext": [
-        {
-            "Title": "CAA RADE V5R21 为新安装输入标识",
-            "ClassName": "#32770"
-        },
-        {
-            "Title": "下一步 >",
-            "ClassName": "Button"
         }
     ],
     "Environment": [
