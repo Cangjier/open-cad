@@ -345,7 +345,7 @@ let InstallerR21 = () => {
                         await wclManager.setWindowText(end.Window.hWnd, "RADER21");
                     }
                 }
-                else if (end.Window.ClassName.tolower() == "button") {
+                else if (end.Window.ClassName == "Button") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                 }
 

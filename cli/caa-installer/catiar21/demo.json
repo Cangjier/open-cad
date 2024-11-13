@@ -1,0 +1,158 @@
+{
+    "Welcome": [
+        {
+            "Title": "Welcome",
+            "ClassName": "#32770",
+            "Window": {
+                "hWnd": "0xD0826",
+                "WindowText": "Welcome",
+                "ClassName": "#32770",
+                "Text": "Welcome",
+                "Enable": true,
+                "Size": {
+                    "Width": 624,
+                    "Height": 361
+                },
+                "Location": {
+                    "X": 547,
+                    "Y": 297
+                },
+                "ClientRect": {
+                    "Left": 0,
+                    "Top": 0,
+                    "Right": 618,
+                    "Bottom": 355
+                }
+            }
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button",
+            "Window": {
+                "hWnd": "0xB0660",
+                "WindowText": "下一步 >",
+                "ClassName": "Button",
+                "Text": "下一步 >",
+                "Enable": true,
+                "Size": {
+                    "Width": 65,
+                    "Height": 23
+                },
+                "Location": {
+                    "X": 1095,
+                    "Y": 624
+                },
+                "ClientRect": {
+                    "Left": 0,
+                    "Top": 0,
+                    "Right": 65,
+                    "Bottom": 23
+                }
+            }
+        }
+    ],
+    "InstallDirectory": [
+        {
+            "Title": "CATIA P3 V5R21 选择目标位置",
+            "ClassName": "#32770",
+            "Window": {
+                "hWnd": "0xA0860",
+                "WindowText": "CATIA P3 V5R21 选择目标位置",
+                "ClassName": "#32770",
+                "Text": "CATIA P3 V5R21 选择目标位置",
+                "Enable": true,
+                "Size": {
+                    "Width": 624,
+                    "Height": 330
+                },
+                "Location": {
+                    "X": 547,
+                    "Y": 313
+                },
+                "ClientRect": {
+                    "Left": 0,
+                    "Top": 0,
+                    "Right": 618,
+                    "Bottom": 324
+                }
+            }
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button",
+            "Window": {
+                "hWnd": "0x19064A",
+                "WindowText": "下一步 >",
+                "ClassName": "Button",
+                "Text": "下一步 >",
+                "Enable": true,
+                "Size": {
+                    "Width": 65,
+                    "Height": 23
+                },
+                "Location": {
+                    "X": 1095,
+                    "Y": 609
+                },
+                "ClientRect": {
+                    "Left": 0,
+                    "Top": 0,
+                    "Right": 65,
+                    "Bottom": 23
+                }
+            }
+        }
+    ],
+    "Environment": [
+        {
+            "Title": "Environment",
+            "ClassName": "#32770",
+            "Window": {
+                "hWnd": "0x1C06B0",
+                "WindowText": "Environment",
+                "ClassName": "#32770",
+                "Text": "Environment",
+                "Enable": true,
+                "Size": {
+                    "Width": 624,
+                    "Height": 330
+                },
+                "Location": {
+                    "X": 547,
+                    "Y": 313
+                },
+                "ClientRect": {
+                    "Left": 0,
+                    "Top": 0,
+                    "Right": 618,
+                    "Bottom": 324
+                }
+            }
+        },
+        {
+            "Title": "下一步 >",
+            "ClassName": "Button",
+            "Window": {
+                "hWnd": "0x6085E",
+                "WindowText": "下一步 >",
+                "ClassName": "Button",
+                "Text": "下一步 >",
+                "Enable": true,
+                "Size": {
+                    "Width": 65,
+                    "Height": 23
+                },
+                "Location": {
+                    "X": 1095,
+                    "Y": 609
+                },
+                "ClientRect": {
+                    "Left": 0,
+                    "Top": 0,
+                    "Right": 65,
+                    "Bottom": 23
+                }
+            }
+        }
+    ]
+}
