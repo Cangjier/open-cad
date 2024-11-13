@@ -108,16 +108,6 @@ let wclManager = WCLManager();
 
 
 let InstallerR21 = () => {
-    let entry = async (archiveDirectory: string) => {
-        let catiaDirectory = Path.Combine(archiveDirectory, "1");
-        let crackArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "2"), "*.7z", SearchOption.AllDirectories)[0];
-        let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
-        let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
-        await installCatia(catiaDirectory);
-        await installCatiaCrack(crackArchivePath);
-        await installCAA(caaArchivePath);
-        await installRade(radeArchivePath);
-    };
     let installCatia = async (archiveDirectory: string) => {
         console.log(`Installing CATIA from ${archiveDirectory}`);
         let arctiveFilePaths = Directory.GetFiles(archiveDirectory, "*.7z");
@@ -376,7 +366,16 @@ let InstallerR21 = () => {
     };
     let installVS2005 = async (archivePath: string) => {
     };
-
+    let entry = async (archiveDirectory: string) => {
+        let catiaDirectory = Path.Combine(archiveDirectory, "1");
+        let crackArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "2"), "*.7z", SearchOption.AllDirectories)[0];
+        let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
+        let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
+        await installCatia(catiaDirectory);
+        await installCatiaCrack(crackArchivePath);
+        await installCAA(caaArchivePath);
+        await installRade(radeArchivePath);
+    };
     return {
         installCatia,
         installCatiaCrack,
