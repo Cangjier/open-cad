@@ -140,35 +140,79 @@ let Installer = () => {
         let catiar21MatchPath = Path.Combine(script_directory, "catiar21.json");
         let orderKeys = Object.keys(Json.Load(catiar21MatchPath)).reverse();
         let doneKeys = [] as string[];
-        let isDone = false;
         while (true) {
+            let isDone = false;
             let matchResult = await wclManager.match(catiar21MatchPath);
-            for (let key of orderKeys) {
+            let currentKey = orderKeys.find(key => {
                 if (doneKeys.includes(key)) {
-                    continue;
+                    return false;
                 }
                 let state = matchResult[key];
                 if (state != undefined) {
-                    if (key != "Message") {
-                        doneKeys.push(key);
-                    }
-                    console.log(`Processing ${key}`);
-                    await wclManager.click(state[state.length - 1].Window.hWnd);
-                    if (key == "CopyFile") {
-                        console.log("Waiting for copy file");
-                        isDone = true;
-                        break;
-                    }
-                    else {
-                        await Task.Delay(1000);
-                    }
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                if (currentKey != "Message") {
+                    doneKeys.push(currentKey);
+                }
+                console.log(`Processing ${currentKey}`);
+                await wclManager.click(state[state.length - 1].Window.hWnd);
+                if (currentKey == "CopyFile") {
+                    console.log("Waiting for copy file");
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
                 }
             }
-            if(isDone){
+            if (isDone) {
                 break;
             }
         }
         console.log("CD1 done");
+        let cd2hWnd = "";
+        while (true) {
+            let matchResult = await wclManager.match(catiar21MatchPath);
+            if (matchResult.InsertCD) {
+                console.log("Insert CD2");
+                cd2hWnd = matchResult.InsertCD[1].Window.hWnd;
+                break;
+            }
+            console.log("Waiting for insert CD2");
+            await Task.Delay(1000);
+        }
+        deleteDirectory(extractDirectory);
+        await wclManager.extract(cd2, extractDirectory);
+        rootDirectory = Directory.GetDirectories(extractDirectory)[0];
+        Directory.Move(rootDirectory, Path.Combine(extractDirectory, "CATIA"));
+        rootDirectory = Path.Combine(extractDirectory, "CATIA");
+        await wclManager.click(cd2hWnd);
+        await Task.Delay(1000);
+        let cd3hWnd = "";
+        while (true) {
+            let matchResult = await wclManager.match(catiar21MatchPath);
+            if (matchResult.InsertCD) {
+                console.log("Insert CD3");
+                cd3hWnd = matchResult.InsertCD[1].Window.hWnd;
+                break;
+            }
+            console.log("Waiting for insert CD3");
+            await Task.Delay(1000);
+        }
+        deleteDirectory(extractDirectory);
+        await wclManager.extract(cd3, extractDirectory);
+        rootDirectory = Directory.GetDirectories(extractDirectory)[0];
+        Directory.Move(rootDirectory, Path.Combine(extractDirectory, "CATIA"));
+        rootDirectory = Path.Combine(extractDirectory, "CATIA");
+        await wclManager.click(cd3hWnd);
+        await Task.Delay(1000);
     }
 
     return {
