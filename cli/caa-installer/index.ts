@@ -352,7 +352,7 @@ let InstallerR21 = () => {
                 let end = state[state.length - 1];
                 if (end.Window.ClassName == "edit") {
                     if (currentKey == "InstallFlagEdit") {
-                        await wclManager.setWindowText(end.Window.hWnd, "CAAR21");
+                        await wclManager.setWindowText(end.Window.hWnd, "RADER21");
                     }
                 }
                 else if (end.Window.ClassName.tolower() == "button") {
@@ -393,17 +393,17 @@ let main = async () => {
         await wclManager.install();
     }
     if (args.length < 1) {
-        console.log("Usage: caa-installer installCatia <catiaDirectory>");
+        console.log("Usage: caa-installer r21 <installDirectory>");
         return;
     }
     let command = args[0];
-    if (command == "installCatia") {
+    if (command == "r21") {
         if (args.length < 2) {
-            console.log("Usage: caa-installer installCatia <catiaDirectory>");
+            console.log("Usage: caa-installer r21 <installDirectory>");
             return;
         }
-        let catiaDirectory = args[1];
-        await installer.installCatia(catiaDirectory);
+        let installDirectory = args[1];
+        await installer.entry(installDirectory);
     }
 };
 
