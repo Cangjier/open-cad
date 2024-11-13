@@ -213,6 +213,22 @@ let Installer = () => {
         rootDirectory = Path.Combine(extractDirectory, "CATIA");
         await wclManager.click(cd3hWnd);
         await Task.Delay(1000);
+        let finishhWnd = "";
+        let startCatiahWnd = "";
+        while (true) {
+            let matchResult = await wclManager.match(catiar21MatchPath);
+            if (matchResult.Finish && matchResult.StartCatia) {
+                console.log("Finish");
+                finishhWnd = matchResult.Finish[1].Window.hWnd;
+                startCatiahWnd = matchResult.StartCatia[2].Window.hWnd;
+                break;
+            }
+            console.log("Waiting for finish");
+            await Task.Delay(1000);
+        }
+        await wclManager.click(startCatiahWnd);
+        await Task.Delay(1000);
+        await wclManager.click(finishhWnd);
     }
 
     return {
