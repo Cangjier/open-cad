@@ -340,7 +340,7 @@ let InstallerR21 = () => {
                 }
                 console.log(`Processing ${currentKey}`);
                 let end = state[state.length - 1];
-                if (end.Window.ClassName == "edit") {
+                if (end.Window.ClassName == "Edit") {
                     if (currentKey == "InstallFlagEdit") {
                         await wclManager.setWindowText(end.Window.hWnd, "RADER21");
                     }
