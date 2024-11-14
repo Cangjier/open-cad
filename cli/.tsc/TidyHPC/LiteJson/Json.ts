@@ -96,6 +96,9 @@ export class Json {
     public Slice(start?: number, end?: number): any {
         return {} as any;
     }
+    public Reverse(): any {
+        return {} as any;
+    }
     public Remove(key?: any): void {
         return {} as any;
     }

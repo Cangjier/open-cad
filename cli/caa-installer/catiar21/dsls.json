@@ -1,0 +1,29 @@
+{
+    "Welcome": [
+        {
+            "Title": "DS License Server V6R2017x Setup"
+        },
+        {
+            "Title": "Next >",
+            "Enable": "true"
+        }
+    ],
+    "InstallLocation": [
+        {
+            "Title": "DS License Server V6R2017x Setup"
+        },
+        {
+            "Title": "Install",
+            "Enable": "true"
+        }
+    ],
+    "Finish": [
+        {
+            "Title": "DS License Server V6R2017x Setup"
+        },
+        {
+            "Title": "Finish",
+            "Enable": "true"
+        }
+    ],
+}

@@ -53,9 +53,10 @@ let main = async () => {
     let input = Json.Load(inputPath);
     let serverName = input.ServerName;
     let serverID = input.ServerID;
+    let generator = input.Generator;
     let ssq = input.SSQ;
     let liczOutputPath = Path.Combine(Path.GetTempPath(), `${serverName}_${serverID}_${Path.GetFileNameWithoutExtension(ssq)}.licz`);
-    await cmdAsync(Environment.CurrentDirectory, `opencad dsls create ${serverName} ${serverID} ${ssq} ${liczOutputPath}`);
+    await cmdAsync(Environment.CurrentDirectory, `opencad dsls create ${serverName} ${serverID} ${ssq} ${generator} ${liczOutputPath}`);
     console.log(`opencad dsls create ${serverName} ${serverID} ${ssq} ${liczOutputPath}`)
     if (File.Exists(liczOutputPath) == false) {
         let output = {
@@ -72,7 +73,6 @@ let main = async () => {
         File.WriteAllText(outputPath, JSON.stringify(output), utf8);
     }
     unlockFile(lockFilePath);
-
 };
 
 await main();

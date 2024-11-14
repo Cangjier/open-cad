@@ -8,6 +8,7 @@ import { Task } from "../.tsc/System/Threading/Tasks/Task";
 import { Environment } from "../.tsc/System/Environment";
 import { File } from "../.tsc/System/IO/File";
 import { SearchOption } from "../.tsc/System/IO/SearchOption";
+import { shell } from "../.tsc/Cangjie/TypeSharp/System/shell";
 
 axios.setDefaultProxy();
 let script_directory = Path.GetDirectoryName(script_path);
@@ -90,6 +91,9 @@ let WCLManager = () => {
     let extract = async (archiveFilePath: string, outputPath: string) => {
         await cmdAsync(Environment.CurrentDirectory, `wcl extract ${archiveFilePath} ${outputPath}`);
     };
+    let mouseClickWindowAtRatio = async (hwnd: string, xRatio: number, yRatio: number) => {
+        await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 500`);
+    };
     return {
         isInstalled,
         install,
@@ -100,7 +104,8 @@ let WCLManager = () => {
         click,
         match,
         close,
-        extract
+        extract,
+        mouseClickWindowAtRatio
     }
 };
 
@@ -232,7 +237,8 @@ let InstallerR21 = () => {
         deleteDirectory(extractDirectory);
     };
     let installCatiaCrack = async (archivePath: string) => {
-        let extractDirectory = Path.Combine(opencadDirectory, "catia-crack-extract");
+        let archiveDirectory = Path.GetDirectoryName(archivePath);
+        let extractDirectory = Path.Combine(archiveDirectory, "catia-crack-extract");
         if (Directory.Exists(extractDirectory)) {
             deleteDirectory(extractDirectory);
         }
@@ -248,7 +254,8 @@ let InstallerR21 = () => {
         deleteDirectory(extractDirectory);
     };
     let installCAA = async (archivePath: string) => {
-        let extractDirectory = Path.Combine(opencadDirectory, "caa-crack-extract");
+        let archiveDirectory = Path.GetDirectoryName(archivePath);
+        let extractDirectory = Path.Combine(archiveDirectory, "caa-crack-extract");
         if (Directory.Exists(extractDirectory)) {
             deleteDirectory(extractDirectory);
         }
@@ -302,7 +309,8 @@ let InstallerR21 = () => {
         deleteDirectory(extractDirectory);
     };
     let installRade = async (archivePath: string) => {
-        let extractDirectory = Path.Combine(opencadDirectory, "rade-crack-extract");
+        let archiveDirectory = Path.GetDirectoryName(archivePath);
+        let extractDirectory = Path.Combine(archiveDirectory, "rade-crack-extract");
         if (Directory.Exists(extractDirectory)) {
             deleteDirectory(extractDirectory);
         }
@@ -364,7 +372,239 @@ let InstallerR21 = () => {
 
         deleteDirectory(extractDirectory);
     };
-    let installVS2005 = async (archivePath: string) => {
+    let installDotNet = async (exePath: string) => {
+        console.log(`Installing .NET from ${exePath}`);
+        start({
+            filePath: exePath
+        });
+        let matchPath = Path.Combine(script_directory, "catiar21", "dotnet.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        let totalTime = 0;
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                totalTime += 1000;
+                if (doneKeys.includes("Download") == false && totalTime > 3000) {
+                    console.log("Download not found");
+                    break;
+                }
+                continue;
+            }
+            else {
+                totalTime = 0;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                console.log(`Processing ${currentKey}`);
+                await wclManager.click(state[state.length - 1].Window.hWnd);
+                if (currentKey == "WindowsClose") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
+            }
+        }
+    };
+    let installVS2008 = async (archivePath: string) => {
+        let archiveDirectory = Path.GetDirectoryName(archivePath);
+        let extractDirectory = Path.Combine(archiveDirectory, "vs2008-extract");
+        if (Directory.Exists(extractDirectory)) {
+            deleteDirectory(extractDirectory);
+        }
+        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
+        await wclManager.extract(archivePath, extractDirectory);
+        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
+        let setup = Directory.GetFiles(rootDirectory, "setup.exe", SearchOption.AllDirectories)[0];
+        console.log(`Starting ${setup}`);
+        start({
+            filePath: setup
+        });
+        await Task.Delay(2000);
+        let matchPath = Path.Combine(script_directory, "catiar21", "vs2008.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                if (currentKey != "InstallingPageDoing" && currentKey != "Message") {
+                    doneKeys.push(currentKey);
+                }
+                console.log(`Processing ${currentKey}`);
+                if (currentKey != "InstallingPageDoing") {
+                    await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
+                }
+                if (currentKey == "NavigateExit") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
+            }
+        }
+
+        deleteDirectory(extractDirectory);
+    };
+    let installVS2008SP1 = async (archivePath: string) => {
+        let archiveDirectory = Path.GetDirectoryName(archivePath);
+        let extractDirectory = Path.Combine(archiveDirectory, "vs2008-sp1-extract");
+        if (Directory.Exists(extractDirectory)) {
+            deleteDirectory(extractDirectory);
+        }
+        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
+        await wclManager.extract(archivePath, extractDirectory);
+        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
+        let setup = Directory.GetFiles(rootDirectory, "SPInstaller.exe", SearchOption.AllDirectories)[0];
+        console.log(`Starting ${setup}`);
+        start({
+            filePath: setup
+        });
+        await Task.Delay(2000);
+        let matchPath = Path.Combine(script_directory, "catiar21", "vs2008_sp1.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                if (currentKey != "Installing") {
+                    doneKeys.push(currentKey);
+                }
+                console.log(`Processing ${currentKey}`);
+                if (currentKey != "Installing") {
+                    await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
+                }
+                if (currentKey == "Finish") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
+            }
+        }
+    };
+    let installDSLS = async (exePath: string) => {
+        start({
+            filePath: exePath
+        });
+        await Task.Delay(2000);
+        let matchPath = Path.Combine(script_directory, "catiar21", "dsls.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                console.log(`Processing ${currentKey}`);
+                await wclManager.click(state[state.length - 1].Window.hWnd);
+                if (currentKey == "Finish") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
+            }
+        }
+    };
+    let getDSLSInfomation = async (exePath: string) => {
+        let sh = shell.start({
+            filePath: "C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/DSLicSrv.exe",
+            arguments: ["/test", "-admin"]
+        });
+        console.log("started");
+        await Task.Delay(1000);
+        console.log(`> c localhost 4084`);
+        sh.writeLine("c localhost 4084");
+        await Task.Delay(1000);
+        let lines = sh.readLines();
+        let lastLine = lines[lines.length - 1];
+        let items = lastLine.trim().split(' ').filter(item => item.length > 0);
+        let parameters = {};
+        for (let item of items) {
+            if (item.includes("：")) {
+                parameters[item.split('：')[0]] = item.split('：')[1]
+            }
+        }
+        console.log(parameters)
+        sh.kill();
+        return {
+            "ServerName": parameters["服务器名称"],
+            "ServerID": parameters["ID"]
+        };
+    };
+    let registerSSQ = async (serverName: string, serverID: string, ssqPath: string) => {
+        
     };
     let entry = async (archiveDirectory: string) => {
         let catiaDirectory = Path.Combine(archiveDirectory, "1");
@@ -380,7 +620,9 @@ let InstallerR21 = () => {
         installCatia,
         installCatiaCrack,
         installCAA,
-        entry
+        entry,
+        installVS2008,
+        installDotNet
     }
 };
 

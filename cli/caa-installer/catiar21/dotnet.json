@@ -1,0 +1,53 @@
+{
+    "Download": [
+        {
+            "Title": "Windows 功能"
+        },
+        {
+            "ClassName": "DirectUIHWND"
+        },
+        {
+            "ClassName": "CtrlNotifySink"
+        },
+        {
+            "Title": "摘要页"
+        },
+        {
+            "Title": "下载并安装此功能",
+            "Enable": "true"
+        }
+    ],
+    "WindowsInstalling": [
+        {
+            "Title": "Windows 功能"
+        },
+        {
+            "ClassName": "DirectUIHWND"
+        },
+        {
+            "ClassName": "CtrlNotifySink"
+        },
+        {
+            "Title": "安装进度页"
+        },
+        {
+            "Title": "安装进度",
+            "Enable": "true"
+        }
+    ],
+    "WindowsClose": [
+        {
+            "Title": "Windows 功能"
+        },
+        {
+            "ClassName": "DirectUIHWND"
+        },
+        {
+            "ClassName": "CtrlNotifySink"
+        },
+        {
+            "Title": "关闭",
+            "Enable": "true"
+        }
+    ]
+}

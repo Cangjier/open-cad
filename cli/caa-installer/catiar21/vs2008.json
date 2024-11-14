@@ -1,0 +1,134 @@
+{
+    "StartInstall": [
+        {
+            "Title": "Visual Studio 2008 安装程序"
+        },
+        {
+            "ClassName": "HTMLLITE"
+        },
+        {
+            "Title": "安 装 Visual Studio 2008"
+        }
+    ],
+    "Welcome": [
+        {
+            "Title": "Microsoft Visual Studio 2008"
+        },
+        {
+            "Title": "下一步",
+            "Enable": "true"
+        }
+    ],
+    "StartPageNext": [
+        {
+            "Title": "Microsoft Visual Studio 2008 安装程序 - 起始页"
+        },
+        {
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "下一步",
+            "Enable": "true"
+        }
+    ],
+    "StartPageAgree": [
+        {
+            "Title": "Microsoft Visual Studio 2008 安装程序 - 起始页"
+        },
+        {
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "我已阅读并接受许可条款",
+            "Enable": "true"
+        }
+    ],
+    "OptionalPageNext": [
+        {
+            "Title": "Microsoft Visual Studio 2008 安装程序 - 选项页"
+        },
+        {
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "安装",
+            "ClassName": "Button",
+            "Enable": "true"
+        }
+    ],
+    "OptionalPageFullInstall": [
+        {
+            "Title": "Microsoft Visual Studio 2008 安装程序 - 选项页"
+        },
+        {
+            "ClassName": "#32770"
+        },
+        {
+            "Title": "完全",
+            "Enable": "true"
+        }
+    ],
+    "InstallingPageDone": [
+        {
+            "Title": "Microsoft Visual Studio 2008 安装程序 - 安装页"
+        },
+        {
+            "ClassName": "#32770",
+            "Enable": "true"
+        },
+        {
+            "Title": "下一步",
+            "Enable": "true"
+        }
+    ],
+    "InstallingPageDoing": [
+        {
+            "Title": "Microsoft Visual Studio 2008 安装程序 - 安装页"
+        },
+        {
+            "ClassName": "#32770",
+            "Enable": "true"
+        },
+        {
+            "Title": "下一步",
+            "Enable": "false"
+        }
+    ],
+    "FinishPage": [
+        {
+            "Title": "Microsoft Visual Studio 2008 安装程序 - 完成页"
+        },
+        {
+            "ClassName": "#32770",
+            "Enable": "true"
+        },
+        {
+            "Title": "完成",
+            "Enable": "true"
+        }
+    ],
+    "NavigateExit": [
+        {
+            "Title": "Visual Studio 2008 安装程序"
+        },
+        {
+            "Title": "完成",
+            "Enable": "true"
+        }
+    ],
+    "Message": [
+        {
+            "Title": "程序兼容性助手"
+        },
+        {
+            "ClassName": "DirectUIHWND"
+        },
+        {
+            "ClassName": "CtrlNotifySink"
+        },
+        {
+            "ClassName": "Button",
+            "Title": "关闭"
+        }
+    ]
+}
