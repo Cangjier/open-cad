@@ -278,7 +278,7 @@ let main = async () => {
         let serverID = args[2];
         let ssqName = args[3];
         let generatorName = args[4];
-        let outputPath = args[4];
+        let outputPath = args[5];
         await ssqManager.create(serverName, serverID, ssqName, generatorName, outputPath);
     }
 };
