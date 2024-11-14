@@ -9,6 +9,7 @@ import { Environment } from "../.tsc/System/Environment";
 import { File } from "../.tsc/System/IO/File";
 import { SearchOption } from "../.tsc/System/IO/SearchOption";
 import { shell } from "../.tsc/Cangjie/TypeSharp/System/shell";
+import { Guid } from "../.tsc/System/Guid";
 
 axios.setDefaultProxy();
 let script_directory = Path.GetDirectoryName(script_path);
@@ -582,9 +583,7 @@ let InstallerR21 = () => {
             filePath: "C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/DSLicSrv.exe",
             arguments: ["/test", "-admin"]
         });
-        console.log("started");
         await Task.Delay(1000);
-        console.log(`> c localhost 4084`);
         sh.writeLine("c localhost 4084");
         await Task.Delay(1000);
         let lines = sh.readLines();
@@ -603,8 +602,20 @@ let InstallerR21 = () => {
             "ServerID": parameters["ID"]
         };
     };
-    let registerSSQ = async (serverName: string, serverID: string, ssqPath: string) => {
-        
+    let registerSSQ = async (serverName: string, serverID: string, ssqName: string, generatorName: string) => {
+        let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
+        await cmdAsync(Environment.CurrentDirectory, `opencad dsls create ${serverName} ${serverID} ${ssqName} ${generatorName} ${outputPath}`);
+        return outputPath;
+    };
+    let installSSQ = async (liczFilePath: string) => {
+        let sh = shell.start({
+            filePath: "C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/DSLicSrv.exe",
+            arguments: ["/test", "-admin"]
+        });
+        await Task.Delay(1000);
+        sh.writeLine(`e -file ${liczFilePath}`);
+        await Task.Delay(1000);
+        sh.kill();
     };
     let entry = async (archiveDirectory: string) => {
         let catiaDirectory = Path.Combine(archiveDirectory, "1");

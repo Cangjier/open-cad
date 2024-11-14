@@ -57,7 +57,7 @@ let main = async () => {
     let ssq = input.SSQ;
     let liczOutputPath = Path.Combine(Path.GetTempPath(), `${serverName}_${serverID}_${Path.GetFileNameWithoutExtension(ssq)}.licz`);
     await cmdAsync(Environment.CurrentDirectory, `opencad dsls create ${serverName} ${serverID} ${ssq} ${generator} ${liczOutputPath}`);
-    console.log(`opencad dsls create ${serverName} ${serverID} ${ssq} ${liczOutputPath}`)
+    console.log(`opencad dsls create ${serverName} ${serverID} ${ssq} ${generator} ${liczOutputPath}`)
     if (File.Exists(liczOutputPath) == false) {
         let output = {
             FileID: null,

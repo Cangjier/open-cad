@@ -241,7 +241,7 @@ let SSQManager = () => {
         let liczFiles = getLiczFiles();
         if (liczFiles.length == 1) {
             File.Copy(liczFiles[0], outputPath, true);
-            console.log("Generate SSQ successfully");
+            console.log(`Generate SSQ successfully: ${liczFiles[0]} -> ${outputPath}`);
         }
         else {
             console.log("Generate SSQ failed");
