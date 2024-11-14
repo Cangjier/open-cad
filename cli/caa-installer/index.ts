@@ -607,14 +607,20 @@ let InstallerR21 = () => {
         await cmdAsync(Environment.CurrentDirectory, `opencad dsls create ${serverName} ${serverID} ${ssqName} ${generatorName} ${outputPath}`);
         return outputPath;
     };
-    let installSSQ = async (liczFilePath: string) => {
+    let installLiczFilePath = async (liczFilePath: string) => {
         let sh = shell.start({
             filePath: "C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/DSLicSrv.exe",
             arguments: ["/test", "-admin"]
         });
         await Task.Delay(1000);
-        sh.writeLine(`e -file ${liczFilePath}`);
+        let liczDirectory = Path.GetDirectoryName(liczFilePath);
+        sh.writeLine(`setConfig –licensingPort 4085`);
         await Task.Delay(1000);
+        sh.writeLine(`connect localhost 4084`);
+        await Task.Delay(1000);
+        sh.writeLine(`e -dir ${liczDirectory} -file ${Path.GetFileName(liczFilePath)}`);
+        await Task.Delay(1000);
+        console.log(sh.readLines());
         sh.kill();
     };
     let entry = async (archiveDirectory: string) => {
@@ -622,10 +628,27 @@ let InstallerR21 = () => {
         let crackArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "2"), "*.7z", SearchOption.AllDirectories)[0];
         let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
         let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
+        let dotnet35Path = Path.Combine(Path.Combine(archiveDirectory, "5"), "dotnetfx35.exe");
+        let dotnet20Path = Path.Combine(Path.Combine(archiveDirectory, "5"), "dotnetfx20.exe");
+        let vs2008Path = Path.Combine(Path.Combine(archiveDirectory, "5"), "VS2008.7z");
+        let vs2008SP1Path = Path.Combine(Path.Combine(archiveDirectory, "5"), "VS2008__SP1.7z");
+        let dslsPath = Path.Combine(archiveDirectory, "6", "_SolidSQUAD_", "DSLS_SSQ_V6R2017x_Installer_20170620.exe");
+        let catiaSSQ = "CATIA V5R21-V5R22-V23.SSQ";
+        let caaSSQ = "CAA Rade V5R21-V5R22.SSQ";
         await installCatia(catiaDirectory);
         await installCatiaCrack(crackArchivePath);
         await installCAA(caaArchivePath);
         await installRade(radeArchivePath);
+        await installDotNet(dotnet20Path);
+        await installDotNet(dotnet35Path);
+        await installVS2008(vs2008Path);
+        await installVS2008SP1(vs2008SP1Path);
+        await installDSLS(dslsPath);
+        let dslsInfo = await getDSLSInfomation(dslsPath);
+        let catiaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        let caaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        await installLiczFilePath(catiaLiczPath);
+        await installLiczFilePath(caaLiczPath);
     };
     return {
         installCatia,
