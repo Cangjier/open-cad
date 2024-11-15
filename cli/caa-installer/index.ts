@@ -127,6 +127,9 @@ let InstallerR21 = () => {
     let isInstallRade = () => {
         return File.Exists("C:/Program Files (x86)/Dassault Systemes/B21/intel_a/CAA_RADE.lp");
     };
+    let isInstallDSLS = () => {
+        return File.Exists("C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/intel_a/code/bin/DSLicSrv.exe");
+    };
     let installCatia = async (archiveDirectory: string) => {
         console.log(`Installing CATIA from ${archiveDirectory}`);
         let arctiveFilePaths = Directory.GetFiles(archiveDirectory, "*.7z");
@@ -486,7 +489,7 @@ let InstallerR21 = () => {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                     await Task.Delay(2000);
                 }
-                else if(currentKey == "ReadmeView"){
+                else if (currentKey == "ReadmeView") {
                     await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.995, 0.005);
                 }
                 else if (currentKey != "InstallingPageDoing") {
@@ -700,7 +703,13 @@ let InstallerR21 = () => {
         await installDotNet(dotnet35Path);
         await installDotNet(dotnet20Path);
 
-        await installDSLS(dslsPath);
+        if (isInstallDSLS() == false) {
+            await installDSLS(dslsPath);
+        }
+        else {
+            console.log("DSLS is already installed");
+        }
+
         let dslsInfo = await getDSLSInfomation(dslsPath);
         let catiaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
         let caaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");

@@ -104,6 +104,9 @@ let wclManager = WCLManager();
 let SSQManager = () => {
     let genPath = Path.Combine(script_directory, "gen.json");
     let flag = 'toSave';
+    let isDownload = () => {
+        return Directory.Exists(ssqDirectory) && (Directory.GetFiles(ssqDirectory).length > 0);
+    };
     let download = async () => {
         let indexJson = await Json.LoadAsync(dslsIndexPath);
         for (let item of indexJson["DSLS.Gen"]) {
@@ -251,7 +254,8 @@ let SSQManager = () => {
     };
     return {
         create,
-        download
+        download,
+        isDownload
     };
 };
 
@@ -279,6 +283,9 @@ let main = async () => {
         let ssqName = args[3];
         let generatorName = args[4];
         let outputPath = args[5];
+        if (ssqManager.isDownload() == false) {
+            await ssqManager.download();
+        }
         await ssqManager.create(serverName, serverID, ssqName, generatorName, outputPath);
     }
 };
