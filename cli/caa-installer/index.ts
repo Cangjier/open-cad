@@ -93,7 +93,10 @@ let WCLManager = () => {
         await cmdAsync(Environment.CurrentDirectory, `wcl extract ${archiveFilePath} ${outputPath}`);
     };
     let mouseClickWindowAtRatio = async (hwnd: string, xRatio: number, yRatio: number) => {
-        await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 1000`);
+        await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 500`);
+    };
+    let mouseClick = async () => {
+        await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click`);
     };
     return {
         isInstalled,
@@ -106,7 +109,8 @@ let WCLManager = () => {
         match,
         close,
         extract,
-        mouseClickWindowAtRatio
+        mouseClickWindowAtRatio,
+        mouseClick
     }
 };
 
