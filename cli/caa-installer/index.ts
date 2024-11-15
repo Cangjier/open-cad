@@ -80,7 +80,6 @@ let WCLManager = () => {
     };
     let match = async (matchPath: string) => {
         let outputPath = Path.GetTempFileName();
-        // console.log(`wcl match-window ${matchPath} ${outputPath}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl match-window ${matchPath} ${outputPath}`);
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
@@ -119,6 +118,15 @@ let wclManager = WCLManager();
 
 
 let InstallerR21 = () => {
+    let isInstallCatia = () => {
+        return File.Exists("C:/Program Files/Dassault Systemes/B21/win_b64/code/bin/CATSTART.exe");
+    };
+    let isInstallCAA = () => {
+        return File.Exists("C:/Program Files/Dassault Systemes/B21/InstallCAA2.log");
+    };
+    let isInstallRade = () => {
+        return File.Exists("C:/Program Files (x86)/Dassault Systemes/B21/intel_a/CAA_RADE.lp");
+    };
     let installCatia = async (archiveDirectory: string) => {
         console.log(`Installing CATIA from ${archiveDirectory}`);
         let arctiveFilePaths = Directory.GetFiles(archiveDirectory, "*.7z");
@@ -654,10 +662,16 @@ let InstallerR21 = () => {
         let dslsPath = Path.Combine(archiveDirectory, "6", "_SolidSQUAD_", "DSLS_SSQ_V6R2017x_Installer_20170620.exe");
         let catiaSSQ = "CATIA V5R21-V5R22-V23.SSQ";
         let caaSSQ = "CAA Rade V5R21-V5R22.SSQ";
-        await installCatia(catiaDirectory);
-        await installCatiaCrack(crackArchivePath);
-        await installCAA(caaArchivePath);
-        await installRade(radeArchivePath);
+        if (isInstallCatia() == false) {
+            await installCatia(catiaDirectory);
+            await installCatiaCrack(crackArchivePath);
+        }
+        if (isInstallCAA() == false) {
+            await installCAA(caaArchivePath);
+        }
+        if (isInstallRade() == false) {
+            await installRade(radeArchivePath);
+        }
         await installDotNet(dotnet35Path);
         await installDotNet(dotnet20Path);
         await installVS2008(vs2008Path);
