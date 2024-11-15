@@ -471,8 +471,11 @@ let InstallerR21 = () => {
                     doneKeys.push(currentKey);
                 }
                 console.log(`Processing ${currentKey}`);
-                if (currentKey != "InstallingPageDoing") {
+                if (currentKey != "InstallingPageDoing" && currentKey!="Readme") {
                     await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
+                }
+                else if (currentKey == "Readme") {
+                    await wclManager.click(state[state.length - 1].Window.hWnd);
                 }
                 if (currentKey == "NavigateExit") {
                     isDone = true;
