@@ -36,4 +36,12 @@
             "Enable": "true"
         }
     ],
+    "WindowsMessage":[
+        {
+            "Title":"Windows 安全中心警报"
+        },
+        {
+            "Title":"允许访问"
+        }
+    ]
 }

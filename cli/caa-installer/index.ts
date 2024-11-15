@@ -217,7 +217,7 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
-                if (currentKey != "Message") {
+                if (currentKey != "Message" && currentKey != "WindowsMessage") {
                     doneKeys.push(currentKey);
                 }
                 console.log(`Processing ${currentKey}`);
@@ -342,7 +342,7 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
-                if (currentKey != "Message") {
+                if (currentKey != "Message" && currentKey != "WindowsMessage") {
                     doneKeys.push(currentKey);
                 }
                 console.log(`Processing ${currentKey}`);
@@ -397,7 +397,7 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
-                if (currentKey != "Message") {
+                if (currentKey != "Message" && currentKey != "WindowsMessage") {
                     doneKeys.push(currentKey);
                 }
                 console.log(`Processing ${currentKey}`);
@@ -518,7 +518,7 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
-                if (currentKey != "InstallingPageDoing" && currentKey != "Message") {
+                if (currentKey != "InstallingPageDoing" && currentKey != "Message" && currentKey != "WindowsMessage") {
                     doneKeys.push(currentKey);
                 }
                 console.log(`Processing ${currentKey}`);
@@ -635,7 +635,10 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
-                doneKeys.push(currentKey);
+                if (currentKey != "WindowsMessage") {
+                    doneKeys.push(currentKey);
+                }
+
                 console.log(`Processing ${currentKey}`);
                 if (currentKey == "Settings" || currentKey == "Tools") {
                     await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.9, 0.1);
