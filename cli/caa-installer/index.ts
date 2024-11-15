@@ -93,8 +93,7 @@ let WCLManager = () => {
         await cmdAsync(Environment.CurrentDirectory, `wcl extract ${archiveFilePath} ${outputPath}`);
     };
     let mouseClickWindowAtRatio = async (hwnd: string, xRatio: number, yRatio: number) => {
-        console.log(`wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 500`);
-        await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 500`);
+        await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 1000`);
     };
     return {
         isInstalled,
