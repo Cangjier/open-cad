@@ -456,6 +456,9 @@ let InstallerR21 = () => {
                 if (doneKeys.includes(key)) {
                     return false;
                 }
+                if (key == "NavigateExit" && doneKeys.includes("FinishPage") == false) {
+                    return false;
+                }
                 let state = matchResult[key];
                 if (state != undefined) {
                     return true;
