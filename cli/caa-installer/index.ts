@@ -117,6 +117,43 @@ let WCLManager = () => {
 let wclManager = WCLManager();
 
 
+let TaskManager = () => {
+    let formatApiUrl = (path: string) => {
+        return `http://124.221.102.24:8080${path}`;
+    };
+    let runSync = async (pluginName: string, input: { [key: string]: any }) => {
+        let response = await axios.post(formatApiUrl("/api/v1/tasks/run"), {
+            Input: input,
+            Processor: {
+                "Name": pluginName,
+                "Type": "Plugin"
+            }
+        });
+        if (response.status == 200) {
+            if (response.data.success) {
+                return response.data.data;
+            }
+            else {
+                throw response.data.message ?? "Unkown error";
+            }
+        }
+        else {
+            throw "Net error"
+        }
+    };
+    let download = async (fileID: string, outputPath: string) => {
+        await axios.download(formatApiUrl(`/api/v1/iostorage/download/${fileID}`), outputPath);
+    };
+
+    return {
+        runSync,
+        download
+    }
+};
+
+let taskManager = TaskManager();
+
+
 let InstallerR21 = () => {
     let isInstallCatia = () => {
         return File.Exists('C:/Program Files/Dassault Systemes/B21/win_b64/code/bin/CATSTART.exe');
@@ -648,6 +685,18 @@ let InstallerR21 = () => {
         await cmdAsync(Environment.CurrentDirectory, cmd);
         return outputPath;
     };
+    let resgiterSSQByNet = async (serverName: string, serverID: string, ssqName: string, generatorName: string) => {
+        let task = await taskManager.runSync("dsls", {
+            ServerName: serverName,
+            ServerID: serverID,
+            SSQ: ssqName,
+            Generator: generatorName
+        });
+        let download_url = task.Output.FileID;
+        let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
+        await taskManager.download(download_url, outputPath);
+        return outputPath;
+    };
     let installLiczFilePath = async (liczFilePath: string) => {
         let sh = shell.start({
             filePath: "C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/DSLicSrv.exe",
@@ -713,8 +762,8 @@ let InstallerR21 = () => {
         }
 
         let dslsInfo = await getDSLSInfomation(dslsPath);
-        let catiaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        let caaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
         await installLiczFilePath(catiaLiczPath);
         await installLiczFilePath(caaLiczPath);
 
