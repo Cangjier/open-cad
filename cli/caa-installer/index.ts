@@ -763,11 +763,11 @@ let InstallerR21 = () => {
             console.log("DSLS is already installed");
         }
 
-        // let dslsInfo = await getDSLSInfomation(dslsPath);
-        // let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        // let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        // await installLiczFilePath(catiaLiczPath);
-        // await installLiczFilePath(caaLiczPath);
+        let dslsInfo = await getDSLSInfomation(dslsPath);
+        let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        await installLiczFilePath(catiaLiczPath);
+        await installLiczFilePath(caaLiczPath);
 
         await installVS2008(vs2008Path);
         await installVS2008SP1(vs2008SP1Path);
