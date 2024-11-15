@@ -80,6 +80,7 @@ let WCLManager = () => {
     };
     let match = async (matchPath: string) => {
         let outputPath = Path.GetTempFileName();
+        console.log(`wcl match-window ${matchPath} ${outputPath}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl match-window ${matchPath} ${outputPath}`);
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
@@ -475,6 +476,9 @@ let InstallerR21 = () => {
                 }
                 else if (currentKey == "CloseReadme") {
                     await wclManager.close(state[state.length - 1].Window.hWnd);
+                }
+                if (currentKey == "StartInstallReadme") {
+                    await Task.Delay(3000);
                 }
                 if (currentKey == "NavigateExit") {
                     isDone = true;
