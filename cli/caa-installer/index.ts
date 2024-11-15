@@ -575,6 +575,9 @@ let InstallerR21 = () => {
                 if (doneKeys.includes(key)) {
                     return false;
                 }
+                if (key == "Tools" && doneKeys.includes("Settings") == false) {
+                    return false;
+                }
                 let state = matchResult[key];
                 if (state != undefined) {
                     return true;
@@ -586,8 +589,14 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
+                doneKeys.push(currentKey);
                 console.log(`Processing ${currentKey}`);
-                await wclManager.click(state[state.length - 1].Window.hWnd);
+                if (currentKey == "Settings" || currentKey == "Tools") {
+                    await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.9, 0.1);
+                }
+                else {
+                    await wclManager.click(state[state.length - 1].Window.hWnd);
+                }
                 if (currentKey == "Finish") {
                     isDone = true;
                     break;

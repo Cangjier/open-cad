@@ -17,6 +17,16 @@
             "Enable": "true"
         }
     ],
+    "Settings": [
+        {
+            "Title": "许可证服务器连接参数"
+        }
+    ],
+    "Tools": [
+        {
+            "Title": "许可证管理工具"
+        }
+    ],
     "Finish": [
         {
             "Title": "DS License Server V6R2017x Setup"
