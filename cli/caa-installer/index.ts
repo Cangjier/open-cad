@@ -484,6 +484,10 @@ let InstallerR21 = () => {
                 console.log(`Processing ${currentKey}`);
                 if (currentKey == "Readme") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
+                    await Task.Delay(2000);
+                }
+                else if(currentKey == "ReadmeView"){
+                    await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.995, 0.005);
                 }
                 else if (currentKey != "InstallingPageDoing") {
                     await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
@@ -703,8 +707,8 @@ let InstallerR21 = () => {
         await installLiczFilePath(catiaLiczPath);
         await installLiczFilePath(caaLiczPath);
 
-        await installVS2008(vs2008Path);
-        await installVS2008SP1(vs2008SP1Path);
+        // await installVS2008(vs2008Path);
+        // await installVS2008SP1(vs2008SP1Path);
 
     };
     return {

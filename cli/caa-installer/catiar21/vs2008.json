@@ -18,6 +18,11 @@
             "Title": "查看自述文件"
         }
     ],
+    "ReadmeView": [
+        {
+            "Title": "Visual Studio 2008 自述文件"
+        }
+    ],
     "Welcome": [
         {
             "Title": "Microsoft Visual Studio 2008",
