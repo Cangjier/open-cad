@@ -532,6 +532,7 @@ let InstallerR21 = () => {
                 }
                 else if (currentKey != "InstallingPageDoing") {
                     await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
+                    await Task.Delay(2000);
                 }
 
                 if (currentKey == "NavigateExit") {
