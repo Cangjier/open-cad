@@ -121,7 +121,7 @@ let TaskManager = () => {
     let formatApiUrl = (path: string) => {
         return `http://124.221.102.24:8080${path}`;
     };
-    let runSync = async (pluginName: string, input: { [key: string]: any }) => {
+    let runSync = async (pluginName: string, input: any) => {
         let response = await axios.post(formatApiUrl("/api/v1/tasks/run"), {
             Input: input,
             Processor: {
