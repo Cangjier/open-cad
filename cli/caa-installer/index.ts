@@ -686,14 +686,17 @@ let InstallerR21 = () => {
         }
         await installDotNet(dotnet35Path);
         await installDotNet(dotnet20Path);
-        await installVS2008(vs2008Path);
-        await installVS2008SP1(vs2008SP1Path);
+
         await installDSLS(dslsPath);
         let dslsInfo = await getDSLSInfomation(dslsPath);
         let catiaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
         let caaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
         await installLiczFilePath(catiaLiczPath);
         await installLiczFilePath(caaLiczPath);
+
+        await installVS2008(vs2008Path);
+        await installVS2008SP1(vs2008SP1Path);
+
     };
     return {
         installCatia,
