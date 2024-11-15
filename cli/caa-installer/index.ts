@@ -471,14 +471,8 @@ let InstallerR21 = () => {
                     doneKeys.push(currentKey);
                 }
                 console.log(`Processing ${currentKey}`);
-                if (currentKey != "InstallingPageDoing" && currentKey != "CloseReadme") {
+                if (currentKey != "InstallingPageDoing") {
                     await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
-                }
-                else if (currentKey == "CloseReadme") {
-                    await wclManager.close(state[state.length - 1].Window.hWnd);
-                }
-                if (currentKey == "StartInstallReadme") {
-                    await Task.Delay(3000);
                 }
                 if (currentKey == "NavigateExit") {
                     isDone = true;

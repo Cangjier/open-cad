@@ -8,20 +8,6 @@
             "Title": "安装"
         }
     ],
-    "CloseReadme": [
-        {
-            "Title": "Visual Studio 2008 自述文件"
-        }
-    ],
-    "StartInstallReadme": [
-        {
-            "Title": "Visual Studio 2008 安装程序"
-        },
-        {
-            "Title": "查看自述文件",
-            "Enable": "true"
-        }
-    ],
     "Welcome": [
         {
             "Title": "Microsoft Visual Studio 2008"
