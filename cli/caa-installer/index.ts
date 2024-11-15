@@ -518,9 +518,9 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
-                if (currentKey != "InstallingPageDoing" && currentKey != "Message") {
-                    doneKeys.push(currentKey);
-                }
+                // if (currentKey != "InstallingPageDoing" && currentKey != "Message") {
+                //     doneKeys.push(currentKey);
+                // }
                 console.log(`Processing ${currentKey}`);
                 if (currentKey == "Readme") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
