@@ -663,6 +663,7 @@ let InstallerR21 = () => {
         let catiaSSQ = "CATIA V5R21-V5R22-V23.SSQ";
         let caaSSQ = "CAA Rade V5R21-V5R22.SSQ";
         if (isInstallCatia() == false) {
+            console.log("Installing CATIA");
             await installCatia(catiaDirectory);
             await installCatiaCrack(crackArchivePath);
         }
@@ -670,12 +671,14 @@ let InstallerR21 = () => {
             console.log("Catia is already installed");
         }
         if (isInstallCAA() == false) {
+            console.log("Installing CAA");
             await installCAA(caaArchivePath);
         }
         else {
             console.log("CAA is already installed");
         }
         if (isInstallRade() == false) {
+            console.log("Installing Rade");
             await installRade(radeArchivePath);
         }
         else {
