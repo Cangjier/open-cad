@@ -20,7 +20,8 @@
     ],
     "Welcome": [
         {
-            "Title": "Microsoft Visual Studio 2008"
+            "Title": "Microsoft Visual Studio 2008",
+            "Enable": "true"
         },
         {
             "Title": "下一步",
