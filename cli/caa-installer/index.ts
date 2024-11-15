@@ -665,7 +665,7 @@ let InstallerR21 = () => {
         if (isInstallCatia() == false) {
             console.log("Installing CATIA");
             await installCatia(catiaDirectory);
-            await installCatiaCrack(crackArchivePath);
+            // await installCatiaCrack(crackArchivePath);
         }
         else {
             console.log("Catia is already installed");
