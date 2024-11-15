@@ -639,10 +639,10 @@ let InstallerR21 = () => {
         let dslsPath = Path.Combine(archiveDirectory, "6", "_SolidSQUAD_", "DSLS_SSQ_V6R2017x_Installer_20170620.exe");
         let catiaSSQ = "CATIA V5R21-V5R22-V23.SSQ";
         let caaSSQ = "CAA Rade V5R21-V5R22.SSQ";
-        await installCatia(catiaDirectory);
-        await installCatiaCrack(crackArchivePath);
-        await installCAA(caaArchivePath);
-        await installRade(radeArchivePath);
+        // await installCatia(catiaDirectory);
+        // await installCatiaCrack(crackArchivePath);
+        // await installCAA(caaArchivePath);
+        // await installRade(radeArchivePath);
         await installDotNet(dotnet20Path);
         await installDotNet(dotnet35Path);
         await installVS2008(vs2008Path);
