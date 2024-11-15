@@ -644,6 +644,7 @@ let InstallerR21 = () => {
     let registerSSQ = async (serverName: string, serverID: string, ssqName: string, generatorName: string) => {
         let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
         let cmd = `opencad dsls create "${serverName}" "${serverID}" "${ssqName}" "${generatorName}" "${outputPath}"`;
+        console.log(cmd)
         await cmdAsync(Environment.CurrentDirectory, cmd);
         return outputPath;
     };
