@@ -643,8 +643,8 @@ let InstallerR21 = () => {
     };
     let registerSSQ = async (serverName: string, serverID: string, ssqName: string, generatorName: string) => {
         let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
-        console.log(`opencad dsls create ${serverName} ${serverID} ${ssqName} ${generatorName} ${outputPath}`);
-        await cmdAsync(Environment.CurrentDirectory, `opencad dsls create "${serverName}" "${serverID}" "${ssqName}" "${generatorName}" "${outputPath}"`);
+        let cmd = `opencad dsls create "${serverName}" "${serverID}" "${ssqName}" "${generatorName}" "${outputPath}"`;
+        await cmdAsync(Environment.CurrentDirectory, cmd);
         return outputPath;
     };
     let installLiczFilePath = async (liczFilePath: string) => {
