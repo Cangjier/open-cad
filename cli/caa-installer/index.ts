@@ -686,6 +686,7 @@ let InstallerR21 = () => {
         return outputPath;
     };
     let resgiterSSQByNet = async (serverName: string, serverID: string, ssqName: string, generatorName: string) => {
+        axios.unsetProxy();
         let task = await taskManager.runSync("dsls", {
             ServerName: serverName,
             ServerID: serverID,
@@ -695,6 +696,7 @@ let InstallerR21 = () => {
         let download_url = task.Output.FileID;
         let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
         await taskManager.download(download_url, outputPath);
+        axios.setDefaultProxy();
         return outputPath;
     };
     let installLiczFilePath = async (liczFilePath: string) => {
@@ -761,14 +763,14 @@ let InstallerR21 = () => {
             console.log("DSLS is already installed");
         }
 
-        let dslsInfo = await getDSLSInfomation(dslsPath);
-        let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        await installLiczFilePath(catiaLiczPath);
-        await installLiczFilePath(caaLiczPath);
+        // let dslsInfo = await getDSLSInfomation(dslsPath);
+        // let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        // let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        // await installLiczFilePath(catiaLiczPath);
+        // await installLiczFilePath(caaLiczPath);
 
-        // await installVS2008(vs2008Path);
-        // await installVS2008SP1(vs2008SP1Path);
+        await installVS2008(vs2008Path);
+        await installVS2008SP1(vs2008SP1Path);
 
     };
     return {
