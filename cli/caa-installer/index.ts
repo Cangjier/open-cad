@@ -471,12 +471,13 @@ let InstallerR21 = () => {
                     doneKeys.push(currentKey);
                 }
                 console.log(`Processing ${currentKey}`);
-                if (currentKey != "InstallingPageDoing" && currentKey != "Readme") {
-                    await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
-                }
-                else if (currentKey == "Readme") {
+                if (currentKey == "Readme" || currentKey == "StartPageAgree") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                 }
+                else if (currentKey != "InstallingPageDoing") {
+                    await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
+                }
+
                 if (currentKey == "NavigateExit") {
                     isDone = true;
                     break;
