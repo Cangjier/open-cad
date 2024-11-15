@@ -625,13 +625,17 @@ let InstallerR21 = () => {
     };
     let entry = async (archiveDirectory: string) => {
         let catiaDirectory = Path.Combine(archiveDirectory, "1");
+        if (Directory.Exists(catiaDirectory) == false) {
+            console.log(`Directory ${catiaDirectory} not found`);
+            return;
+        }
         let crackArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "2"), "*.7z", SearchOption.AllDirectories)[0];
         let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
         let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
-        let dotnet35Path = Path.Combine(Path.Combine(archiveDirectory, "5"), "dotnetfx35.exe");
-        let dotnet20Path = Path.Combine(Path.Combine(archiveDirectory, "5"), "dotnetfx20.exe");
-        let vs2008Path = Path.Combine(Path.Combine(archiveDirectory, "5"), "VS2008.7z");
-        let vs2008SP1Path = Path.Combine(Path.Combine(archiveDirectory, "5"), "VS2008__SP1.7z");
+        let dotnet35Path = Path.Combine(archiveDirectory, "5", "dotnetfx35.exe");
+        let dotnet20Path = Path.Combine(archiveDirectory, "5", "NetFx20SP1_x64");
+        let vs2008Path = Path.Combine(archiveDirectory, "5", "VS2008.7z");
+        let vs2008SP1Path = Path.Combine(archiveDirectory, "5", "VS2008__SP1.7z");
         let dslsPath = Path.Combine(archiveDirectory, "6", "_SolidSQUAD_", "DSLS_SSQ_V6R2017x_Installer_20170620.exe");
         let catiaSSQ = "CATIA V5R21-V5R22-V23.SSQ";
         let caaSSQ = "CAA Rade V5R21-V5R22.SSQ";
@@ -668,17 +672,17 @@ let main = async () => {
         await wclManager.install();
     }
     if (args.length < 1) {
-        console.log("Usage: caa-installer r21 <installDirectory>");
+        console.log("Usage: caa-installer r21 <archiveDirectory>");
         return;
     }
     let command = args[0];
     if (command == "r21") {
         if (args.length < 2) {
-            console.log("Usage: caa-installer r21 <installDirectory>");
+            console.log("Usage: caa-installer r21 <archiveDirectory>");
             return;
         }
-        let installDirectory = args[1];
-        await installer.entry(installDirectory);
+        let archiveDirectory = args[1];
+        await installer.entry(archiveDirectory);
     }
 };
 
