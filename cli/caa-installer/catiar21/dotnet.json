@@ -4,13 +4,16 @@
             "Title": "Windows 功能"
         },
         {
-            "ClassName": "DirectUIHWND"
+            "ClassName": "DirectUIHWND",
+            "Enable": "true"
         },
         {
-            "ClassName": "CtrlNotifySink"
+            "ClassName": "CtrlNotifySink",
+            "Enable": "true"
         },
         {
-            "Title": "摘要页"
+            "Title": "摘要页",
+            "Enable": "true"
         },
         {
             "Title": "下载并安装此功能",
@@ -22,13 +25,16 @@
             "Title": "Windows 功能"
         },
         {
-            "ClassName": "DirectUIHWND"
+            "ClassName": "DirectUIHWND",
+            "Enable": "true"
         },
         {
-            "ClassName": "CtrlNotifySink"
+            "ClassName": "CtrlNotifySink",
+            "Enable": "true"
         },
         {
-            "Title": "安装进度页"
+            "Title": "安装进度页",
+            "Enable": "true"
         },
         {
             "Title": "安装进度",
@@ -40,10 +46,12 @@
             "Title": "Windows 功能"
         },
         {
-            "ClassName": "DirectUIHWND"
+            "ClassName": "DirectUIHWND",
+            "Enable": "true"
         },
         {
-            "ClassName": "CtrlNotifySink"
+            "ClassName": "CtrlNotifySink",
+            "Enable": "true"
         },
         {
             "Title": "关闭",
