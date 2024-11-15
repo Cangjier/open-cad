@@ -4,8 +4,7 @@
             "Title": "软件更新 Microsoft Visual Studio 2008 SP1 安装向导"
         },
         {
-            "Title": "下一步",
-            "Enable": "true"
+            "Title": "下一步"
         }
     ],
     "AgreementNext": [
@@ -13,8 +12,7 @@
             "Title": "软件更新 Microsoft Visual Studio 2008 SP1 安装向导"
         },
         {
-            "Title": "下一步",
-            "Enable": "true"
+            "Title": "下一步"
         }
     ],
     "AgreementAgree": [
@@ -34,8 +32,7 @@
             "Title": "软件更新 Microsoft Visual Studio 2008 SP1 安装向导"
         },
         {
-            "Title": "下一步",
-            "Enable": "true"
+            "Title": "下一步"
         }
     ],
     "Installing": [
@@ -43,8 +40,7 @@
             "Title": "软件更新 Microsoft Visual Studio 2008 SP1 安装向导"
         },
         {
-            "ClassName": "#32770",
-            "Enable": "true"
+            "ClassName": "#32770"
         },
         {
             "Title": "正在安装"
@@ -56,8 +52,7 @@
         },
         {
             "Title": "完成",
-            "ClassName": "Button",
-            "Enable": "true"
+            "ClassName": "Button"
         }
     ]
 }
