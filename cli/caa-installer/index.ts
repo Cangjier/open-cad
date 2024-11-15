@@ -518,9 +518,9 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
-                // if (currentKey != "InstallingPageDoing" && currentKey != "Message") {
-                //     doneKeys.push(currentKey);
-                // }
+                if (currentKey != "InstallingPageDoing" && currentKey != "Message") {
+                    doneKeys.push(currentKey);
+                }
                 console.log(`Processing ${currentKey}`);
                 if (currentKey == "Readme") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
@@ -528,6 +528,7 @@ let InstallerR21 = () => {
                 }
                 else if (currentKey == "ReadmeView") {
                     await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.995, 0.005);
+                    await Task.Delay(2000);
                 }
                 else if (currentKey != "InstallingPageDoing") {
                     await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
