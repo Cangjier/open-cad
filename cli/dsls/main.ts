@@ -283,6 +283,13 @@ let main = async () => {
         let ssqName = args[3];
         let generatorName = args[4];
         let outputPath = args[5];
+        console.log({
+            serverName,
+            serverID,
+            ssqName,
+            generatorName,
+            outputPath
+        })
         if (ssqManager.isDownload() == false) {
             await ssqManager.download();
         }
