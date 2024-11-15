@@ -408,6 +408,9 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
+                if (currentKey != "WindowsInstalling") {
+                    doneKeys.push(currentKey);
+                }
                 console.log(`Processing ${currentKey}`);
                 await wclManager.click(state[state.length - 1].Window.hWnd);
                 if (currentKey == "WindowsClose") {
