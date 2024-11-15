@@ -119,7 +119,7 @@ let wclManager = WCLManager();
 
 let InstallerR21 = () => {
     let isInstallCatia = () => {
-        return File.Exists("C:/Program Files/Dassault Systemes/B21/win_b64/code/bin/CATSTART.exe");
+        return File.Exists('C:/Program Files/Dassault Systemes/B21/win_b64/code/bin/CATSTART.exe');
     };
     let isInstallCAA = () => {
         return File.Exists("C:/Program Files/Dassault Systemes/B21/InstallCAA2.log");
@@ -666,11 +666,20 @@ let InstallerR21 = () => {
             await installCatia(catiaDirectory);
             await installCatiaCrack(crackArchivePath);
         }
+        else {
+            console.log("Catia is already installed");
+        }
         if (isInstallCAA() == false) {
             await installCAA(caaArchivePath);
         }
+        else {
+            console.log("CAA is already installed");
+        }
         if (isInstallRade() == false) {
             await installRade(radeArchivePath);
+        }
+        else {
+            console.log("Rade is already installed");
         }
         await installDotNet(dotnet35Path);
         await installDotNet(dotnet20Path);
