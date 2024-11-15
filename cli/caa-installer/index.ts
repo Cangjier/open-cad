@@ -643,8 +643,8 @@ let InstallerR21 = () => {
         // await installCatiaCrack(crackArchivePath);
         // await installCAA(caaArchivePath);
         // await installRade(radeArchivePath);
-        await installDotNet(dotnet20Path);
-        await installDotNet(dotnet35Path);
+        // await installDotNet(dotnet35Path);
+        // await installDotNet(dotnet20Path);
         await installVS2008(vs2008Path);
         await installVS2008SP1(vs2008SP1Path);
         await installDSLS(dslsPath);
