@@ -7,6 +7,7 @@ import { fileUtils } from "../.tsc/Cangjie/TypeSharp/System/fileUtils";
 import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
 import { File } from "../.tsc/System/IO/File";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
+import { DateTime } from "../.tsc/System/DateTime";
 let utf8 = new UTF8Encoding(false);
 let upload = async (server: string, filePath: string) => {
     server = stringUtils.trimEnd(server, '/');
@@ -55,7 +56,7 @@ let main = async () => {
     let serverID = input.ServerID;
     let generator = input.Generator;
     let ssq = input.SSQ;
-    let liczOutputPath = Path.Combine(Path.GetTempPath(), `${serverName}_${serverID}_${Path.GetFileNameWithoutExtension(ssq)}.licz`);
+    let liczOutputPath = Path.Combine(Path.GetTempPath(), `${serverName}_${serverID}_${Path.GetFileNameWithoutExtension(ssq)}_${DateTime.Now.Ticks}.licz`);
     await cmdAsync(Environment.CurrentDirectory, `opencad dsls create ${serverName} ${serverID} ${ssq} ${generator} ${liczOutputPath}`);
     console.log(`opencad dsls create ${serverName} ${serverID} ${ssq} ${generator} ${liczOutputPath}`)
     if (File.Exists(liczOutputPath) == false) {
