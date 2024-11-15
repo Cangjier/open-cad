@@ -471,7 +471,7 @@ let InstallerR21 = () => {
                     doneKeys.push(currentKey);
                 }
                 console.log(`Processing ${currentKey}`);
-                if (currentKey == "Readme" || currentKey == "StartPageAgree") {
+                if (currentKey == "Readme") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                 }
                 else if (currentKey != "InstallingPageDoing") {
