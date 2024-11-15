@@ -80,7 +80,7 @@ let WCLManager = () => {
     };
     let match = async (matchPath: string) => {
         let outputPath = Path.GetTempFileName();
-        console.log(`wcl match-window ${matchPath} ${outputPath}`);
+        // console.log(`wcl match-window ${matchPath} ${outputPath}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl match-window ${matchPath} ${outputPath}`);
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
@@ -471,7 +471,7 @@ let InstallerR21 = () => {
                     doneKeys.push(currentKey);
                 }
                 console.log(`Processing ${currentKey}`);
-                if (currentKey != "InstallingPageDoing" && currentKey!="Readme") {
+                if (currentKey != "InstallingPageDoing" && currentKey != "Readme") {
                     await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.5, 0.2);
                 }
                 else if (currentKey == "Readme") {

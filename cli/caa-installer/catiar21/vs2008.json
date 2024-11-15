@@ -30,7 +30,8 @@
             "Title": "Microsoft Visual Studio 2008 安装程序 - 起始页"
         },
         {
-            "ClassName": "#32770"
+            "ClassName": "#32770",
+            "Enable": "true"
         },
         {
             "Title": "下一步",
@@ -42,7 +43,8 @@
             "Title": "Microsoft Visual Studio 2008 安装程序 - 起始页"
         },
         {
-            "ClassName": "#32770"
+            "ClassName": "#32770",
+            "Enable": "true"
         },
         {
             "Title": "我已阅读并接受许可条款",
@@ -54,7 +56,8 @@
             "Title": "Microsoft Visual Studio 2008 安装程序 - 选项页"
         },
         {
-            "ClassName": "#32770"
+            "ClassName": "#32770",
+            "Enable": "true"
         },
         {
             "Title": "安装",
@@ -67,7 +70,8 @@
             "Title": "Microsoft Visual Studio 2008 安装程序 - 选项页"
         },
         {
-            "ClassName": "#32770"
+            "ClassName": "#32770",
+            "Enable": "true"
         },
         {
             "Title": "完全",
@@ -127,10 +131,12 @@
             "Title": "程序兼容性助手"
         },
         {
-            "ClassName": "DirectUIHWND"
+            "ClassName": "DirectUIHWND",
+            "Enable": "true"
         },
         {
-            "ClassName": "CtrlNotifySink"
+            "ClassName": "CtrlNotifySink",
+            "Enable": "true"
         },
         {
             "ClassName": "Button",
