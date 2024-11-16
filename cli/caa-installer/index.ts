@@ -824,7 +824,8 @@ let InstallerR21 = () => {
         entry,
         installVS2008,
         installDotNet,
-        entry_installCatia
+        entry_installCatia,
+        entry_installDSLS
     }
 };
 
