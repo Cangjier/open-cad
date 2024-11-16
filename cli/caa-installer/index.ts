@@ -784,13 +784,28 @@ let InstallerR21 = () => {
             await installVS2008SP1(vs2008SP1Path);
         }
     };
+    let entry_installCatia = async (archiveDirectory: string) => {
+        let catiaDirectory = Path.Combine(archiveDirectory, "1");
+        if (Directory.Exists(catiaDirectory) == false) {
+            console.log(`Directory ${catiaDirectory} not found`);
+            return;
+        }
+        if (isInstallCatia() == false) {
+            console.log("Installing CATIA");
+            await installCatia(catiaDirectory);
+        }
+        else {
+            console.log("Catia is already installed");
+        }
+    };
     return {
         installCatia,
         installCatiaCrack,
         installCAA,
         entry,
         installVS2008,
-        installDotNet
+        installDotNet,
+        entry_installCatia
     }
 };
 
@@ -803,12 +818,21 @@ let main = async () => {
     }
     if (args.length < 1) {
         console.log("Usage: caa-installer r21 <archiveDirectory>");
+        console.log("Usage: caa-installer r21-catia <archiveDirectory>");
         return;
     }
     let command = args[0];
     if (command == "r21") {
         if (args.length < 2) {
             console.log("Usage: caa-installer r21 <archiveDirectory>");
+            return;
+        }
+        let archiveDirectory = args[1];
+        await installer.entry(archiveDirectory);
+    }
+    else if (command == "r21-catia") {
+        if (args.length < 2) {
+            console.log("Usage: caa-installer r21-catia <archiveDirectory>");
             return;
         }
         let archiveDirectory = args[1];
