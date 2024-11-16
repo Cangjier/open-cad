@@ -836,7 +836,7 @@ let main = async () => {
             return;
         }
         let archiveDirectory = args[1];
-        await installer.entry(archiveDirectory);
+        await installer.entry_installCatia(archiveDirectory);
     }
 };
 
