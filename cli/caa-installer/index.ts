@@ -167,6 +167,9 @@ let InstallerR21 = () => {
     let isInstallDSLS = () => {
         return File.Exists("C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/intel_a/code/bin/DSLicSrv.exe");
     };
+    let isInstallVS2008 = () => {
+        return File.Exists("C:/Program Files (x86)/Microsoft Visual Studio 9.0/Common7/IDE/devenv.exe");
+    };
     let installCatia = async (archiveDirectory: string) => {
         console.log(`Installing CATIA from ${archiveDirectory}`);
         let arctiveFilePaths = Directory.GetFiles(archiveDirectory, "*.7z");
@@ -737,7 +740,7 @@ let InstallerR21 = () => {
         let vs2008Path = Path.Combine(archiveDirectory, "5", "VS2008.7z");
         let vs2008SP1Path = Path.Combine(archiveDirectory, "5", "VS2008__SP1.7z");
         let dslsPath = Path.Combine(archiveDirectory, "6", "_SolidSQUAD_", "DSLS_SSQ_V6R2017x_Installer_20170620.exe");
-        let catiaSSQ = "CATIA.V5R21-V5R22-V23.SSQ";
+        let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
         let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
         if (isInstallCatia() == false) {
             console.log("Installing CATIA");
@@ -776,10 +779,10 @@ let InstallerR21 = () => {
         let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
         await installLiczFilePath(catiaLiczPath);
         await installLiczFilePath(caaLiczPath);
-
-        await installVS2008(vs2008Path);
-        await installVS2008SP1(vs2008SP1Path);
-
+        if (isInstallVS2008() == false) {
+            await installVS2008(vs2008Path);
+            await installVS2008SP1(vs2008SP1Path);
+        }
     };
     return {
         installCatia,
