@@ -858,6 +858,17 @@ let main = async () => {
         let archiveDirectory = args[1];
         await installer.entry_installCatia(archiveDirectory);
     }
+    else if (command == "r21-dsls") {
+        if (args.length < 2) {
+            console.log("Usage: caa-installer r21-dsls <archiveDirectory>");
+            return;
+        }
+        let archiveDirectory = args[1];
+        await installer.entry_installDSLS(archiveDirectory);
+    }
+    else {
+        console.log("Unknown command");
+    }
 };
 
 await main();
