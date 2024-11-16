@@ -10,7 +10,8 @@ import { File } from "../.tsc/System/IO/File";
 import { SearchOption } from "../.tsc/System/IO/SearchOption";
 import { shell } from "../.tsc/Cangjie/TypeSharp/System/shell";
 import { Guid } from "../.tsc/System/Guid";
-
+import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
+let utf8 = new UTF8Encoding(false);
 axios.setDefaultProxy();
 let script_directory = Path.GetDirectoryName(script_path);
 let cli_directory = Path.GetDirectoryName(script_directory);
@@ -661,6 +662,7 @@ let InstallerR21 = () => {
                 break;
             }
         }
+        File.WriteAllText("C:/ProgramData/DassaultSystemes/Licenses/DSLicSrv.txt", "localhost:4085", utf8);
     };
     let getDSLSInfomation = async (exePath: string) => {
         let sh = shell.start({
@@ -797,6 +799,23 @@ let InstallerR21 = () => {
         else {
             console.log("Catia is already installed");
         }
+    };
+    let entry_installDSLS = async (archiveDirectory: string) => {
+        let dslsPath = Path.Combine(archiveDirectory, "6", "_SolidSQUAD_", "DSLS_SSQ_V6R2017x_Installer_20170620.exe");
+        let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
+        let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
+        if (isInstallDSLS() == false) {
+            await installDSLS(dslsPath);
+        }
+        else {
+            console.log("DSLS is already installed");
+        }
+
+        let dslsInfo = await getDSLSInfomation(dslsPath);
+        let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        await installLiczFilePath(catiaLiczPath);
+        await installLiczFilePath(caaLiczPath);
     };
     return {
         installCatia,
