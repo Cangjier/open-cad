@@ -720,6 +720,9 @@ let InstallerR21 = () => {
         console.log(sh.readLines());
         sh.kill();
     };
+    let selectLicense = async () => {
+
+    };
     let entry = async (archiveDirectory: string) => {
         let catiaDirectory = Path.Combine(archiveDirectory, "1");
         if (Directory.Exists(catiaDirectory) == false) {

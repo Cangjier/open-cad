@@ -112,17 +112,24 @@ let SSQManager = () => {
         for (let item of indexJson["DSLS.Gen"]) {
             let download_url = item["download_url"];
             let download_path = Path.Combine(ssqDirectory, Path.GetFileName(download_url));
-            await axios.download(download_url, download_path);
+            if (File.Exists(download_path) == false) {
+                await axios.download(download_url, download_path);
+            }
         }
         for (let item of indexJson["RADE.SSQ"]) {
             let download_url = item["download_url"];
             let download_path = Path.Combine(ssqDirectory, Path.GetFileName(download_url));
-            await axios.download(download_url, download_path);
+            if (File.Exists(download_path) == false) {
+                await axios.download(download_url, download_path);
+            }
+
         }
         for (let item of indexJson["CATIA.SSQ"]) {
             let download_url = item["download_url"];
             let download_path = Path.Combine(ssqDirectory, Path.GetFileName(download_url));
-            await axios.download(download_url, download_path);
+            if (File.Exists(download_path) == false) {
+                await axios.download(download_url, download_path);
+            }
         }
     };
     let getGenFilePaths = () => {
@@ -290,9 +297,7 @@ let main = async () => {
             generatorName,
             outputPath
         })
-        if (ssqManager.isDownload() == false) {
-            await ssqManager.download();
-        }
+        await ssqManager.download();
         await ssqManager.create(serverName, serverID, ssqName, generatorName, outputPath);
     }
 };
