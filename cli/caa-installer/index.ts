@@ -615,6 +615,20 @@ let InstallerR21 = () => {
         await cmdAsync(Environment.CurrentDirectory, cmd);
         return outputPath;
     };
+    let resgiterSSQByNet = async (serverName: string, serverID: string, ssqName: string, generatorName: string) => {
+        axios.unsetProxy();
+        let task = await taskManager.runSync("dsls", {
+            ServerName: serverName,
+            ServerID: serverID,
+            SSQ: ssqName,
+            Generator: generatorName
+        });
+        let download_url = task.Output.FileID;
+        let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
+        await taskManager.download(download_url, outputPath);
+        axios.setDefaultProxy();
+        return outputPath;
+    };
     let installLiczFilePath = async (liczFilePath: string) => {
         let sh = shell.start({
             filePath: "C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/DSLicSrv.exe",
@@ -659,7 +673,7 @@ let InstallerR21 = () => {
         let dslsInfo = await getDSLSInfomation();
         if (dslsInfo.ServerID && dslsInfo.ServerName) {
             let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
-            let catiaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+            let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
             console.log(`Catia Licz Path: ${catiaLiczPath}`);
         }
 
