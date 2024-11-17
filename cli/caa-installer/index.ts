@@ -587,7 +587,6 @@ let InstallerR21 = () => {
         let lines = sh.readLines();
         console.log(lines);
         let lastLine = lines[lines.length - 1];
-        let parameters = {};
         let colonIndex = lastLine.indexOf(":");
         if (colonIndex == -1) {
             colonIndex = lastLine.indexOf("：");
@@ -602,8 +601,7 @@ let InstallerR21 = () => {
         }
         next = next.substring(colonIndex + 1).trim();
         whiteSpaceIndex = next.indexOf(" ");
-        let serverID = next.substring(0, whiteSpaceIndex);
-        console.log(parameters)
+        let serverID = next;
         sh.kill();
         return {
             "ServerName": serverName,
