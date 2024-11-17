@@ -585,6 +585,7 @@ let InstallerR21 = () => {
         sh.writeLine("c localhost 4084");
         await Task.Delay(1000);
         let lines = sh.readLines();
+        console.log(lines);
         let lastLine = lines[lines.length - 1];
         let items = lastLine.trim().split(' ').filter(item => item.length > 0);
         let parameters = {};
