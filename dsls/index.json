@@ -9,6 +9,10 @@
         {
             "name": "v1.6",
             "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/DSLS.LicGen.v1.6.SSQ.exe"
+        },
+        {
+            "name": "v1.5",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/DSLS.LicGen.v1.5.SSQ.exe"
         }
     ],
     "RADE.SSQ": [
@@ -39,8 +43,8 @@
             "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/CATIA.V5R21-V5R22-V23.SSQ"
         },
         {
-            "name":"V5R25",
-            "download_url":"https://github.com/Cangjier/open-cad/releases/download/dsls/CATIA.V5R21-V5R25.SSQ"
+            "name": "V5R25",
+            "download_url": "https://github.com/Cangjier/open-cad/releases/download/dsls/CATIA.V5R21-V5R25.SSQ"
         }
     ]
 }

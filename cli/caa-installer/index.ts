@@ -166,34 +166,16 @@ let InstallerR21 = () => {
         return File.Exists("C:/Program Files (x86)/Dassault Systemes/B21/intel_a/CAA_RADE.lp");
     };
     let isInstallDSLS = () => {
-        return File.Exists("C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/intel_a/code/bin/DSLicSrv.exe");
+        return File.Exists("C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/DSLicSrv.exe");
     };
     let isInstallVS2008 = () => {
         return File.Exists("C:/Program Files (x86)/Microsoft Visual Studio 9.0/Common7/IDE/devenv.exe");
     };
-    let installCatia = async (archiveDirectory: string) => {
-        console.log(`Installing CATIA from ${archiveDirectory}`);
-        let arctiveFilePaths = Directory.GetFiles(archiveDirectory, "*.7z");
-        console.log(arctiveFilePaths);
-        let cd1 = arctiveFilePaths.find(x => x.includes("CD1"));
-        let cd2 = arctiveFilePaths.find(x => x.includes("CD2"));
-        let cd3 = arctiveFilePaths.find(x => x.includes("CD3"));
-        if (cd1 == undefined || cd2 == undefined || cd3 == undefined) {
-            console.log("CD1, CD2, CD3 not found");
-            return;
-        }
-        let extractDirectory = Path.Combine(archiveDirectory, "catia-extract");
-        if (Directory.Exists(extractDirectory)) {
-            deleteDirectory(extractDirectory);
-        }
-        console.log(`Extracting ${cd1} to ${extractDirectory}`);
-        await wclManager.extract(cd1, extractDirectory);
-        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
-        Directory.Move(rootDirectory, Path.Combine(extractDirectory, "CATIA"));
-        rootDirectory = Path.Combine(extractDirectory, "CATIA");
-        let setupPath = Path.Combine(rootDirectory, "setup.exe");
+    let installCatia = async (setupDirectory: string) => {
+        console.log(`Installing CATIA from ${setupDirectory}`);
+        let setupPath = Path.Combine(setupDirectory, "setup.exe");
         if (File.Exists(setupPath) == false) {
-            console.log(`setup.exe not found in ${rootDirectory}`);
+            console.log(`setup.exe not found in ${setupDirectory}`);
             return;
         }
         start({
@@ -239,77 +221,6 @@ let InstallerR21 = () => {
                 break;
             }
         }
-        console.log("CD1 done");
-        let cd2hWnd = "";
-        while (true) {
-            let matchResult = await wclManager.match(catiar21MatchPath);
-            if (matchResult.InsertCD) {
-                console.log("Insert CD2");
-                cd2hWnd = matchResult.InsertCD[1].Window.hWnd;
-                break;
-            }
-            console.log("Waiting for insert CD2");
-            await Task.Delay(1000);
-        }
-        deleteDirectory(extractDirectory);
-        await wclManager.extract(cd2, extractDirectory);
-        rootDirectory = Directory.GetDirectories(extractDirectory)[0];
-        Directory.Move(rootDirectory, Path.Combine(extractDirectory, "CATIA"));
-        rootDirectory = Path.Combine(extractDirectory, "CATIA");
-        await wclManager.click(cd2hWnd);
-        await Task.Delay(1000);
-        let cd3hWnd = "";
-        while (true) {
-            let matchResult = await wclManager.match(catiar21MatchPath);
-            if (matchResult.InsertCD) {
-                console.log("Insert CD3");
-                cd3hWnd = matchResult.InsertCD[1].Window.hWnd;
-                break;
-            }
-            console.log("Waiting for insert CD3");
-            await Task.Delay(1000);
-        }
-        deleteDirectory(extractDirectory);
-        await wclManager.extract(cd3, extractDirectory);
-        rootDirectory = Directory.GetDirectories(extractDirectory)[0];
-        Directory.Move(rootDirectory, Path.Combine(extractDirectory, "CATIA"));
-        rootDirectory = Path.Combine(extractDirectory, "CATIA");
-        await wclManager.click(cd3hWnd);
-        await Task.Delay(1000);
-        let finishhWnd = "";
-        let startCatiahWnd = "";
-        while (true) {
-            let matchResult = await wclManager.match(catiar21MatchPath);
-            if (matchResult.Finish && matchResult.StartCatia) {
-                console.log("Finish");
-                finishhWnd = matchResult.Finish[1].Window.hWnd;
-                startCatiahWnd = matchResult.StartCatia[2].Window.hWnd;
-                break;
-            }
-            console.log("Waiting for finish");
-            await Task.Delay(1000);
-        }
-        await wclManager.click(startCatiahWnd);
-        await Task.Delay(1000);
-        await wclManager.click(finishhWnd);
-        deleteDirectory(extractDirectory);
-    };
-    let installCatiaCrack = async (archivePath: string) => {
-        let archiveDirectory = Path.GetDirectoryName(archivePath);
-        let extractDirectory = Path.Combine(archiveDirectory, "catia-crack-extract");
-        if (Directory.Exists(extractDirectory)) {
-            deleteDirectory(extractDirectory);
-        }
-        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
-        await wclManager.extract(archivePath, extractDirectory);
-        let dlls = Directory.GetFiles(extractDirectory, "*.dll", SearchOption.AllDirectories);
-        let catiaDirectory = "C:/Program Files/Dassault Systemes/B21/win_b64/code/bin";
-        console.log(`Copying ${dlls} to ${catiaDirectory}`);
-        dlls.forEach(dll => {
-            let targetPath = Path.Combine(catiaDirectory, Path.GetFileName(dll));
-            File.Copy(dll, targetPath, true);
-        });
-        deleteDirectory(extractDirectory);
     };
     let installCAA = async (archivePath: string) => {
         let archiveDirectory = Path.GetDirectoryName(archivePath);
@@ -665,7 +576,7 @@ let InstallerR21 = () => {
         Directory.CreateDirectory("C:/ProgramData/DassaultSystemes/Licenses");
         File.WriteAllText("C:/ProgramData/DassaultSystemes/Licenses/DSLicSrv.txt", "localhost:4085", utf8);
     };
-    let getDSLSInfomation = async (exePath: string) => {
+    let getDSLSInfomation = async () => {
         let sh = shell.start({
             filePath: "C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/DSLicSrv.exe",
             arguments: ["/test", "-admin"]
@@ -681,12 +592,15 @@ let InstallerR21 = () => {
             if (item.includes("：")) {
                 parameters[item.split('：')[0]] = item.split('：')[1]
             }
+            else if (item.includes(":")) {
+                parameters[item.split(':')[0]] = item.split(':')[1]
+            }
         }
         console.log(parameters)
         sh.kill();
         return {
-            "ServerName": parameters["服务器名称"],
-            "ServerID": parameters["ID"]
+            "ServerName": parameters["服务器名称"] ?? parameters["ServerName"] ?? parameters["Name"],
+            "ServerID": parameters["ID"] ?? parameters["ServerID"]
         };
     };
     let registerSSQ = async (serverName: string, serverID: string, ssqName: string, generatorName: string) => {
@@ -694,20 +608,6 @@ let InstallerR21 = () => {
         let cmd = `opencad dsls create "${serverName}" "${serverID}" "${ssqName}" "${generatorName}" "${outputPath}"`;
         console.log(cmd)
         await cmdAsync(Environment.CurrentDirectory, cmd);
-        return outputPath;
-    };
-    let resgiterSSQByNet = async (serverName: string, serverID: string, ssqName: string, generatorName: string) => {
-        axios.unsetProxy();
-        let task = await taskManager.runSync("dsls", {
-            ServerName: serverName,
-            ServerID: serverID,
-            SSQ: ssqName,
-            Generator: generatorName
-        });
-        let download_url = task.Output.FileID;
-        let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
-        await taskManager.download(download_url, outputPath);
-        axios.setDefaultProxy();
         return outputPath;
     };
     let installLiczFilePath = async (liczFilePath: string) => {
@@ -735,64 +635,6 @@ let InstallerR21 = () => {
             console.log(`Directory ${catiaDirectory} not found`);
             return;
         }
-        let crackArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "2"), "*.7z", SearchOption.AllDirectories)[0];
-        let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
-        let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
-        let dotnet35Path = Path.Combine(archiveDirectory, "5", "dotnetfx35.exe");
-        let dotnet20Path = Path.Combine(archiveDirectory, "5", "NetFx20SP1_x64");
-        let vs2008Path = Path.Combine(archiveDirectory, "5", "VS2008.7z");
-        let vs2008SP1Path = Path.Combine(archiveDirectory, "5", "VS2008__SP1.7z");
-        let dslsPath = Path.Combine(archiveDirectory, "6", "_SolidSQUAD_", "DSLS_SSQ_V6R2017x_Installer_20170620.exe");
-        let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
-        let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
-        if (isInstallCatia() == false) {
-            console.log("Installing CATIA");
-            await installCatia(catiaDirectory);
-            // await installCatiaCrack(crackArchivePath);
-        }
-        else {
-            console.log("Catia is already installed");
-        }
-        if (isInstallCAA() == false) {
-            console.log("Installing CAA");
-            await installCAA(caaArchivePath);
-        }
-        else {
-            console.log("CAA is already installed");
-        }
-        if (isInstallRade() == false) {
-            console.log("Installing Rade");
-            await installRade(radeArchivePath);
-        }
-        else {
-            console.log("Rade is already installed");
-        }
-        await installDotNet(dotnet35Path);
-        await installDotNet(dotnet20Path);
-
-        if (isInstallDSLS() == false) {
-            await installDSLS(dslsPath);
-        }
-        else {
-            console.log("DSLS is already installed");
-        }
-
-        let dslsInfo = await getDSLSInfomation(dslsPath);
-        let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        await installLiczFilePath(catiaLiczPath);
-        await installLiczFilePath(caaLiczPath);
-        if (isInstallVS2008() == false) {
-            await installVS2008(vs2008Path);
-            await installVS2008SP1(vs2008SP1Path);
-        }
-    };
-    let entry_installCatia = async (archiveDirectory: string) => {
-        let catiaDirectory = Path.Combine(archiveDirectory, "1");
-        if (Directory.Exists(catiaDirectory) == false) {
-            console.log(`Directory ${catiaDirectory} not found`);
-            return;
-        }
         if (isInstallCatia() == false) {
             console.log("Installing CATIA");
             await installCatia(catiaDirectory);
@@ -800,11 +642,8 @@ let InstallerR21 = () => {
         else {
             console.log("Catia is already installed");
         }
-    };
-    let entry_installDSLS = async (archiveDirectory: string) => {
-        let dslsPath = Path.Combine(archiveDirectory, "6", "_SolidSQUAD_", "DSLS_SSQ_V6R2017x_Installer_20170620.exe");
-        let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
-        let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
+
+        let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
         if (isInstallDSLS() == false) {
             await installDSLS(dslsPath);
         }
@@ -812,21 +651,54 @@ let InstallerR21 = () => {
             console.log("DSLS is already installed");
         }
 
-        let dslsInfo = await getDSLSInfomation(dslsPath);
-        let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        await installLiczFilePath(catiaLiczPath);
-        await installLiczFilePath(caaLiczPath);
+        let dslsInfo = await getDSLSInfomation();
+        let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
+        let catiaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        console.log(`Catia Licz Path: ${catiaLiczPath}`);
+        // let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
+        // let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
+        // let dotnet35Path = Path.Combine(archiveDirectory, "5", "dotnetfx35.exe");
+        // let dotnet20Path = Path.Combine(archiveDirectory, "5", "NetFx20SP1_x64");
+        // let vs2008Path = Path.Combine(archiveDirectory, "5", "VS2008.7z");
+        // let vs2008SP1Path = Path.Combine(archiveDirectory, "5", "VS2008__SP1.7z");
+
+
+        // let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
+
+        // if (isInstallCAA() == false) {
+        //     console.log("Installing CAA");
+        //     await installCAA(caaArchivePath);
+        // }
+        // else {
+        //     console.log("CAA is already installed");
+        // }
+        // if (isInstallRade() == false) {
+        //     console.log("Installing Rade");
+        //     await installRade(radeArchivePath);
+        // }
+        // else {
+        //     console.log("Rade is already installed");
+        // }
+        // await installDotNet(dotnet35Path);
+
+
+
+        
+        
+        // let caaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        // await installLiczFilePath(catiaLiczPath);
+        // await installLiczFilePath(caaLiczPath);
+        // if (isInstallVS2008() == false) {
+        //     await installVS2008(vs2008Path);
+        //     await installVS2008SP1(vs2008SP1Path);
+        // }
     };
     return {
         installCatia,
-        installCatiaCrack,
         installCAA,
         entry,
         installVS2008,
-        installDotNet,
-        entry_installCatia,
-        entry_installDSLS
+        installDotNet
     }
 };
 
@@ -839,7 +711,6 @@ let main = async () => {
     }
     if (args.length < 1) {
         console.log("Usage: caa-installer r21 <archiveDirectory>");
-        console.log("Usage: caa-installer r21-catia <archiveDirectory>");
         return;
     }
     let command = args[0];
@@ -850,22 +721,6 @@ let main = async () => {
         }
         let archiveDirectory = args[1];
         await installer.entry(archiveDirectory);
-    }
-    else if (command == "r21-catia") {
-        if (args.length < 2) {
-            console.log("Usage: caa-installer r21-catia <archiveDirectory>");
-            return;
-        }
-        let archiveDirectory = args[1];
-        await installer.entry_installCatia(archiveDirectory);
-    }
-    else if (command == "r21-dsls") {
-        if (args.length < 2) {
-            console.log("Usage: caa-installer r21-dsls <archiveDirectory>");
-            return;
-        }
-        let archiveDirectory = args[1];
-        await installer.entry_installDSLS(archiveDirectory);
     }
     else {
         console.log("Unknown command");
