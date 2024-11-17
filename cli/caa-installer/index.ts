@@ -662,6 +662,7 @@ let InstallerR21 = () => {
                 break;
             }
         }
+        Directory.CreateDirectory("C:/ProgramData/DassaultSystemes/Licenses");
         File.WriteAllText("C:/ProgramData/DassaultSystemes/Licenses/DSLicSrv.txt", "localhost:4085", utf8);
     };
     let getDSLSInfomation = async (exePath: string) => {
