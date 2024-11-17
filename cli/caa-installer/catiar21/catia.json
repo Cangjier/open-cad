@@ -119,16 +119,6 @@
             "ClassName": "Button"
         }
     ],
-    "InsertCD": [
-        {
-            "Title": "插入下一张 CD-ROM",
-            "ClassName": "#32770"
-        },
-        {
-            "Title": "确定",
-            "ClassName": "Button"
-        }
-    ],
     "Finish": [
         {
             "Title": "CATIA P3 V5R21 安装完成",

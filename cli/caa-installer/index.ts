@@ -208,8 +208,8 @@ let InstallerR21 = () => {
                 }
                 console.log(`Processing ${currentKey}`);
                 await wclManager.click(state[state.length - 1].Window.hWnd);
-                if (currentKey == "CopyFile") {
-                    console.log("Waiting for copy file");
+                if (currentKey == "Finish") {
+                    console.log("Finish");
                     isDone = true;
                     break;
                 }
