@@ -673,7 +673,7 @@ let InstallerR21 = () => {
         let dslsInfo = await getDSLSInfomation();
         if (dslsInfo.ServerID && dslsInfo.ServerName) {
             let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
-            let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+            let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
             console.log(`Catia Licz Path: ${catiaLiczPath}`);
         }
 
