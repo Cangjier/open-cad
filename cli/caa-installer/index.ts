@@ -587,21 +587,27 @@ let InstallerR21 = () => {
         let lines = sh.readLines();
         console.log(lines);
         let lastLine = lines[lines.length - 1];
-        let items = lastLine.trim().split(' ').filter(item => item.length > 0);
         let parameters = {};
-        for (let item of items) {
-            if (item.includes("：")) {
-                parameters[item.split('：')[0]] = item.split('：')[1]
-            }
-            else if (item.includes(":")) {
-                parameters[item.split(':')[0]] = item.split(':')[1]
-            }
+        let colonIndex = lastLine.indexOf(":");
+        if (colonIndex == -1) {
+            colonIndex = lastLine.indexOf("：");
         }
+        let next = lastLine.substring(colonIndex + 1).trim();
+        let whiteSpaceIndex = next.indexOf(" ");
+        let serverName = next.substring(0, whiteSpaceIndex);
+        next = next.substring(whiteSpaceIndex + 1).trim();
+        colonIndex = next.indexOf(":");
+        if (colonIndex == -1) {
+            colonIndex = next.indexOf("：");
+        }
+        next = next.substring(colonIndex + 1).trim();
+        whiteSpaceIndex = next.indexOf(" ");
+        let serverID = next.substring(0, whiteSpaceIndex);
         console.log(parameters)
         sh.kill();
         return {
-            "ServerName": parameters["服务器名称"] ?? parameters["ServerName"] ?? parameters["Name"],
-            "ServerID": parameters["ID"] ?? parameters["ServerID"]
+            "ServerName": serverName,
+            "ServerID": serverID
         };
     };
     let registerSSQ = async (serverName: string, serverID: string, ssqName: string, generatorName: string) => {
@@ -653,9 +659,12 @@ let InstallerR21 = () => {
         }
 
         let dslsInfo = await getDSLSInfomation();
-        let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
-        let catiaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        console.log(`Catia Licz Path: ${catiaLiczPath}`);
+        if (dslsInfo.ServerID && dslsInfo.ServerName) {
+            let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
+            let catiaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+            console.log(`Catia Licz Path: ${catiaLiczPath}`);
+        }
+
         // let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
         // let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
         // let dotnet35Path = Path.Combine(archiveDirectory, "5", "dotnetfx35.exe");
@@ -684,8 +693,8 @@ let InstallerR21 = () => {
 
 
 
-        
-        
+
+
         // let caaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
         // await installLiczFilePath(catiaLiczPath);
         // await installLiczFilePath(caaLiczPath);
