@@ -526,7 +526,7 @@ let InstallerR21 = () => {
             filePath: exePath
         });
         await Task.Delay(2000);
-        let matchPath = Path.Combine(script_directory, "catiar21", "dsls.json");
+        let matchPath = Path.Combine(script_directory, "catiar21", "dsls2015.json");
         let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
         let doneKeys = [] as string[];
         while (true) {
