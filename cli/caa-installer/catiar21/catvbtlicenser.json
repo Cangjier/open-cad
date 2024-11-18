@@ -2,6 +2,20 @@
     "Finish": {
         "Title": "RADE Tools Licensing"
     },
+    "Apply": [
+        {
+            "Title": "RADE Tools Licensing"
+        },
+        {
+            "Title": "RADE Tools Licensing"
+        },
+        {
+            "Title": "RADELicensing"
+        },
+        {
+            "Title": "Apply"
+        }
+    ],
     "Licenses": [
         {
             "Title": "RADE Tools Licensing"
@@ -20,20 +34,6 @@
         },
         {
             "Title": "La_Liste_des_licences"
-        }
-    ],
-    "Apply": [
-        {
-            "Title": "RADE Tools Licensing"
-        },
-        {
-            "Title": "RADE Tools Licensing"
-        },
-        {
-            "Title": "RADELicensing"
-        },
-        {
-            "Title": "Apply"
         }
     ],
     "Information": [
