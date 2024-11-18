@@ -706,7 +706,6 @@ let InstallerR21 = () => {
                 console.log(`Processing ${currentKey}`);
                 if (currentKey == "Welcome" || currentKey == "Sure" || currentKey == "Warning") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
-                    await Task.Delay(4000);
                 }
                 else if (currentKey == "LicenseSelect") {
                     let hWnd = state[state.length - 1].Window.hWnd;
@@ -744,37 +743,37 @@ let InstallerR21 = () => {
         }
     };
     let entry = async (archiveDirectory: string) => {
-        // let catiaDirectory = Path.Combine(archiveDirectory, "1");
-        // if (Directory.Exists(catiaDirectory) == false) {
-        //     console.log(`Directory ${catiaDirectory} not found`);
-        //     return;
-        // }
-        // if (isInstallCatia() == false) {
-        //     console.log("Installing CATIA");
-        //     await installCatia(catiaDirectory);
-        // }
-        // else {
-        //     console.log("Catia is already installed");
-        // }
+        let catiaDirectory = Path.Combine(archiveDirectory, "1");
+        if (Directory.Exists(catiaDirectory) == false) {
+            console.log(`Directory ${catiaDirectory} not found`);
+            return;
+        }
+        if (isInstallCatia() == false) {
+            console.log("Installing CATIA");
+            await installCatia(catiaDirectory);
+        }
+        else {
+            console.log("Catia is already installed");
+        }
 
-        // let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
-        // if (isInstallDSLS() == false) {
-        //     await installDSLS(dslsPath);
-        // }
-        // else {
-        //     console.log("DSLS is already installed");
-        // }
+        let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
+        if (isInstallDSLS() == false) {
+            await installDSLS(dslsPath);
+        }
+        else {
+            console.log("DSLS is already installed");
+        }
 
-        // let dslsInfo = await getDSLSInfomation();
-        // if (dslsInfo.ServerID && dslsInfo.ServerName) {
-        //     let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
-        //     let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
-        //     if (File.Exists(catiaLiczPath)) {
-        //         await installLiczFilePath(catiaLiczPath);
-        //         installDSLSConfig();
-        //         await selectLicense();
-        //     }
-        // }
+        let dslsInfo = await getDSLSInfomation();
+        if (dslsInfo.ServerID && dslsInfo.ServerName) {
+            let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
+            let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
+            if (File.Exists(catiaLiczPath)) {
+                await installLiczFilePath(catiaLiczPath);
+                installDSLSConfig();
+                await selectLicense();
+            }
+        }
 
         await selectLicense();
 
