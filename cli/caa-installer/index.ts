@@ -715,7 +715,7 @@ let InstallerR21 = () => {
                                     await wclManager.click(button.hWnd);
                                 }
                                 else{
-                                    console.log(`Button not found ${subChildren}`);
+                                    console.log(`Button not found, ${child}, ${subChildren}`);
                                 }
                             }
                         }
