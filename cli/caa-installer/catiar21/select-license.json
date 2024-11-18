@@ -1,0 +1,44 @@
+{
+    "Welcome": [
+        {
+            "Title": "许可证管理器"
+        },
+        {
+            "Title": "确定"
+        }
+    ],
+    "LicenseSelect": [
+        {
+            "Title": "许可证管理器"
+        },
+        {
+            "Title": "Frame"
+        },
+        {
+            "Title": "FRList"
+        },
+        {
+            "Title": "IconAndOptionsFrame"
+        },
+        {
+            "Title": "OptionsFrame"
+        },
+        {
+            "Title": "Container"
+        },
+        {
+            "Title": "La_Liste_des_licences"
+        }
+    ],
+    "Sure": [
+        {
+            "Title": "许可证管理器"
+        },
+        {
+            "Title": "确定"
+        }
+    ],
+    "CATIA": {
+        "Title": "CATIA V5"
+    }
+}

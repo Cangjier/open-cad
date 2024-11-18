@@ -655,39 +655,114 @@ let InstallerR21 = () => {
         sh.kill();
     };
     let selectLicense = async () => {
+        start({
+            filePath: "C:\\Program Files\\Dassault Systemes\\B21\\win_b64\\code\\bin\\CATSTART.exe",
+            arguments: [
+                "-run",
+                "CNEXT.exe",
+                "-env",
+                "CATIA_P3.V5R21.B21",
+                "-direnv",
+                "C:\\ProgramData\\DassaultSystemes\\CATEnv",
+                "-nowindow"
+            ]
+        });
+        await Task.Delay(2000);
+        let matchPath = Path.Combine(script_directory, "catiar21", "select-license.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                if ((currentKey == "CATIA" || currentKey == "Sure") && doneKeys.includes("LicenseSelect") == false) {
+                    return false;
+                }
+                if (currentKey == "CATIA" && doneKeys.includes("Sure") == false) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                doneKeys.push(currentKey);
+                console.log(`Processing ${currentKey}`);
+                if (currentKey == "Welcome" || currentKey == "Sure") {
+                    await wclManager.click(state[state.length - 1].Window.hWnd);
+                }
+                else if (currentKey == "LicenseSelect") {
+                    let hWnd = state[state.length - 1].Window.hWnd;
+                    let children = await wclManager.getChildrenWindows(hWnd);
+                    console.log(children);
+                    for (let child of children) {
+                        if (child.Title.startsWith("License_")) {
+                            if (child.Title.includes("DIC") == false && child.Title.includes("ED2") == false && child.Title.includes("EX2") == false && child.Title.includes("I3D") == false) {
+                                await wclManager.click(child.hWnd);
+                            }
+                        }
+                    }
+                }
+                else if (currentKey == "CATIA") {
+                    await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.995, 0.005);
+                }
 
-    };
-    let entry = async (archiveDirectory: string) => {
-        let catiaDirectory = Path.Combine(archiveDirectory, "1");
-        if (Directory.Exists(catiaDirectory) == false) {
-            console.log(`Directory ${catiaDirectory} not found`);
-            return;
-        }
-        if (isInstallCatia() == false) {
-            console.log("Installing CATIA");
-            await installCatia(catiaDirectory);
-        }
-        else {
-            console.log("Catia is already installed");
-        }
-
-        let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
-        if (isInstallDSLS() == false) {
-            await installDSLS(dslsPath);
-        }
-        else {
-            console.log("DSLS is already installed");
-        }
-
-        let dslsInfo = await getDSLSInfomation();
-        if (dslsInfo.ServerID && dslsInfo.ServerName) {
-            let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
-            let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
-            if (File.Exists(catiaLiczPath)) {
-                await installLiczFilePath(catiaLiczPath);
-                await installDSLSConfig();
+                if (currentKey == "CATIA") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
             }
         }
+    };
+    let entry = async (archiveDirectory: string) => {
+        // let catiaDirectory = Path.Combine(archiveDirectory, "1");
+        // if (Directory.Exists(catiaDirectory) == false) {
+        //     console.log(`Directory ${catiaDirectory} not found`);
+        //     return;
+        // }
+        // if (isInstallCatia() == false) {
+        //     console.log("Installing CATIA");
+        //     await installCatia(catiaDirectory);
+        // }
+        // else {
+        //     console.log("Catia is already installed");
+        // }
+
+        // let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
+        // if (isInstallDSLS() == false) {
+        //     await installDSLS(dslsPath);
+        // }
+        // else {
+        //     console.log("DSLS is already installed");
+        // }
+
+        // let dslsInfo = await getDSLSInfomation();
+        // if (dslsInfo.ServerID && dslsInfo.ServerName) {
+        //     let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
+        //     let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
+        //     if (File.Exists(catiaLiczPath)) {
+        //         await installLiczFilePath(catiaLiczPath);
+        //         installDSLSConfig();
+        //         await selectLicense();
+        //     }
+        // }
+
+        await selectLicense();
 
         // let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
         // let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
