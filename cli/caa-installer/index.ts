@@ -96,6 +96,9 @@ let WCLManager = () => {
     let mouseClickWindowAtRatio = async (hwnd: string, xRatio: number, yRatio: number) => {
         await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 500`);
     };
+    let mouseClickWindowAt = async (hwnd: string, x: number, y: number) => {
+        await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at ${hwnd} ${x} ${y} --delay 500`);
+    };
     let mouseClick = async () => {
         await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click`);
     };
@@ -111,6 +114,7 @@ let WCLManager = () => {
         close,
         extract,
         mouseClickWindowAtRatio,
+        mouseClickWindowAt,
         mouseClick
     }
 };
@@ -706,14 +710,17 @@ let InstallerR21 = () => {
                     for (let child of children) {
                         if (child.Text.startsWith("License_")) {
                             if (child.Text.includes("DIC") == false && child.Text.includes("ED2") == false && child.Text.includes("EX2") == false && child.Text.includes("I3D") == false) {
-                                console.log(`Selecting ${child}`);
-                                await wclManager.click(child.hWnd);
+                                let subChild = await wclManager.getChildrenWindows(child.hWnd);
+                                let button = subChild.find(x => x.ClassName == "Button");
+                                if (button) {
+                                    await wclManager.click(button.hWnd);
+                                }
                             }
                         }
                     }
                 }
                 else if (currentKey == "CATIA") {
-                    await wclManager.mouseClickWindowAtRatio(state.Window.hWnd, 0.995, 0.005);
+                    await wclManager.mouseClickWindowAt(state.Window.hWnd, state.Window.Size.With - 10, 10);
                 }
 
                 if (currentKey == "CATIA") {
