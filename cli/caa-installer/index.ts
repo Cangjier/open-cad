@@ -705,8 +705,8 @@ let InstallerR21 = () => {
                     let children = await wclManager.getChildrenWindows(hWnd);
                     console.log(children);
                     for (let child of children) {
-                        if (child.Title.startsWith("License_")) {
-                            if (child.Title.includes("DIC") == false && child.Title.includes("ED2") == false && child.Title.includes("EX2") == false && child.Title.includes("I3D") == false) {
+                        if (child.Text.startsWith("License_")) {
+                            if (child.Text.includes("DIC") == false && child.Text.includes("ED2") == false && child.Text.includes("EX2") == false && child.Text.includes("I3D") == false) {
                                 await wclManager.click(child.hWnd);
                             }
                         }
