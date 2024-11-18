@@ -54,7 +54,6 @@ let WCLManager = () => {
     };
     let getChildrenWindows = async (hwnd: string) => {
         let outputPath = Path.GetTempFileName();
-        console.log(`wcl list-children-windows ${hwnd} ${outputPath}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl list-children-windows ${hwnd} ${outputPath}`);
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
@@ -706,7 +705,7 @@ let InstallerR21 = () => {
                     await Task.Delay(4000);
                 }
                 else if (currentKey == "LicenseSelect") {
-                    console.log(`${state[state.length - 1]}`);
+                    let isValid = true;
                     let hWnd = state[state.length - 1].Window.hWnd;
                     let children = await wclManager.getChildrenWindows(hWnd);
                     for (let child of children) {
@@ -717,8 +716,16 @@ let InstallerR21 = () => {
                                 if (button) {
                                     await wclManager.click(button.hWnd);
                                 }
+                                else {
+                                    isValid = false;
+                                    break;
+                                }
                             }
                         }
+                    }
+                    if (isValid == false) {
+                        let index = doneKeys.indexOf("LicenseSelect");
+                        doneKeys.splice(index, 1);
                     }
                 }
                 else if (currentKey == "CATIA") {
