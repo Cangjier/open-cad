@@ -793,7 +793,7 @@ let InstallerR21 = () => {
                     let nodes = tree.Nodes;
                     console.log(`Nodes: ${nodes}`);
                     for (let node of nodes) {
-                        await wclManager.mouseClickWindowAt(node.hWnd, node.Rectangle.Height / 2, node.Rectangle.Y + node.Rectangle.Height / 2);
+                        await wclManager.mouseClickWindowAt(tree.hWnd, node.Rectangle.Height / 2, node.Rectangle.Y + node.Rectangle.Height / 2);
                     }
                 }
                 else {
