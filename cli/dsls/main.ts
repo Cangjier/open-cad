@@ -90,6 +90,15 @@ let WCLManager = () => {
         console.log(`wcl close-window ${hwnd}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl close-window ${hwnd}`);
     };
+    let mouseClickWindowAtRatio = async (hwnd: string, xRatio: number, yRatio: number) => {
+        await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 500`);
+    };
+    let mouseClick = async () => {
+        await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click`);
+    };
+    let keyboard = async (keys: string) => {
+        await cmdAsync(Environment.CurrentDirectory, `wcl keyboard ${keys}`);
+    };
     return {
         isInstalled,
         install,
@@ -99,7 +108,10 @@ let WCLManager = () => {
         selectComboboxIndex,
         click,
         match,
-        close
+        close,
+        mouseClick,
+        mouseClickWindowAtRatio,
+        keyboard
     }
 };
 
@@ -186,7 +198,14 @@ let SSQManager = () => {
                 console.log(`Cannot find ${name}`);
                 return;
             }
-            await wclManager.selectComboboxIndex(comboboxes[0].hWnd, index);
+            let combobox = comboboxes[0];
+            await wclManager.mouseClickWindowAtRatio(comboboxes[0].hWnd, 0.95, 0.5);
+            await wclManager.keyboard("up,up,up,up,up");
+            let downs = [] as string[];
+            for (let i = 0; i < index; i++) {
+                downs.push("down");
+            }
+            await wclManager.keyboard(downs.join(","));
         }
     };
     let sureGenerate = async (hwnd: string) => {
