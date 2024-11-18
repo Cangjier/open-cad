@@ -82,7 +82,6 @@ let WCLManager = () => {
     };
     let match = async (matchPath: string) => {
         let outputPath = Path.GetTempFileName();
-        console.log(`wcl match-window ${matchPath} ${outputPath}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl match-window ${matchPath} ${outputPath}`);
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
@@ -704,6 +703,7 @@ let InstallerR21 = () => {
                 doneKeys.push(currentKey);
                 if (currentKey == "Welcome" || currentKey == "Sure") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
+                    await Task.Delay(4000);
                 }
                 else if (currentKey == "LicenseSelect") {
                     console.log(`${state[state.length - 1]}`);
