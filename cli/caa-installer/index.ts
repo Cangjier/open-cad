@@ -706,30 +706,20 @@ let InstallerR21 = () => {
                     await Task.Delay(4000);
                 }
                 else if (currentKey == "LicenseSelect") {
-                    let isValid = true;
                     let hWnd = state[state.length - 1].Window.hWnd;
                     console.log(hWnd);
                     let children = await wclManager.getChildrenWindows(hWnd);
                     for (let child of children) {
                         if (child.Text.startsWith("License_")) {
                             if (child.Text.includes("DIC") == false && child.Text.includes("ED2") == false && child.Text.includes("EX2") == false && child.Text.includes("I3D") == false) {
-                                
                                 let subChildren = await wclManager.getChildrenWindows(child.hWnd);
                                 console.log(subChildren);
-                                // let button = subChildren.find(x => x.ClassName == "Button");
-                                // if (button) {
-                                //     await wclManager.click(button.hWnd);
-                                // }
-                                // else {
-                                //     isValid = false;
-                                //     break;
-                                // }
+                                let button = subChildren.find(x => x.ClassName == "Button" && x.Text == "");
+                                if (button) {
+                                    await wclManager.click(button.hWnd);
+                                }
                             }
                         }
-                    }
-                    if (isValid == false) {
-                        let index = doneKeys.indexOf("LicenseSelect");
-                        doneKeys.splice(index, 1);
                     }
                 }
                 else if (currentKey == "CATIA") {
