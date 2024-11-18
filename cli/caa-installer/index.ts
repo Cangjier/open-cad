@@ -98,6 +98,7 @@ let WCLManager = () => {
         await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 500`);
     };
     let mouseClickWindowAt = async (hwnd: string, x: number, y: number) => {
+        console.log(`wcl mouse-click-window-at ${hwnd} ${x} ${y} --delay 500`);
         await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at ${hwnd} ${x} ${y} --delay 500`);
     };
     let mouseClick = async () => {
@@ -790,6 +791,7 @@ let InstallerR21 = () => {
                 if (currentKey == "ComponentTree") {
                     let tree = state[state.length - 1].Window;
                     let nodes = tree.Nodes;
+                    console.log(`Nodes: ${nodes}`);
                     for (let node of nodes) {
                         await wclManager.mouseClickWindowAt(node.hWnd, node.Rectangle.X + node.Rectangle.Height / 2, node.Rectangle.Y + node.Rectangle.Height / 2);
                     }
