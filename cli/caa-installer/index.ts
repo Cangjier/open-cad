@@ -707,8 +707,8 @@ let InstallerR21 = () => {
                 }
                 else if (currentKey == "LicenseSelect") {
                     // let isValid = true;
-                    // let hWnd = state[state.length - 1].Window.hWnd;
-                    // let children = await wclManager.getChildrenWindows(hWnd);
+                    let hWnd = state[state.length - 1].Window.hWnd;
+                    let children = await wclManager.getChildrenWindows(hWnd);
                     // for (let child of children) {
                     //     if (child.Text.startsWith("License_")) {
                     //         if (child.Text.includes("DIC") == false && child.Text.includes("ED2") == false && child.Text.includes("EX2") == false && child.Text.includes("I3D") == false) {
