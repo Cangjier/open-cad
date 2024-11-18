@@ -678,10 +678,10 @@ let InstallerR21 = () => {
                 if (doneKeys.includes(key)) {
                     return false;
                 }
-                if ((currentKey == "CATIA" || currentKey == "Sure") && doneKeys.includes("LicenseSelect") == false) {
+                if ((key == "CATIA" || key == "Sure") && doneKeys.includes("LicenseSelect") == false) {
                     return false;
                 }
-                if (currentKey == "CATIA" && doneKeys.includes("Sure") == false) {
+                if (key == "CATIA" && doneKeys.includes("Sure") == false) {
                     return false;
                 }
                 let state = matchResult[key];
