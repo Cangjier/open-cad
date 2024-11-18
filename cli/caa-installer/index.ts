@@ -788,7 +788,11 @@ let InstallerR21 = () => {
                 doneKeys.push(currentKey);
                 console.log(`Processing ${currentKey}`);
                 if (currentKey == "ComponentTree") {
-                    
+                    let tree = state[state.length - 1].Window;
+                    let nodes = tree.Nodes;
+                    for (let node of nodes) {
+                        await wclManager.mouseClickWindowAt(node.hWnd, node.Rectangle.X + node.Rectangle.Height / 2, node.Rectangle.Y + node.Rectangle.Height / 2);
+                    }
                 }
                 else {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
@@ -868,8 +872,8 @@ let InstallerR21 = () => {
         // let catvbtlicenserPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTLicenser.exe";
         // await configCATVBTLicenser(catvbtlicenserPath);
 
-        // let catvbtsetupPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTSetup.exe";
-        // await configCATVBTSetup(catvbtsetupPath);
+        let catvbtsetupPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTSetup.exe";
+        await configCATVBTSetup(catvbtsetupPath);
 
         // let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
         // await installDotNet(dotnet35Path);
