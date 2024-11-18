@@ -704,7 +704,7 @@ let InstallerR21 = () => {
                 }
                 doneKeys.push(currentKey);
                 console.log(`Processing ${currentKey}`);
-                if (currentKey == "Welcome" || currentKey == "Sure") {
+                if (currentKey == "Welcome" || currentKey == "Sure" || currentKey == "Warning") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                     await Task.Delay(4000);
                 }
