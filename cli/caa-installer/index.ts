@@ -712,8 +712,9 @@ let InstallerR21 = () => {
                     for (let child of children) {
                         if (child.Text.startsWith("License_")) {
                             if (child.Text.includes("DIC") == false && child.Text.includes("ED2") == false && child.Text.includes("EX2") == false && child.Text.includes("I3D") == false) {
-                                console.log(child.Text);
-                                // let subChildren = await wclManager.getChildrenWindows(child.hWnd);
+                                // console.log(child.Text);
+                                let subChildren = await wclManager.getChildrenWindows(child.hWnd);
+                                console.log(subChildren);
                                 // let button = subChildren.find(x => x.ClassName == "Button");
                                 // if (button) {
                                 //     await wclManager.click(button.hWnd);
