@@ -775,8 +775,6 @@ let InstallerR21 = () => {
             }
         }
 
-        await selectLicense();
-
         // let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
         // let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
         // let dotnet35Path = Path.Combine(archiveDirectory, "5", "dotnetfx35.exe");
