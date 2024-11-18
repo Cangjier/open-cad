@@ -226,19 +226,10 @@ let InstallerR21 = () => {
             }
         }
     };
-    let installCAA = async (archivePath: string) => {
-        let archiveDirectory = Path.GetDirectoryName(archivePath);
-        let extractDirectory = Path.Combine(archiveDirectory, "caa-crack-extract");
-        if (Directory.Exists(extractDirectory)) {
-            deleteDirectory(extractDirectory);
-        }
-        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
-        await wclManager.extract(archivePath, extractDirectory);
-        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
-        let startcaa = Directory.GetFiles(rootDirectory, "startcaa.exe", SearchOption.AllDirectories)[0];
-        console.log(`Starting ${startcaa}`);
+    let installCAA = async (exePath: string) => {
+        console.log(`Starting ${exePath}`);
         start({
-            filePath: startcaa
+            filePath: exePath
         });
         let matchPath = Path.Combine(script_directory, "catiar21", "caa.json");
         let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
@@ -278,22 +269,10 @@ let InstallerR21 = () => {
                 break;
             }
         }
-
-        deleteDirectory(extractDirectory);
     };
-    let installRade = async (archivePath: string) => {
-        let archiveDirectory = Path.GetDirectoryName(archivePath);
-        let extractDirectory = Path.Combine(archiveDirectory, "rade-crack-extract");
-        if (Directory.Exists(extractDirectory)) {
-            deleteDirectory(extractDirectory);
-        }
-        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
-        await wclManager.extract(archivePath, extractDirectory);
-        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
-        let startcaa = Directory.GetFiles(rootDirectory, "setup.exe", SearchOption.AllDirectories)[0];
-        console.log(`Starting ${startcaa}`);
+    let installRade = async (exePath: string) => {
         start({
-            filePath: startcaa
+            filePath: exePath
         });
         let matchPath = Path.Combine(script_directory, "catiar21", "rade.json");
         let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
@@ -342,8 +321,6 @@ let InstallerR21 = () => {
                 break;
             }
         }
-
-        deleteDirectory(extractDirectory);
     };
     let installDotNet = async (exePath: string) => {
         console.log(`Installing .NET from ${exePath}`);
@@ -398,19 +375,9 @@ let InstallerR21 = () => {
             }
         }
     };
-    let installVS2008 = async (archivePath: string) => {
-        let archiveDirectory = Path.GetDirectoryName(archivePath);
-        let extractDirectory = Path.Combine(archiveDirectory, "vs2008-extract");
-        if (Directory.Exists(extractDirectory)) {
-            deleteDirectory(extractDirectory);
-        }
-        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
-        await wclManager.extract(archivePath, extractDirectory);
-        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
-        let setup = Directory.GetFiles(rootDirectory, "setup.exe", SearchOption.AllDirectories)[0];
-        console.log(`Starting ${setup}`);
+    let installVS2008 = async (exePath: string) => {
         start({
-            filePath: setup
+            filePath: exePath
         });
         await Task.Delay(2000);
         let matchPath = Path.Combine(script_directory, "catiar21", "vs2008.json");
@@ -466,22 +433,10 @@ let InstallerR21 = () => {
                 break;
             }
         }
-
-        deleteDirectory(extractDirectory);
     };
-    let installVS2008SP1 = async (archivePath: string) => {
-        let archiveDirectory = Path.GetDirectoryName(archivePath);
-        let extractDirectory = Path.Combine(archiveDirectory, "vs2008-sp1-extract");
-        if (Directory.Exists(extractDirectory)) {
-            deleteDirectory(extractDirectory);
-        }
-        console.log(`Extracting ${archivePath} to ${extractDirectory}`);
-        await wclManager.extract(archivePath, extractDirectory);
-        let rootDirectory = Directory.GetDirectories(extractDirectory)[0];
-        let setup = Directory.GetFiles(rootDirectory, "SPInstaller.exe", SearchOption.AllDirectories)[0];
-        console.log(`Starting ${setup}`);
+    let installVS2008SP1 = async (exePath: string) => {
         start({
-            filePath: setup
+            filePath: exePath
         });
         await Task.Delay(2000);
         let matchPath = Path.Combine(script_directory, "catiar21", "vs2008_sp1.json");
@@ -775,43 +730,36 @@ let InstallerR21 = () => {
             }
         }
 
-        // let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
-        // let radeArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "4"), "*.7z", SearchOption.AllDirectories)[0];
-        // let dotnet35Path = Path.Combine(archiveDirectory, "5", "dotnetfx35.exe");
-        // let dotnet20Path = Path.Combine(archiveDirectory, "5", "NetFx20SP1_x64");
-        // let vs2008Path = Path.Combine(archiveDirectory, "5", "VS2008.7z");
-        // let vs2008SP1Path = Path.Combine(archiveDirectory, "5", "VS2008__SP1.7z");
+        let caaStartPath = Path.Combine(archiveDirectory, "5", "startcaa.exe");
+        if (isInstallCAA() == false) {
+            console.log("Installing CAA");
+            await installCAA(caaStartPath);
+        }
+        else {
+            console.log("CAA is already installed");
+        }
 
+        let radeStartPath = Path.Combine(archiveDirectory, "6", "setup.exe");
+        if (isInstallRade() == false) {
+            console.log("Installing Rade");
+            await installRade(radeStartPath);
+        }
+        else {
+            console.log("Rade is already installed");
+        }
 
-        // let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
+        let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
+        await installDotNet(dotnet35Path);
 
-        // if (isInstallCAA() == false) {
-        //     console.log("Installing CAA");
-        //     await installCAA(caaArchivePath);
-        // }
-        // else {
-        //     console.log("CAA is already installed");
-        // }
-        // if (isInstallRade() == false) {
-        //     console.log("Installing Rade");
-        //     await installRade(radeArchivePath);
-        // }
-        // else {
-        //     console.log("Rade is already installed");
-        // }
-        // await installDotNet(dotnet35Path);
-
-
-
-
-
-        // let caaLiczPath = await registerSSQ(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        // await installLiczFilePath(catiaLiczPath);
-        // await installLiczFilePath(caaLiczPath);
-        // if (isInstallVS2008() == false) {
-        //     await installVS2008(vs2008Path);
-        //     await installVS2008SP1(vs2008SP1Path);
-        // }
+        let vs2008Path = Path.Combine(archiveDirectory, "8", "setup.exe");
+        let vs2008SP1Path = Path.Combine(archiveDirectory, "9", "vs90sp1\\SPInstaller.exe");
+        if (isInstallVS2008() == false) {
+            await installVS2008(vs2008Path);
+            await installVS2008SP1(vs2008SP1Path);
+        }
+        let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
+        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        await installLiczFilePath(caaLiczPath);
     };
     return {
         installCatia,
