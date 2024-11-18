@@ -722,6 +722,7 @@ let InstallerR21 = () => {
                     }
                 }
                 else if (currentKey == "CATIA") {
+                    console.log(state);
                     await wclManager.mouseClickWindowAt(state.Window.hWnd, state.Window.Size.With - 10, 10);
                 }
 
