@@ -699,6 +699,9 @@ let InstallerR21 = () => {
             }
             let state = matchResult[currentKey];
             if (state != undefined) {
+                if (currentKey != "Warning") {
+                    doneKeys.push(currentKey);
+                }
                 doneKeys.push(currentKey);
                 console.log(`Processing ${currentKey}`);
                 if (currentKey == "Welcome" || currentKey == "Sure") {

@@ -29,5 +29,24 @@
         {
             "Title": "La_Liste_des_licences"
         }
+    ],
+    "Sure": [
+        {
+            "Title": "许可证管理器"
+        },
+        {
+            "Title": "确定"
+        }
+    ],
+    "CATIA": {
+        "Title": "CATIA V5"
+    },
+    "Warning": [
+        {
+            "Title": "许可证警告"
+        },
+        {
+            "Title": "确定"
+        }
     ]
 }
