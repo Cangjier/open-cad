@@ -24,9 +24,13 @@ if (!Directory.Exists(ssqDirectory)) {
 }
 
 let WCLManager = () => {
+    let isInstalled = () => {
+        let binDirectory = Path.Combine(opencadDirectory, "bin");
+        let wclPath = Path.Combine(binDirectory, "wcl.exe");
+        return File.Exists(wclPath);
+    };
     let install = async () => {
         let binDirectory = Path.Combine(opencadDirectory, "bin");
-        // 获取https://github.com/Cangjier/windows-common-cli/最新的release
         let url = "https://api.github.com/repos/Cangjier/windows-common-cli/releases/latest";
         let releaseResponse = await axios.get(url, {
             headers: {
@@ -87,6 +91,7 @@ let WCLManager = () => {
         await cmdAsync(Environment.CurrentDirectory, `wcl close-window ${hwnd}`);
     };
     return {
+        isInstalled,
         install,
         getChildrenWindows,
         setWindowText,
@@ -297,6 +302,9 @@ let main = async () => {
             generatorName,
             outputPath
         })
+        if (wclManager.isInstalled() == false) {
+            await wclManager.install();
+        }
         await ssqManager.download();
         await ssqManager.create(serverName, serverID, ssqName, generatorName, outputPath);
     }
