@@ -703,7 +703,6 @@ let InstallerR21 = () => {
         });
     };
     let configCATVBTLicenser = async (exePath: string) => {
-        // :\Program Files (x86)\Dassault Systemes\B21\intel_a\code\bin\CATVBTLicenser.exe
         start({
             filePath: exePath
         });
@@ -759,7 +758,54 @@ let InstallerR21 = () => {
             }
         }
 
-    }
+    };
+
+    let configCATVBTSetup = async (exePath: string) => {
+        start({
+            filePath: exePath
+        });
+        let matchPath = Path.Combine(script_directory, "catiar21", "catvbtsetup.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                doneKeys.push(currentKey);
+                console.log(`Processing ${currentKey}`);
+                if (currentKey == "ComponentTree") {
+                    
+                }
+                else {
+                    await wclManager.click(state[state.length - 1].Window.hWnd);
+                }
+                if (currentKey == "Finish") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
+            }
+        }
+    };
 
     let entry = async (archiveDirectory: string) => {
         // let catiaDirectory = Path.Combine(archiveDirectory, "1");
@@ -819,8 +865,11 @@ let InstallerR21 = () => {
         // let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
         // await installLiczFilePath(caaLiczPath);
 
-        let catvbtlicenserPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTLicenser.exe";
-        await configCATVBTLicenser(catvbtlicenserPath);
+        // let catvbtlicenserPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTLicenser.exe";
+        // await configCATVBTLicenser(catvbtlicenserPath);
+
+        // let catvbtsetupPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTSetup.exe";
+        // await configCATVBTSetup(catvbtsetupPath);
 
         // let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
         // await installDotNet(dotnet35Path);
