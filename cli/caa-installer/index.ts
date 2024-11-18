@@ -54,6 +54,7 @@ let WCLManager = () => {
     };
     let getChildrenWindows = async (hwnd: string) => {
         let outputPath = Path.GetTempFileName();
+        console.log(`wcl list-children-windows ${hwnd} ${outputPath}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl list-children-windows ${hwnd} ${outputPath}`);
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
@@ -714,7 +715,7 @@ let InstallerR21 = () => {
                                 if (button) {
                                     await wclManager.click(button.hWnd);
                                 }
-                                else{
+                                else {
                                     console.log(`Button not found, ${child}, ${subChildren}`);
                                 }
                             }
@@ -723,7 +724,7 @@ let InstallerR21 = () => {
                 }
                 else if (currentKey == "CATIA") {
                     console.log(state);
-                    await wclManager.mouseClickWindowAt(state.Window.hWnd, state.Window.Size.With - 10, 10);
+                    await wclManager.mouseClickWindowAt(state.Window.hWnd, state.Window.Size.Width - 10, 10);
                 }
 
                 if (currentKey == "CATIA") {
