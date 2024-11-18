@@ -84,10 +84,10 @@ export class Json {
     public Contains(value_or_key?: any): boolean {
         return {} as any;
     }
-    public IndexOf(value?: any): number {
+    public IndexOf(value?: any, startIndex?: number): number {
         return {} as any;
     }
-    public LastIndexOf(value?: any): number {
+    public LastIndexOf(value?: any, startIndex?: number): number {
         return {} as any;
     }
     public Splice(start?: number, count?: number, items?: any[]): any {
