@@ -750,6 +750,10 @@ let InstallerR21 = () => {
             console.log("Rade is already installed");
         }
 
+        let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
+        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        await installLiczFilePath(caaLiczPath);
+
         let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
         await installDotNet(dotnet35Path);
 
@@ -759,16 +763,9 @@ let InstallerR21 = () => {
             await installVS2008(vs2008Path);
             await installVS2008SP1(vs2008SP1Path);
         }
-        let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
-        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        await installLiczFilePath(caaLiczPath);
     };
     return {
-        installCatia,
-        installCAA,
-        entry,
-        installVS2008,
-        installDotNet
+        entry
     }
 };
 
