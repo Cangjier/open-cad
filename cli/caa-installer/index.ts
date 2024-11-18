@@ -708,13 +708,13 @@ let InstallerR21 = () => {
                 else if (currentKey == "LicenseSelect") {
                     let isValid = true;
                     let hWnd = state[state.length - 1].Window.hWnd;
+                    console.log(hWnd);
                     let children = await wclManager.getChildrenWindows(hWnd);
                     for (let child of children) {
                         if (child.Text.startsWith("License_")) {
                             if (child.Text.includes("DIC") == false && child.Text.includes("ED2") == false && child.Text.includes("EX2") == false && child.Text.includes("I3D") == false) {
                                 // console.log(child.Text);
-                                let subChildren = await wclManager.getChildrenWindows(child.hWnd);
-                                console.log(subChildren);
+                                // let subChildren = await wclManager.getChildrenWindows(child.hWnd);
                                 // let button = subChildren.find(x => x.ClassName == "Button");
                                 // if (button) {
                                 //     await wclManager.click(button.hWnd);
