@@ -705,6 +705,7 @@ let InstallerR21 = () => {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                 }
                 else if (currentKey == "LicenseSelect") {
+                    console.log(`${state[state.length - 1]}`);
                     let hWnd = state[state.length - 1].Window.hWnd;
                     let children = await wclManager.getChildrenWindows(hWnd);
                     for (let child of children) {
