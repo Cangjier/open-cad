@@ -706,14 +706,16 @@ let InstallerR21 = () => {
                 else if (currentKey == "LicenseSelect") {
                     let hWnd = state[state.length - 1].Window.hWnd;
                     let children = await wclManager.getChildrenWindows(hWnd);
-                    console.log(children);
                     for (let child of children) {
                         if (child.Text.startsWith("License_")) {
                             if (child.Text.includes("DIC") == false && child.Text.includes("ED2") == false && child.Text.includes("EX2") == false && child.Text.includes("I3D") == false) {
-                                let subChild = await wclManager.getChildrenWindows(child.hWnd);
-                                let button = subChild.find(x => x.ClassName == "Button");
+                                let subChildren = await wclManager.getChildrenWindows(child.hWnd);
+                                let button = subChildren.find(x => x.ClassName == "Button");
                                 if (button) {
                                     await wclManager.click(button.hWnd);
+                                }
+                                else{
+                                    console.log(`Button not found ${subChildren}`);
                                 }
                             }
                         }
