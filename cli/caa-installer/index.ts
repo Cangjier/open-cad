@@ -630,6 +630,7 @@ let InstallerR21 = () => {
         return outputPath;
     };
     let installLiczFilePath = async (liczFilePath: string) => {
+        console.log(`Installing ${liczFilePath}`);
         let sh = shell.start({
             filePath: "C:/Program Files (x86)/Dassault Systemes/DS License Server/intel_a/code/bin/DSLicSrv.exe",
             arguments: ["/test", "-admin"]
