@@ -696,7 +696,6 @@ let InstallerR21 = () => {
             let state = matchResult[currentKey];
             if (state != undefined) {
                 doneKeys.push(currentKey);
-                console.log(`Processing ${currentKey}`);
                 if (currentKey == "Welcome" || currentKey == "Sure") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                 }
@@ -707,13 +706,14 @@ let InstallerR21 = () => {
                     for (let child of children) {
                         if (child.Text.startsWith("License_")) {
                             if (child.Text.includes("DIC") == false && child.Text.includes("ED2") == false && child.Text.includes("EX2") == false && child.Text.includes("I3D") == false) {
+                                console.log(`Selecting ${child}`);
                                 await wclManager.click(child.hWnd);
                             }
                         }
                     }
                 }
                 else if (currentKey == "CATIA") {
-                    await wclManager.mouseClickWindowAtRatio(state[state.length - 1].Window.hWnd, 0.995, 0.005);
+                    await wclManager.mouseClickWindowAtRatio(state.Window.hWnd, 0.995, 0.005);
                 }
 
                 if (currentKey == "CATIA") {
