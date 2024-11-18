@@ -82,6 +82,7 @@ let WCLManager = () => {
     };
     let match = async (matchPath: string) => {
         let outputPath = Path.GetTempFileName();
+        console.log(`wcl match-window ${matchPath} ${outputPath}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl match-window ${matchPath} ${outputPath}`);
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
@@ -715,9 +716,6 @@ let InstallerR21 = () => {
                                 let button = subChildren.find(x => x.ClassName == "Button");
                                 if (button) {
                                     await wclManager.click(button.hWnd);
-                                }
-                                else {
-                                    console.log(`Button not found, ${child}, ${subChildren}`);
                                 }
                             }
                         }
