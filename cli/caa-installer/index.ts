@@ -636,11 +636,17 @@ let InstallerR21 = () => {
         });
         await Task.Delay(1000);
         let liczDirectory = Path.GetDirectoryName(liczFilePath);
-        sh.writeLine(`setConfig –licensingPort 4085`);
-        await Task.Delay(1000);
         sh.writeLine(`connect localhost 4084`);
         await Task.Delay(1000);
         sh.writeLine(`e -dir ${liczDirectory} -file ${Path.GetFileName(liczFilePath)}`);
+        await Task.Delay(1000);
+        sh.writeLine(`sc -els yes`);
+        await Task.Delay(1000);
+        sh.writeLine(`yes`);
+        await Task.Delay(1000);
+        sh.writeLine(`sc -lp 4085`);
+        await Task.Delay(1000);
+        sh.writeLine(`yes`);
         await Task.Delay(1000);
         console.log(sh.readLines());
         sh.kill();
@@ -674,7 +680,9 @@ let InstallerR21 = () => {
         if (dslsInfo.ServerID && dslsInfo.ServerName) {
             let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
             let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
-            console.log(`Catia Licz Path: ${catiaLiczPath}`);
+            if (File.Exists(catiaLiczPath)) {
+                installLiczFilePath(catiaLiczPath);
+            }
         }
 
         // let caaArchivePath = Directory.GetFiles(Path.Combine(archiveDirectory, "3"), "*.7z", SearchOption.AllDirectories)[0];
