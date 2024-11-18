@@ -734,6 +734,7 @@ let InstallerR21 = () => {
         if (isInstallCAA() == false) {
             console.log("Installing CAA");
             await installCAA(caaStartPath);
+            await Task.Delay(3000);
         }
         else {
             console.log("CAA is already installed");
@@ -743,6 +744,7 @@ let InstallerR21 = () => {
         if (isInstallRade() == false) {
             console.log("Installing Rade");
             await installRade(radeStartPath);
+            await Task.Delay(3000);
         }
         else {
             console.log("Rade is already installed");
