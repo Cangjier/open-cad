@@ -675,6 +675,10 @@ let InstallerR21 = () => {
             SSQ: ssqName,
             Generator: generatorName
         });
+        if (task.Output.FileID == undefined) {
+            console.log(task);
+            throw "FileID not found";
+        }
         let download_url = task.Output.FileID;
         let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
         await taskManager.download(download_url, outputPath);
