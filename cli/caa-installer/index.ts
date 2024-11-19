@@ -55,7 +55,6 @@ let WCLManager = () => {
     };
     let getChildrenWindows = async (hwnd: string) => {
         let outputPath = Path.GetTempFileName();
-        console.log(`wcl list-children-windows ${hwnd} ${outputPath}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl list-children-windows ${hwnd} ${outputPath}`);
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
@@ -89,7 +88,6 @@ let WCLManager = () => {
         return result;
     };
     let close = async (hwnd: string) => {
-        console.log(`wcl close-window ${hwnd}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl close-window ${hwnd}`);
     };
     let extract = async (archiveFilePath: string, outputPath: string) => {
@@ -1007,10 +1005,6 @@ let InstallerR21 = () => {
         let catvbtlicenserPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTLicenser.exe";
         await configCATVBTLicenser(catvbtlicenserPath);
 
-        console.log("Configuring CATVBTSetup");
-        let catvbtsetupPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTSetup.exe";
-        await configCATVBTSetup(catvbtsetupPath);
-
         console.log("Installing .NET Framework 3.5");
         let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
         await installDotNet(dotnet35Path);
@@ -1024,6 +1018,12 @@ let InstallerR21 = () => {
             console.log("Installing Visual Studio 2008 SP1");
             await installVS2008SP1(vs2008SP1Path);
         }
+
+        console.log("Configuring CATVBTSetup");
+        let catvbtsetupPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTSetup.exe";
+        await configCATVBTSetup(catvbtsetupPath);
+
+
     };
     return {
         entry
