@@ -941,15 +941,15 @@ let InstallerR21 = () => {
         if (isInstallCatia() == false) {
             console.log("Installing CATIA");
             await installCatia(catiaDirectory);
-            await Task.Delay(3000);
+            await Task.Delay(1000);
             let sp6Path = Path.Combine(archiveDirectory, "2", "WIN64\\StartSPK.exe");
             console.log("Installing SP6");
             await installSP6(sp6Path);
-            await Task.Delay(3000);
+            await Task.Delay(1000);
             let hotfixPath = Path.Combine(archiveDirectory, "3", "WIN64\\StartHFX.exe");
             console.log("Installing Hotfix");
             await installSP6Hotfix(hotfixPath);
-            await Task.Delay(3000);
+            await Task.Delay(1000);
         }
         else {
             console.log("Catia is already installed");
