@@ -1,0 +1,56 @@
+{
+    "Welcome": [
+        {
+            "Title": "Welcome"
+        },
+        {
+            "Title": "下一个"
+        }
+    ],
+    "InstallMode-Next": [
+        {
+            "Title": "MediaSPK"
+        },
+        {
+            "Title": "下一个"
+        }
+    ],
+    "InstallMode": [
+        {
+            "Title": "MediaSPK"
+        },
+        {
+            "Title": "MediaSPKFrame"
+        },
+        {
+            "Title": "自动提交 Service Pack"
+        }
+    ],
+    "Resume": [
+        {
+            "Title": "Resume"
+        },
+        {
+            "Title": "安装"
+        }
+    ],
+    "Kill": [
+        {
+            "Title": "正在运行进程"
+        },
+        {
+            "Title": "是"
+        }
+    ],
+    "Transfer": {
+        "Title": "Transfer"
+    },
+    "Finish": [
+        {
+            "Title": "Finish"
+        },
+        {
+            "Title": "完成"
+        }
+    ]
+}

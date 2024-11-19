@@ -1,0 +1,34 @@
+{
+    "Welcome": [
+        {
+            "Title": "Welcome"
+        },
+        {
+            "Title": "下一个"
+        }
+    ],
+    "MediaHFX":[
+        {
+            "Title":"MediaHFX"
+        },
+        {
+            "Title": "下一个"
+        }
+    ],
+    "Resume": [
+        {
+            "Title": "Resume"
+        },
+        {
+            "Title": "安装"
+        }
+    ],
+    "Finish": [
+        {
+            "Title": "Finish"
+        },
+        {
+            "Title": "完成"
+        }
+    ]
+}

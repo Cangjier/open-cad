@@ -230,9 +230,92 @@ let InstallerR21 = () => {
     };
     let installSP6 = async (exePath: string) => {
         start({
-            filePath:exePath
+            filePath: exePath
         });
-
+        let matchPath = Path.Combine(script_directory, "catiar21", "sp6.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                if (currentKey != "Transfer") {
+                    doneKeys.push(currentKey);
+                }
+                if (currentKey == "Transfer") {
+                    console.log("Installing ...");
+                }
+                else {
+                    console.log(`Processing ${currentKey}`);
+                    await wclManager.click(state[state.length - 1].Window.hWnd);
+                }
+                if (currentKey == "Finish") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
+            }
+        }
+    };
+    let installSP6Hotfix = async (exePath: string) => {
+        start({
+            filePath: exePath
+        });
+        let matchPath = Path.Combine(script_directory, "catiar21", "sp6_hotfix.json");
+        let orderKeys = Object.keys(Json.Load(matchPath)).reverse();
+        let doneKeys = [] as string[];
+        while (true) {
+            let isDone = false;
+            let matchResult = await wclManager.match(matchPath);
+            let currentKey = orderKeys.find(key => {
+                if (doneKeys.includes(key)) {
+                    return false;
+                }
+                let state = matchResult[key];
+                if (state != undefined) {
+                    return true;
+                }
+            });
+            if (currentKey == undefined) {
+                await Task.Delay(1000);
+                continue;
+            }
+            let state = matchResult[currentKey];
+            if (state != undefined) {
+                doneKeys.push(currentKey);
+                console.log(`Processing ${currentKey}`);
+                await wclManager.click(state[state.length - 1].Window.hWnd);
+                if (currentKey == "Finish") {
+                    isDone = true;
+                    break;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            if (isDone) {
+                break;
+            }
+        }
     };
     let installCAA = async (exePath: string) => {
         console.log(`Starting ${exePath}`);
@@ -852,11 +935,24 @@ let InstallerR21 = () => {
         if (isInstallCatia() == false) {
             console.log("Installing CATIA");
             await installCatia(catiaDirectory);
+            await Task.Delay(3000);
+            let sp6Path = Path.Combine(archiveDirectory, "2", "WIN64\\StartSPK.exe");
+            console.log("Installing SP6");
+            await installSP6(sp6Path);
+            await Task.Delay(3000);
+            let hotfixPath = Path.Combine(archiveDirectory, "3", "WIN64\\StartHFX.exe");
+            console.log("Installing Hotfix");
+            await installSP6Hotfix(hotfixPath);
+            await Task.Delay(3000);
         }
         else {
             console.log("Catia is already installed");
         }
-        return;
+
+
+
+
+      
         let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
         if (isInstallDSLS() == false) {
             console.log("Installing DSLS");
@@ -878,6 +974,8 @@ let InstallerR21 = () => {
                 await selectLicense();
             }
         }
+
+        return;
 
         let caaStartPath = Path.Combine(archiveDirectory, "5", "startcaa.exe");
         if (isInstallCAA() == false) {
