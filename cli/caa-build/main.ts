@@ -18,14 +18,6 @@ let Rade = () => {
             console.log(item);
             return false;
         });
-        sh.writeLine(`mkCI -a & echo ---`);
-        await sh.readLinesWhen(item => {
-            if (item == "---") {
-                return true;
-            }
-            console.log(item);
-            return false;
-        });
         sh.writeLine("tck_list & echo ---");
         await sh.readLinesWhen(item => {
             if (item == "---") {
@@ -35,6 +27,14 @@ let Rade = () => {
             return false;
         });
         sh.writeLine("tck_profile V5R21_B21 & echo ---");
+        await sh.readLinesWhen(item => {
+            if (item == "---") {
+                return true;
+            }
+            console.log(item);
+            return false;
+        });
+        sh.writeLine(`mkCI -a & echo ---`);
         await sh.readLinesWhen(item => {
             if (item == "---") {
                 return true;
