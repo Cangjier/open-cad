@@ -11,15 +11,45 @@ let Rade = () => {
             workingDirectory: frameworkDirectory
         });
         sh.writeLine(`call "${tck_initPath}" & echo ---`);
-        console.log(await sh.readLinesWhen(item => item == "---"));
-        sh.writeLine(`mkCI -a`);
-        console.log(await sh.readLinesWhen(item => item == "---"));
+        await sh.readLinesWhen(item => {
+            if (item == "---") {
+                return true;
+            }
+            console.log(item);
+            return false;
+        });
+        sh.writeLine(`mkCI -a & echo ---`);
+        await sh.readLinesWhen(item => {
+            if (item == "---") {
+                return true;
+            }
+            console.log(item);
+            return false;
+        });
         sh.writeLine("tck_list && echo ---");
-        console.log(await sh.readLinesWhen(item => item == "---"));
+        await sh.readLinesWhen(item => {
+            if (item == "---") {
+                return true;
+            }
+            console.log(item);
+            return false;
+        });
         sh.writeLine("tck_profile V5R21_B21 & echo ---");
-        console.log(await sh.readLinesWhen(item => item == "---"));
+        await sh.readLinesWhen(item => {
+            if (item == "---") {
+                return true;
+            }
+            console.log(item);
+            return false;
+        });
         sh.writeLine("mkmk -a -g -u && mkrtv & echo ---");
-        console.log(await sh.readLinesWhen(item => item == "---"));
+        await sh.readLinesWhen(item => {
+            if (item == "---") {
+                return true;
+            }
+            console.log(item);
+            return false;
+        });
         sh.kill();
     };
     return {
