@@ -814,7 +814,7 @@ let InstallerR21 = () => {
                     tab = tabs[4];
                     await wclManager.mouseClickWindowAt(tabControl.hWnd, tab.X + (tab.Width / 2), tab.Y + (tab.Height / 2));
                 }
-                else if (currentKey == "Install") {
+                else if (currentKey == "Confirmation") {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                     await Task.Delay(5000);
                 }
