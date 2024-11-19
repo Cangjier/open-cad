@@ -675,8 +675,8 @@ let InstallerR21 = () => {
             SSQ: ssqName,
             Generator: generatorName
         });
+        console.log(task);
         if (task.Output.FileID == undefined) {
-            console.log(task);
             throw "FileID not found";
         }
         let download_url = task.Output.FileID;
