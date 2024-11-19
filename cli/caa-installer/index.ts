@@ -802,8 +802,7 @@ let InstallerR21 = () => {
                     let tab = tabs[3];
                     await wclManager.mouseClickWindowAt(tabControl.hWnd, tab.X + (tab.Width / 2), tab.Y + (tab.Height / 2));
                     await Task.Delay(1000);
-                    let tabWindows = tabControl.Children;
-                    console.log(tabWindows);
+                    let tabWindows = await wclManager.getChildrenWindows(tabControl.hWnd);
                     let documentWindow = tabWindows[4];
                     let documentWindowChildren = await wclManager.getChildrenWindows(documentWindow.hWnd);
                     let edit = documentWindowChildren[0];
