@@ -12,6 +12,8 @@ let Rade = () => {
         });
         sh.writeLine(`call "${tck_initPath}" & echo ---`);
         console.log(await sh.readLinesWhen(item => item == "---"));
+        sh.writeLine(`mkCI -a`);
+        console.log(await sh.readLinesWhen(item => item == "---"));
         sh.writeLine("tck_list && echo ---");
         console.log(await sh.readLinesWhen(item => item == "---"));
         sh.writeLine("tck_profile V5R21_B21 & echo ---");
