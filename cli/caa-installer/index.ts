@@ -775,6 +775,9 @@ let InstallerR21 = () => {
                 if (doneKeys.includes(key)) {
                     return false;
                 }
+                if (key == "Close" && doneKeys.includes("Confirmation") == false) {
+                    return false;
+                }
                 let state = matchResult[key];
                 if (state != undefined) {
                     return true;
@@ -812,12 +815,13 @@ let InstallerR21 = () => {
                     await wclManager.mouseClickWindowAt(tabControl.hWnd, tab.X + (tab.Width / 2), tab.Y + (tab.Height / 2));
                 }
                 else if (currentKey == "Install") {
-
+                    await wclManager.click(state[state.length - 1].Window.hWnd);
+                    await Task.Delay(5000);
                 }
                 else {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                 }
-                if (currentKey == "Finish") {
+                if (currentKey == "Close") {
                     isDone = true;
                     break;
                 }

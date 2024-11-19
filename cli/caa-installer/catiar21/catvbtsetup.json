@@ -12,7 +12,7 @@
             "Title": "CAA V5 Development Environment Setup V5R21"
         },
         {
-            "Title":"Install"
+            "Title": "Install"
         }
     ],
     "Documentation": [
@@ -20,7 +20,7 @@
             "Title": "CAA V5 Development Environment Setup V5R21"
         },
         {
-            "Title":"Tab1"
+            "Title": "Tab1"
         }
     ],
     "ComponentTree": [
@@ -54,4 +54,20 @@
             "Title": "Eclipse/IBM Rational applications"
         }
     ],
+    "Confirmation": [
+        {
+            "Title": "Confirmation"
+        },
+        {
+            "Title": "确定"
+        }
+    ],
+    "Close": [
+        {
+            "Title": "CAA V5 Development Environment Setup V5R21"
+        },
+        {
+            "Title": "Close"
+        }
+    ]
 }
