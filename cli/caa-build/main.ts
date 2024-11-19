@@ -20,9 +20,8 @@ let Rade = () => {
         sh.writeLine("tck_profile V5R21_B21");
         await Task.Delay(1000);
         console.log(sh.readLines());
-        sh.writeLine("mkmk -a -g -u && mkrtv");
+        sh.writeLine("mkmk -a -g -u && mkrtv && echo ---");
         await Task.Delay(12000);
-        console.log(sh.readLines());
         sh.kill();
     };
     return {
