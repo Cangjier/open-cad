@@ -228,6 +228,12 @@ let InstallerR21 = () => {
             }
         }
     };
+    let installSP6 = async (exePath: string) => {
+        start({
+            filePath:exePath
+        });
+
+    };
     let installCAA = async (exePath: string) => {
         console.log(`Starting ${exePath}`);
         start({
@@ -850,7 +856,7 @@ let InstallerR21 = () => {
         else {
             console.log("Catia is already installed");
         }
-
+        return;
         let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
         if (isInstallDSLS() == false) {
             console.log("Installing DSLS");
