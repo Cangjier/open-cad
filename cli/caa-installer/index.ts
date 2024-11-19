@@ -675,15 +675,17 @@ let InstallerR21 = () => {
             SSQ: ssqName,
             Generator: generatorName
         });
-        console.log(task);
-        if (task.Output.FileID == undefined) {
+        if (task.Output.FileID) {
+            let download_url = task.Output.FileID;
+            let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
+            await taskManager.download(download_url, outputPath);
+            axios.setDefaultProxy();
+            return outputPath;
+        }
+        else {
+            console.log(task);
             throw "FileID not found";
         }
-        let download_url = task.Output.FileID;
-        let outputPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".licz");
-        await taskManager.download(download_url, outputPath);
-        axios.setDefaultProxy();
-        return outputPath;
     };
     let installLiczFilePath = async (liczFilePath: string) => {
         console.log(`Installing ${liczFilePath}`);
@@ -931,103 +933,107 @@ let InstallerR21 = () => {
     };
 
     let entry = async (archiveDirectory: string) => {
-        let catiaDirectory = Path.Combine(archiveDirectory, "1");
-        if (Directory.Exists(catiaDirectory) == false) {
-            console.log(`Directory ${catiaDirectory} not found`);
-            return;
-        }
-        if (isInstallCatia() == false) {
-            console.log("Installing CATIA");
-            await installCatia(catiaDirectory);
-            await Task.Delay(3000);
-            let sp6Path = Path.Combine(archiveDirectory, "2", "WIN64\\StartSPK.exe");
-            console.log("Installing SP6");
-            await installSP6(sp6Path);
-            await Task.Delay(3000);
-            let hotfixPath = Path.Combine(archiveDirectory, "3", "WIN64\\StartHFX.exe");
-            console.log("Installing Hotfix");
-            await installSP6Hotfix(hotfixPath);
-            await Task.Delay(3000);
-        }
-        else {
-            console.log("Catia is already installed");
-        }
 
-
-
-
-
-        let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
-        if (isInstallDSLS() == false) {
-            console.log("Installing DSLS");
-            await installDSLS(dslsPath);
-        }
-        else {
-            console.log("DSLS is already installed");
-        }
-
-        console.log("Configuring DSLS");
         let dslsInfo = await getDSLSInfomation();
-        if (dslsInfo.ServerID && dslsInfo.ServerName) {
-            console.log(`Registering CATIA License`);
-            let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
-            let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
-            if (File.Exists(catiaLiczPath)) {
-                await installLiczFilePath(catiaLiczPath);
-                installDSLSConfig();
-                await selectLicense();
-            }
-        }
-
-        return;
-
-        let caaStartPath = Path.Combine(archiveDirectory, "5", "startcaa.exe");
-        if (isInstallCAA() == false) {
-            console.log("Installing CAA");
-            await installCAA(caaStartPath);
-            await Task.Delay(3000);
-        }
-        else {
-            console.log("CAA is already installed");
-        }
-
-        let radeStartPath = Path.Combine(archiveDirectory, "6", "setup.exe");
-        if (isInstallRade() == false) {
-            console.log("Installing Rade");
-            createRadeRegistry();
-            await installRade(radeStartPath);
-            await Task.Delay(3000);
-        }
-        else {
-            console.log("Rade is already installed");
-        }
-
-        console.log("Registering CAA License");
-        let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
-        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        await installLiczFilePath(caaLiczPath);
-
-        console.log("Configuring CATVBTLicenser");
-        let catvbtlicenserPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTLicenser.exe";
-        await configCATVBTLicenser(catvbtlicenserPath);
-
-        console.log("Configuring CATVBTSetup");
-        let catvbtsetupPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTSetup.exe";
-        await configCATVBTSetup(catvbtsetupPath);
-
-        console.log("Installing .NET Framework 3.5");
-        let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
-        await installDotNet(dotnet35Path);
+        let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
+        let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
+        console.log(catiaLiczPath);
+        
+        // let catiaDirectory = Path.Combine(archiveDirectory, "1");
+        // if (Directory.Exists(catiaDirectory) == false) {
+        //     console.log(`Directory ${catiaDirectory} not found`);
+        //     return;
+        // }
+        // if (isInstallCatia() == false) {
+        //     console.log("Installing CATIA");
+        //     await installCatia(catiaDirectory);
+        //     await Task.Delay(3000);
+        //     let sp6Path = Path.Combine(archiveDirectory, "2", "WIN64\\StartSPK.exe");
+        //     console.log("Installing SP6");
+        //     await installSP6(sp6Path);
+        //     await Task.Delay(3000);
+        //     let hotfixPath = Path.Combine(archiveDirectory, "3", "WIN64\\StartHFX.exe");
+        //     console.log("Installing Hotfix");
+        //     await installSP6Hotfix(hotfixPath);
+        //     await Task.Delay(3000);
+        // }
+        // else {
+        //     console.log("Catia is already installed");
+        // }
 
 
-        let vs2008Path = Path.Combine(archiveDirectory, "8", "setup.exe");
-        let vs2008SP1Path = Path.Combine(archiveDirectory, "9", "vs90sp1\\SPInstaller.exe");
-        if (isInstallVS2008() == false) {
-            console.log("Installing Visual Studio 2008");
-            await installVS2008(vs2008Path);
-            console.log("Installing Visual Studio 2008 SP1");
-            await installVS2008SP1(vs2008SP1Path);
-        }
+
+
+
+        // let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
+        // if (isInstallDSLS() == false) {
+        //     console.log("Installing DSLS");
+        //     await installDSLS(dslsPath);
+        // }
+        // else {
+        //     console.log("DSLS is already installed");
+        // }
+
+        // console.log("Configuring DSLS");
+        // let dslsInfo = await getDSLSInfomation();
+        // if (dslsInfo.ServerID && dslsInfo.ServerName) {
+        //     console.log(`Registering CATIA License`);
+        //     let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
+        //     let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
+        //     if (File.Exists(catiaLiczPath)) {
+        //         await installLiczFilePath(catiaLiczPath);
+        //         installDSLSConfig();
+        //         await selectLicense();
+        //     }
+        // }
+
+        // let caaStartPath = Path.Combine(archiveDirectory, "5", "startcaa.exe");
+        // if (isInstallCAA() == false) {
+        //     console.log("Installing CAA");
+        //     await installCAA(caaStartPath);
+        //     await Task.Delay(3000);
+        // }
+        // else {
+        //     console.log("CAA is already installed");
+        // }
+
+        // let radeStartPath = Path.Combine(archiveDirectory, "6", "setup.exe");
+        // if (isInstallRade() == false) {
+        //     console.log("Installing Rade");
+        //     createRadeRegistry();
+        //     await installRade(radeStartPath);
+        //     await Task.Delay(3000);
+        // }
+        // else {
+        //     console.log("Rade is already installed");
+        // }
+
+        // console.log("Registering CAA License");
+        // let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
+        // let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        // await installLiczFilePath(caaLiczPath);
+
+        // console.log("Configuring CATVBTLicenser");
+        // let catvbtlicenserPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTLicenser.exe";
+        // await configCATVBTLicenser(catvbtlicenserPath);
+
+        // console.log("Configuring CATVBTSetup");
+        // let catvbtsetupPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTSetup.exe";
+        // await configCATVBTSetup(catvbtsetupPath);
+
+        // console.log("Installing .NET Framework 3.5");
+        // let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
+        // await installDotNet(dotnet35Path);
+
+
+        // let vs2008Path = Path.Combine(archiveDirectory, "8", "setup.exe");
+        // let vs2008SP1Path = Path.Combine(archiveDirectory, "9", "vs90sp1\\SPInstaller.exe");
+        // if (isInstallVS2008() == false) {
+        //     console.log("Installing Visual Studio 2008");
+        //     await installVS2008(vs2008Path);
+        //     console.log("Installing Visual Studio 2008 SP1");
+        //     await installVS2008SP1(vs2008SP1Path);
+        // }
     };
     return {
         entry
