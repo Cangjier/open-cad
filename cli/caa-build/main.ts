@@ -21,6 +21,9 @@ let Rade = () => {
         await Task.Delay(1000);
         console.log(sh.readLines());
         sh.writeLine("mkmk -a -g -u && mkrtv");
+        await Task.Delay(12000);
+        console.log(sh.readLines());
+        sh.kill();
     };
     return {
         build
