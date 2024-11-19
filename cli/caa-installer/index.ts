@@ -791,9 +791,9 @@ let InstallerR21 = () => {
                 if (currentKey == "ComponentTree") {
                     let tree = state[state.length - 1].Window;
                     let nodes = tree.Nodes;
-                    console.log(`Nodes: ${nodes}`);
+                    let height = nodes[1].Rectangle.Y - nodes[0].Rectangle.Y;
                     for (let node of nodes) {
-                        await wclManager.mouseClickWindowAt(tree.hWnd, node.Rectangle.Height / 2, node.Rectangle.Y + (node.Rectangle.Height / 2));
+                        await wclManager.mouseClickWindowAt(tree.hWnd, node.Rectangle.Height / 2, node.Rectangle.Y + (height / 2));
                     }
                 }
                 else {
