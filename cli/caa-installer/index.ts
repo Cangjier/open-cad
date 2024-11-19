@@ -697,12 +697,14 @@ let InstallerR21 = () => {
             }
         }
     };
+
     let createRadeRegistry = () => {
         registry.set("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\SCHANNEL\\KeyExchangeAlgorithms\\Diffie-Hellman\\ClientMinKeyBitLength", {
             type: "DWORD",
             value: "512"
         });
     };
+
     let configCATVBTLicenser = async (exePath: string) => {
         start({
             filePath: exePath
@@ -851,14 +853,17 @@ let InstallerR21 = () => {
 
         let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
         if (isInstallDSLS() == false) {
+            console.log("Installing DSLS");
             await installDSLS(dslsPath);
         }
         else {
             console.log("DSLS is already installed");
         }
 
+        console.log("Configuring DSLS");
         let dslsInfo = await getDSLSInfomation();
         if (dslsInfo.ServerID && dslsInfo.ServerName) {
+            console.log(`Registering CATIA License`);
             let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
             let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
             if (File.Exists(catiaLiczPath)) {
@@ -889,23 +894,30 @@ let InstallerR21 = () => {
             console.log("Rade is already installed");
         }
 
+        console.log("Registering CAA License");
         let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
         let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
         await installLiczFilePath(caaLiczPath);
 
+        console.log("Configuring CATVBTLicenser");
         let catvbtlicenserPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTLicenser.exe";
         await configCATVBTLicenser(catvbtlicenserPath);
 
+        console.log("Configuring CATVBTSetup");
         let catvbtsetupPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTSetup.exe";
         await configCATVBTSetup(catvbtsetupPath);
 
+        console.log("Installing .NET Framework 3.5");
         let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
         await installDotNet(dotnet35Path);
+
 
         let vs2008Path = Path.Combine(archiveDirectory, "8", "setup.exe");
         let vs2008SP1Path = Path.Combine(archiveDirectory, "9", "vs90sp1\\SPInstaller.exe");
         if (isInstallVS2008() == false) {
+            console.log("Installing Visual Studio 2008");
             await installVS2008(vs2008Path);
+            console.log("Installing Visual Studio 2008 SP1");
             await installVS2008SP1(vs2008SP1Path);
         }
     };
