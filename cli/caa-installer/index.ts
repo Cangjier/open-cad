@@ -796,6 +796,24 @@ let InstallerR21 = () => {
                         await wclManager.mouseClickWindowAt(tree.hWnd, node.Rectangle.Height / 2, node.Rectangle.Y + (height / 2));
                     }
                 }
+                else if (currentKey == "Documentation") {
+                    let tabControl = state[state.length - 1].Window;
+                    let tabs = tabControl.Tabs;
+                    let tab = tabs[3];
+                    await wclManager.mouseClickWindowAt(tabControl.hWnd, tab.X + (tab.Width / 2), tab.Y + (tab.Height / 2));
+                    await Task.Delay(1000);
+                    let tabWindows = tabControl.Children;
+                    let documentWindow = tabWindows[4];
+                    let documentWindowChildren = await wclManager.getChildrenWindows(documentWindow.hWnd);
+                    let edit = documentWindowChildren[0];
+                    await wclManager.setWindowText(edit.hWnd, "C:\\Program Files\\Dassault Systemes\\B21\\CAADoc");
+                    await Task.Delay(1000);
+                    tab = tabs[4];
+                    await wclManager.mouseClickWindowAt(tabControl.hWnd, tab.X + (tab.Width / 2), tab.Y + (tab.Height / 2));
+                }
+                else if (currentKey == "Install") {
+
+                }
                 else {
                     await wclManager.click(state[state.length - 1].Window.hWnd);
                 }
