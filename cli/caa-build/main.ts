@@ -26,7 +26,7 @@ let Rade = () => {
             console.log(item);
             return false;
         });
-        sh.writeLine("tck_list && echo ---");
+        sh.writeLine("tck_list & echo ---");
         await sh.readLinesWhen(item => {
             if (item == "---") {
                 return true;
