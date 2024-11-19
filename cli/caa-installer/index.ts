@@ -55,6 +55,7 @@ let WCLManager = () => {
     };
     let getChildrenWindows = async (hwnd: string) => {
         let outputPath = Path.GetTempFileName();
+        console.log(`wcl list-children-windows ${hwnd} ${outputPath}`);
         await cmdAsync(Environment.CurrentDirectory, `wcl list-children-windows ${hwnd} ${outputPath}`);
         let result = Json.Load(outputPath);
         File.Delete(outputPath);
@@ -98,7 +99,6 @@ let WCLManager = () => {
         await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at-ratio ${hwnd} ${xRatio} ${yRatio} --delay 500`);
     };
     let mouseClickWindowAt = async (hwnd: string, x: number, y: number) => {
-        console.log(`wcl mouse-click-window-at ${hwnd} ${x} ${y} --delay 500`);
         await cmdAsync(Environment.CurrentDirectory, `wcl mouse-click-window-at ${hwnd} ${x} ${y} --delay 500`);
     };
     let mouseClick = async () => {
@@ -803,6 +803,7 @@ let InstallerR21 = () => {
                     await wclManager.mouseClickWindowAt(tabControl.hWnd, tab.X + (tab.Width / 2), tab.Y + (tab.Height / 2));
                     await Task.Delay(1000);
                     let tabWindows = tabControl.Children;
+                    console.log(tabWindows);
                     let documentWindow = tabWindows[4];
                     let documentWindowChildren = await wclManager.getChildrenWindows(documentWindow.hWnd);
                     let edit = documentWindowChildren[0];
