@@ -1008,7 +1008,7 @@ let InstallerR21 = () => {
         console.log("Installing .NET Framework 3.5");
         let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
         await installDotNet(dotnet35Path);
-
+        await Task.Delay(3000);
 
         let vs2008Path = Path.Combine(archiveDirectory, "8", "setup.exe");
         let vs2008SP1Path = Path.Combine(archiveDirectory, "9", "vs90sp1\\SPInstaller.exe");
