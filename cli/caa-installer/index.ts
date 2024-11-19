@@ -836,80 +836,78 @@ let InstallerR21 = () => {
     };
 
     let entry = async (archiveDirectory: string) => {
-        // let catiaDirectory = Path.Combine(archiveDirectory, "1");
-        // if (Directory.Exists(catiaDirectory) == false) {
-        //     console.log(`Directory ${catiaDirectory} not found`);
-        //     return;
-        // }
-        // if (isInstallCatia() == false) {
-        //     console.log("Installing CATIA");
-        //     await installCatia(catiaDirectory);
-        // }
-        // else {
-        //     console.log("Catia is already installed");
-        // }
+        let catiaDirectory = Path.Combine(archiveDirectory, "1");
+        if (Directory.Exists(catiaDirectory) == false) {
+            console.log(`Directory ${catiaDirectory} not found`);
+            return;
+        }
+        if (isInstallCatia() == false) {
+            console.log("Installing CATIA");
+            await installCatia(catiaDirectory);
+        }
+        else {
+            console.log("Catia is already installed");
+        }
 
-        // let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
-        // if (isInstallDSLS() == false) {
-        //     await installDSLS(dslsPath);
-        // }
-        // else {
-        //     console.log("DSLS is already installed");
-        // }
+        let dslsPath = Path.Combine(archiveDirectory, "4", "DSLS_SSQ_V6R2015x_Installer_01042015.exe");
+        if (isInstallDSLS() == false) {
+            await installDSLS(dslsPath);
+        }
+        else {
+            console.log("DSLS is already installed");
+        }
 
-        // let dslsInfo = await getDSLSInfomation();
-        // if (dslsInfo.ServerID && dslsInfo.ServerName) {
-        //     let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
-        //     let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
-        //     if (File.Exists(catiaLiczPath)) {
-        //         await installLiczFilePath(catiaLiczPath);
-        //         installDSLSConfig();
-        //         await selectLicense();
-        //     }
-        // }
+        let dslsInfo = await getDSLSInfomation();
+        if (dslsInfo.ServerID && dslsInfo.ServerName) {
+            let catiaSSQ = "CATIA.V5R21-V5R25.SSQ";
+            let catiaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, catiaSSQ, "DSLS.LicGen.v1.5.SSQ.exe");
+            if (File.Exists(catiaLiczPath)) {
+                await installLiczFilePath(catiaLiczPath);
+                installDSLSConfig();
+                await selectLicense();
+            }
+        }
 
-        // let caaStartPath = Path.Combine(archiveDirectory, "5", "startcaa.exe");
-        // if (isInstallCAA() == false) {
-        //     console.log("Installing CAA");
-        //     await installCAA(caaStartPath);
-        //     await Task.Delay(3000);
-        // }
-        // else {
-        //     console.log("CAA is already installed");
-        // }
+        let caaStartPath = Path.Combine(archiveDirectory, "5", "startcaa.exe");
+        if (isInstallCAA() == false) {
+            console.log("Installing CAA");
+            await installCAA(caaStartPath);
+            await Task.Delay(3000);
+        }
+        else {
+            console.log("CAA is already installed");
+        }
 
-        // let radeStartPath = Path.Combine(archiveDirectory, "6", "setup.exe");
-        // if (isInstallRade() == false) {
-        //     console.log("Installing Rade");
-        //     createRadeRegistry();
-        //     await installRade(radeStartPath);
-        //     await Task.Delay(3000);
-        // }
-        // else {
-        //     console.log("Rade is already installed");
-        // }
+        let radeStartPath = Path.Combine(archiveDirectory, "6", "setup.exe");
+        if (isInstallRade() == false) {
+            console.log("Installing Rade");
+            createRadeRegistry();
+            await installRade(radeStartPath);
+            await Task.Delay(3000);
+        }
+        else {
+            console.log("Rade is already installed");
+        }
 
-        // let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
-        // let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
-        // await installLiczFilePath(caaLiczPath);
+        let caaSSQ = "CAA.Rade.V5R21-V5R22.SSQ";
+        let caaLiczPath = await resgiterSSQByNet(dslsInfo.ServerName, dslsInfo.ServerID, caaSSQ, "DSLS.LicGen.v1.6.SSQ.exe");
+        await installLiczFilePath(caaLiczPath);
 
-        // let catvbtlicenserPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTLicenser.exe";
-        // await configCATVBTLicenser(catvbtlicenserPath);
+        let catvbtlicenserPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTLicenser.exe";
+        await configCATVBTLicenser(catvbtlicenserPath);
 
         let catvbtsetupPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\bin\\CATVBTSetup.exe";
         await configCATVBTSetup(catvbtsetupPath);
 
-        // let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
-        // await installDotNet(dotnet35Path);
+        let dotnet35Path = Path.Combine(archiveDirectory, "7", "dotnetfx35.exe");
+        await installDotNet(dotnet35Path);
 
-        // let vs2008Path = Path.Combine(archiveDirectory, "8", "setup.exe");
-        // let vs2008SP1Path = Path.Combine(archiveDirectory, "9", "vs90sp1\\SPInstaller.exe");
-        // if (isInstallVS2008() == false) {
-        //     await installVS2008(vs2008Path);
-        //     await installVS2008SP1(vs2008SP1Path);
-        // }
-
-
+        let vs2008Path = Path.Combine(archiveDirectory, "8", "setup.exe");
+        let vs2008SP1Path = Path.Combine(archiveDirectory, "9", "vs90sp1\\SPInstaller.exe");
+        if (isInstallVS2008() == false) {
+            await installVS2008(vs2008Path);
+            await installVS2008SP1(vs2008SP1Path);
+        }
     };
     return {
         entry
