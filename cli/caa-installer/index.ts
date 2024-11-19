@@ -801,13 +801,13 @@ let InstallerR21 = () => {
                     let tabs = tabControl.Tabs;
                     let tab = tabs[3];
                     await wclManager.mouseClickWindowAt(tabControl.hWnd, tab.X + (tab.Width / 2), tab.Y + (tab.Height / 2));
-                    await Task.Delay(1000);
+                    await Task.Delay(500);
                     let tabWindows = await wclManager.getChildrenWindows(tabControl.hWnd);
                     let documentWindow = tabWindows[4];
                     let documentWindowChildren = await wclManager.getChildrenWindows(documentWindow.hWnd);
                     let edit = documentWindowChildren[0];
                     await wclManager.setWindowText(edit.hWnd, "C:\\Program Files\\Dassault Systemes\\B21\\CAADoc");
-                    await Task.Delay(1000);
+                    await Task.Delay(500);
                     tab = tabs[4];
                     await wclManager.mouseClickWindowAt(tabControl.hWnd, tab.X + (tab.Width / 2), tab.Y + (tab.Height / 2));
                 }
