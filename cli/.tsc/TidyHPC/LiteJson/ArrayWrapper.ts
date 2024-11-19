@@ -15,6 +15,9 @@ export class ArrayWrapper {
     public Dispose(): void {
         return {} as any;
     }
+    public Sort(onSort?: (arg0?:any, arg1?:any)=>number): void {
+        return {} as any;
+    }
     public Equals(obj?: any): boolean {
         return {} as any;
     }

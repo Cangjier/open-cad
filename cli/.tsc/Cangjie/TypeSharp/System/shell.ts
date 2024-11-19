@@ -11,6 +11,9 @@ export class shell {
     public readLines(): string[] {
         return {} as any;
     }
+    public readLinesWhen(predicate?: (arg0?:string)=>boolean): Promise<string[]> {
+        return {} as any;
+    }
     public writeLine(value?: string): void {
         return {} as any;
     }

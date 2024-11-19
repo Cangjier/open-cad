@@ -2,7 +2,7 @@ import { UrlRouter } from "./UrlRouter";
 import { MethodInfo } from "../../../System/Reflection/MethodInfo";
 import { Type } from "../../../System/Type";
 export class UrlFilter {
-    public Register(order?: number, urlPatterns?: string[], func?: null): void {
+    public Register(order?: number, method_or_urlPatterns?: MethodInfo | string[], onPattern_or_method_or_func?: ()=>string | MethodInfo | ()=>Promise<FilterResult> | null, onInstance?: ()=>any): void {
         return {} as any;
     }
     public GetType(): Type {

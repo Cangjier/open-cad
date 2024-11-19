@@ -4,7 +4,7 @@ import { SessionCache } from "./SessionCache";
 import { SessionSetter } from "./SessionSetter";
 import { Type } from "../../../System/Type";
 export class Session {
-    public Complete(onComplete?: ()=>void): void {
+    public Complete(onComplete?: ()=>Promise<void> | ()=>void): Promise<void> | void {
         return {} as any;
     }
     public Dispose(): void {

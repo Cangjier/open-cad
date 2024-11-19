@@ -12,7 +12,7 @@ export class UrlRouter {
     public Listen(server?: IServer): Promise<void> {
         return {} as any;
     }
-    public Register(urlAliases?: string[], method_or_func?: Delegate | null): void {
+    public Register(method_or_urlAliases?: MethodInfo | string[], onPattern_or_method_or_func?: ()=>string | MethodInfo | Delegate | ()=>Promise<void> | null, onInstance?: ()=>any): void {
         return {} as any;
     }
     public GetType(): Type {

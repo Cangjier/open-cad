@@ -16,6 +16,8 @@ export class ArgsRouterRecord {
     public GetType(): Type {
         return {} as any;
     }
+    public constructor(CommandPattern?: string, CommandRegex?: Regex, Handler?: (arg0?:ArgsVisitor)=>Promise<void>) {
+    }
     public static op_Inequality(left?: ArgsRouterRecord, right?: ArgsRouterRecord): boolean {
         return {} as any;
     }
@@ -31,5 +33,10 @@ export class ArgsRouterRecord {
         return {} as any;
     }
     public set CommandRegex(value: Regex) {
+    }
+    public get Handler(): (arg0?:ArgsVisitor)=>Promise<void> {
+        return {} as any;
+    }
+    public set Handler(value: (arg0?:ArgsVisitor)=>Promise<void>) {
     }
 }

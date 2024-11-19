@@ -10,19 +10,14 @@ let Rade = () => {
             filePath: "cmd",
             workingDirectory: frameworkDirectory
         });
-        await Task.Delay(1000);
-        sh.writeLine(`call "${tck_initPath}"`);
-        await Task.Delay(1000);
-        console.log(sh.readLines());
-        sh.writeLine("tck_list");
-        await Task.Delay(1000);
-        console.log(sh.readLines());
-        sh.writeLine("tck_profile V5R21_B21");
-        await Task.Delay(1000);
-        console.log(sh.readLines());
-        sh.writeLine("mkmk -a -g -u && mkrtv && echo ---");
-        await Task.Delay(12000);
-        console.log(sh.readLines());
+        sh.writeLine(`call "${tck_initPath}" & echo ---`);
+        console.log(await sh.readLinesWhen(item => item == "---"));
+        sh.writeLine("tck_list && echo ---");
+        console.log(await sh.readLinesWhen(item => item == "---"));
+        sh.writeLine("tck_profile V5R21_B21 & echo ---");
+        console.log(await sh.readLinesWhen(item => item == "---"));
+        sh.writeLine("mkmk -a -g -u && mkrtv & echo ---");
+        console.log(await sh.readLinesWhen(item => item == "---"));
         sh.kill();
     };
     return {
