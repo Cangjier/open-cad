@@ -1,0 +1,5 @@
+{
+    "webhook":{
+        "plugin":"caa-build-plugin"
+    }
+}

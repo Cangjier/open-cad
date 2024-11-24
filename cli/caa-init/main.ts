@@ -1185,6 +1185,10 @@ let cmd_init = async () => {
     let gitignorePath = Path.Combine(vscodeDirectory, ".gitignore");
     let gitignoreTemplatePath = Path.Combine(script_directory, "Project/Template/.gitignore");
     File.Copy(gitignoreTemplatePath, gitignorePath, true);
+    // 自动创建 manifest.json
+    let manifestPath = Path.Combine(vscodeDirectory, "manifest.json");
+    let manifestTemplatePath = Path.Combine(script_directory, "Project/Template/manifest.json");
+    File.Copy(manifestTemplatePath, manifestPath, true);
     // 自动创建 main.cpp
     let project = ProjectV1(projectDirectory);
     project.initialize();
