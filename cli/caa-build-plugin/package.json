@@ -1,0 +1,4 @@
+{
+    "Name":"caa-build-plugin",
+    "Entry":"opencad caa-build-plugin {Input} {Output} {Logger} {Server}"
+}
