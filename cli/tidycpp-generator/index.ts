@@ -931,17 +931,16 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`    }`);
 
         // Intersect
-        headerLines.push(`    ${className} Intersect(const ${className}& value) const {`);
-        headerLines.push(`        std::string result;
-        for (char item : Target)
-        {
-            if (value.Contains(item))
-            {
-                result.append(1, item);
+        headerLines.push(`    
+    ${className} Intersect(const ${className}& value) const {
+        std::string result;
+        for(size_t i = 0; i < Target.size(); i++) {
+            if(value.Contains(Target[i])) {
+                result.append(1, Target[i]);
             }
         }
-        return result;`);
-        headerLines.push(`    }`);
+        return result;
+    }`);
 
         // Map
         headerLines.push(`#if SUPPORT_STD_FUNCTION
