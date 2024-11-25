@@ -25,61 +25,6 @@ let TidyCppGenerator = (config: {
 
 #if SUPPORT_STD_STRINGSTREAM
 #include <sstream>
-
-#ifndef SUPPORT_STD_TOSTRING
-#define SUPPORT_STD_TOSTRING
-#if __cplusplus >= 201103L
-namespace std {
-    std::string to_string(int value) {
-        std::stringstream ss;
-        ss << value;
-        return ss.str();
-    }
-    
-    std::string to_string(unsigned int value) {
-        std::stringstream ss;
-        ss << value;
-        return ss.str();
-    }
-
-    std::string to_string(long value) {
-        std::stringstream ss;
-        ss << value;
-        return ss.str();
-    }
-
-    std::string to_string(unsigned long value) {
-        std::stringstream ss;
-        ss << value;
-        return ss.str();
-    }
-
-    std::string to_string(long long value) {
-        std::stringstream ss;
-        ss << value;
-        return ss.str();
-    }
-
-    std::string to_string(unsigned long long value) {
-        std::stringstream ss;
-        ss << value;
-        return ss.str();
-    }
-
-    std::string to_string(float value) {
-        std::stringstream ss;
-        ss << value;
-        return ss.str();
-    }
-
-    std::string to_string(double value) {
-        std::stringstream ss;
-        ss << value;
-        return ss.str();
-    }
-}
-#endif
-#endif
 #endif`;
     };
     let generate_SUPPORT_STD_WSTRING = () => {
@@ -148,6 +93,62 @@ namespace std {
 #include <functional>
 #endif`;
     };
+    let generate_SUPPORT_STD_TOSTRING=()=>{
+        return `#ifndef SUPPORT_STD_TOSTRING
+#define SUPPORT_STD_TOSTRING
+#if __cplusplus >= 201103L
+namespace std {
+    std::string to_string(int value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+    
+    std::string to_string(unsigned int value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+
+    std::string to_string(long value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+
+    std::string to_string(unsigned long value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+
+    std::string to_string(long long value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+
+    std::string to_string(unsigned long long value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+
+    std::string to_string(float value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+
+    std::string to_string(double value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+}
+#endif
+#endif`;
+    };
     let generateStringClass = (namespace: string, className: string, targetEncoding: number, exportDefine: string, allStringClassNames: string[]) => {
         let lines = [] as string[];
         lines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
@@ -158,6 +159,8 @@ namespace std {
         lines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
         lines.push(generate_SUPPORT_STD_STRINGSTREAM());
+        // SUPPORT_STD_TOSTRING宏定义
+        lines.push(generate_SUPPORT_STD_TOSTRING());
         // SUPPORT_EXPLICIT宏定义
         lines.push(generate_SUPPORT_EXPLICIT());
         // SUPPORT_INT64宏定义，64位
@@ -1247,6 +1250,8 @@ return result;
         }
         return files;
     };
+
+    
 
     return {
         generateStringClasses
