@@ -23,6 +23,15 @@ let TidyCppGenerator = (config: {
 #endif
 #endif`;
     };
+    let generate_SUPPORT_STD_WSTRING = () => {
+        return `#ifndef SUPPORT_STD_WSTRING
+#if __cplusplus >= 201103L
+#define SUPPORT_STD_WSTRING 1
+#else
+#define SUPPORT_STD_WSTRING 0
+#endif
+#endif`;
+    };
     let generate_SUPPORT_EXPLICIT = () => {
         return `#ifndef SUPPORT_EXPLICIT
 #if __cplusplus >= 201103L
@@ -71,6 +80,8 @@ let TidyCppGenerator = (config: {
         lines.push(generate_SUPPORT_INT64());
         // SUPPORT_STD_OSTRINGSTREAM宏定义
         lines.push(generate_SUPPORT_STD_OSTRINGSTREAM());
+        // SUPPORT_STD_WSTRING宏定义
+        lines.push(generate_SUPPORT_STD_WSTRING());
         lines.push(`namespace ${namespace} {`);
         for (let i = 0; i < allStringClassNames.length; i++) {
             if (allStringClassNames[i] == className) {
@@ -98,9 +109,11 @@ let TidyCppGenerator = (config: {
     }`);
 
         // 从std::wstring转换的构造函数
-        lines.push(`    ${className}(const std::wstring& target) {
+        lines.push(`#if SUPPORT_STD_WSTRING
+        ${className}(const std::wstring& target) {
         this->TargetEncoding = ${targetEncoding};
         this->Target = StringUtil::To(target.c_str(), TargetEncoding);
+#endif
     }`);
 
         // 从std::string转换的构造函数
@@ -282,9 +295,11 @@ let TidyCppGenerator = (config: {
         lines.push(`    }`);
 
         // ToWString
-        lines.push(`    std::wstring ToWString() const {`);
-        lines.push(`        return StringUtil::To(Target, TargetEncoding);`);
-        lines.push(`    }`);
+        lines.push(`#if SUPPORT_STD_WSTRING
+    std::wstring ToWString() const {
+    return StringUtil::To(Target, TargetEncoding);
+    }
+#endif`);
 
         // Length
         lines.push(`    int Length() const {`);
@@ -974,8 +989,10 @@ let TidyCppGenerator = (config: {
         lines.push(`public:`);
         lines.push(`    static unsigned int GetLocale();`);
         lines.push(`    static std::string To(const std::string &value, unsigned int fromCodePage, unsigned int toCodePage);`);
-        lines.push(`    static std::string To(const wchar_t *value, unsigned int toCodePage);`);
-        lines.push(`    static std::wstring To(const std::string &value, unsigned int fromCodePage);`);
+        lines.push(`    static std::string To(const wchar_t *value, unsigned int toCodePage);
+#if SUPPORT_STD_WSTRING
+    static std::wstring To(const std::string &value, unsigned int fromCodePage);
+#endif`);
         lines.push(`};`);
         lines.push(`};`);
         lines.push(`#endif`);
@@ -1095,8 +1112,9 @@ let TidyCppGenerator = (config: {
 #endif`);
         lines.push(`}`);
 
-        lines.push(`std::wstring StringUtil::To(const std::string &value, unsigned int fromCodePage) {`);
-        lines.push(`int length = MultiByteToWideChar(fromCodePage, 0, value.c_str(), -1, NULL, 0);
+        lines.push(`#if SUPPORT_STD_WSTRING
+std::wstring StringUtil::To(const std::string &value, unsigned int fromCodePage) {
+        int length = MultiByteToWideChar(fromCodePage, 0, value.c_str(), -1, NULL, 0);
 if (length == 0)
 {
 	return L"";
@@ -1108,8 +1126,9 @@ if (MultiByteToWideChar(fromCodePage, 0, value.c_str(), -1, &result[0], length) 
 	return L"";
 }
 
-return result;`);
-        lines.push(`}`);
+return result;
+}
+#endif`);
         classes.push({
             FileName: `${namespace}_StringUtil.cpp`,
             Content: lines.join('\r\n')
