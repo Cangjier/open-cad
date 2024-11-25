@@ -945,7 +945,7 @@ let TidyCppGenerator = (config: {
         lines.push(`class ${exportDefine} StringUtil {`);
         lines.push(`public:`);
         lines.push(`    static unsigned int GetLocale();`);
-        lines.push(`    static std::string To(const std::string &value, unsigned int fromCodePage, unsigned int toCodePage)`);
+        lines.push(`    static std::string To(const std::string &value, unsigned int fromCodePage, unsigned int toCodePage);`);
         lines.push(`    static std::string To(const wchar_t *value, unsigned int toCodePage);`);
         lines.push(`    static std::wstring To(const std::string &value, unsigned int fromCodePage);`);
         lines.push(`};`);
