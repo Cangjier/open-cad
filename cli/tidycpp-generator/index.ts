@@ -100,7 +100,7 @@ let TidyCppGenerator = (config: {
         return `
 #ifndef SUPPORT_STD_FUNCTION
     #ifdef _MSC_VER
-        #if _MSC_VER >= 1200
+        #if _MSC_VER >= 1800
             #define SUPPORT_STD_FUNCTION 1
         #else
             #define SUPPORT_STD_FUNCTION 0
