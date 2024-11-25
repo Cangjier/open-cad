@@ -15,18 +15,21 @@ let TidyCppGenerator = (config: {
         return lines.join('\r\n');
     };
     let generate_SUPPORT_STD_STRINGSTREAM = () => {
-        return `#ifndef SUPPORT_STD_STRINGSTREAM
-#ifdef _MSC_VER
-    #if _MSC_VER >= 1400
-    #define SUPPORT_STD_STRINGSTREAM 1
+        return `
+#ifndef SUPPORT_STD_STRINGSTREAM
+    #ifdef _MSC_VER
+        #if _MSC_VER >= 1400
+            #define SUPPORT_STD_STRINGSTREAM 1
+        #else
+            #define SUPPORT_STD_STRINGSTREAM 0
+        #endif
     #else
-    #define SUPPORT_STD_STRINGSTREAM 0
+        #define SUPPORT_STD_STRINGSTREAM 1
     #endif
-#endif
 
-
-#if SUPPORT_STD_STRINGSTREAM
-#include <sstream>
+    #if SUPPORT_STD_STRINGSTREAM
+        #include <sstream>
+    #endif
 #endif`;
     };
     let generate_SUPPORT_STD_WSTRING = () => {
@@ -38,6 +41,8 @@ let TidyCppGenerator = (config: {
         #else
             #define SUPPORT_STD_WSTRING 0
         #endif
+    #else
+        #define SUPPORT_STD_WSTRING 1
     #endif
     #if SUPPORT_STD_WSTRING
         // #include <wstring>
