@@ -4,15 +4,14 @@ let TidyCppGenerator = (config: {
     exportDefine: string,
 }) => {
     let generate_SUPPORT_NULLPTR = () => {
-        let lines = [] as string[];
-        lines.push(`#ifndef SUPPORT_NULLPTR`);
-        lines.push(`#if defined(_MSC_VER) && _MSC_VER >= 1600`);
-        lines.push(`#define SUPPORT_NULLPTR nullptr`);
-        lines.push(`#else`);
-        lines.push(`#define SUPPORT_NULLPTR NULL`);
-        lines.push(`#endif`);
-        lines.push(`#endif`);
-        return lines.join('\r\n');
+        return `
+#ifndef SUPPORT_NULLPTR
+    #if defined(_MSC_VER) && _MSC_VER >= 1600
+        #define SUPPORT_NULLPTR nullptr
+    #else
+        #define SUPPORT_NULLPTR NULL
+    #endif
+#endif`;
     };
     let generate_SUPPORT_STD_STRINGSTREAM = () => {
         return `
