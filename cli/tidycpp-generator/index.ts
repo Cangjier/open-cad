@@ -1058,7 +1058,7 @@ let TidyCppGenerator = (config: {
 	if (length == 0) {
 		return std::string();
 	}
-	std::string result(length - 1, '\0');
+	std::string result(length - 1, '\\0');
 	WideCharToMultiByte(toCodePage, 0, value, -1, &result[0], length, SUPPORT_NULLPTR, SUPPORT_NULLPTR);
 	return result;
 #elif __linux__
