@@ -1116,7 +1116,7 @@ return result;`);
 
 let generator = TidyCppGenerator({
     namespace: "Tidy",
-    exportDefine: "SUPPORT_EXPORT"
+    exportDefine: ""
 });
 let classes = generator.generateStringClasses();
 for (let classFile of classes) {
