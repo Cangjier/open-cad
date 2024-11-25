@@ -165,6 +165,34 @@ namespace std {
         ss << value;
         return ss.str();
     }
+
+    int stoi(const std::string& str) {
+        int result = 0;
+        std::istringstream iss(str);
+        iss >> result;
+        return result;
+    }
+
+    long stol(const std::string& str) {
+        long result = 0;
+        std::istringstream iss(str);
+        iss >> result;
+        return result;
+    }
+
+    long long stoll(const std::string& str) {
+        long long result = 0;
+        std::istringstream iss(str);
+        iss >> result;
+        return result;
+    }
+
+    float stof(const std::string& str) {
+        float result = 0;
+        std::istringstream iss(str);
+        iss >> result;
+        return result;
+    }
 }
     #endif
 #endif`;
@@ -793,15 +821,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`
     int ToInt() const {
         try {
-#ifdef _MSC_VER
-#if _MSC_VER < 1900
-            return std::atoi(Target.c_str());
-#else
             return std::stoi(Target);
-#endif
-#else
-            return std::stoi(Target);
-#endif
         } catch (...) {
             throw new std::exception("String is not a number.");
         }
@@ -811,15 +831,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`    
     float ToFloat() const {
         try {
-#ifdef _MSC_VER
-#if _MSC_VER < 1900
-            return std::atof(Target.c_str());
-#else
             return std::stof(Target);
-#endif
-#else
-            return std::stof(Target);
-#endif
         } catch (...) {
             throw new std::exception("String is not a number.");
         }
@@ -829,15 +841,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`
     double ToDouble() const {
         try {
-        #ifdef _MSC_VER
-        #if _MSC_VER < 1900
-            return std::atof(Target.c_str());
-        #else
             return std::stod(Target);
-        #endif
-        #else
-            return std::stod(Target);
-        #endif
         } catch (...) {
             throw new std::exception("String is not a number.");
         }
@@ -847,15 +851,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`
     SUPPORT_INT64 ToInt64() const {
         try {
-        #ifdef _MSC_VER
-        #if _MSC_VER < 1900
-            return std::atoll(Target.c_str());
-        #else
             return std::stoll(Target);
-        #endif
-        #else
-            return std::stoll(Target);
-        #endif
         } catch (...) {
             throw new std::exception("String is not a number.");
         }
