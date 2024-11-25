@@ -176,6 +176,12 @@ namespace std {
         lines.push(`#include <string>`);
         lines.push(`#include <vector>`);
         lines.push(`#include "${namespace}_StringUtil.h"`);
+        for (let i = 0; i < allStringClassNames.length; i++) {
+            if (allStringClassNames[i] == className) {
+                continue;
+            }
+            lines.push(`#include "${namespace}_${allStringClassNames[i]}.h"`);
+        }
         lines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
         lines.push(generate_SUPPORT_STD_STRINGSTREAM());
