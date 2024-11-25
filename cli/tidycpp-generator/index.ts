@@ -636,7 +636,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         // TrimEnd
         headerLines.push(`    ${className} TrimEnd(const ${className}& chars = " ") const {`);
         headerLines.push(`        std::string result = Target;
-        std::string trimChars = items.Target;
+        std::string trimChars = chars.Target;
 
         std::reverse_iterator<std::string::iterator> rit = result.rbegin();
         while (rit != result.rend() && trimChars.find(*rit) != std::string::npos) {
@@ -650,11 +650,9 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         // OnlyNumber
         headerLines.push(`    ${className} OnlyNumber() const {`);
         headerLines.push(`        ${className} result;
-        for (char item : Target)
-        {
-            if (item >= '0' && item <= '9')
-            {
-                result.Append(item);
+        for(size_t i = 0; i < Target.size(); i++) {
+            if(Target[i] >= '0' && Target[i] <= '9') {
+                result.Append(Target[i]);
             }
         }
         return result;`);
@@ -779,17 +777,18 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`    }`);
 
         // IsNumber
-        headerLines.push(`    bool IsNumber() const {`);
-        headerLines.push(`        if (Target.empty()) {
+        headerLines.push(`
+    bool IsNumber() const {
+        if (Target.empty()) {
             return false;
         }
-        for (char item : Target) {
-            if (item < '0' || item > '9') {
+        for(size_t i = 0; i < Target.size(); i++) {
+            if (Target[i] < '0' || Target[i] > '9') {
                 return false;
             }
         }
-        return true;`);
-        headerLines.push(`    }`);
+        return true;
+    }`);
 
         // ToInt
         headerLines.push(`    int ToInt() const {`);
