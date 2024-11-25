@@ -462,19 +462,21 @@ class ${allStringClassNames[i]};
         headerLines.push(`    }`);
 
         // LastIndexOf
-        headerLines.push(`    int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {`);
-        headerLines.push(`        start = start == -1 ? std::string::npos : start;`);
-        headerLines.push(`        int result = -1;`);
-        headerLines.push(`        for (const ${className}& value : values) {`);
-        headerLines.push(`            int index = LastIndexOf(value, start);`);
-        headerLines.push(`            if (index != -1) {`);
-        headerLines.push(`                if (index > result) {`);
-        headerLines.push(`                    result = index;`);
-        headerLines.push(`                }`);
-        headerLines.push(`            }`);
-        headerLines.push(`        }`);
-        headerLines.push(`        return result;`);
-        headerLines.push(`    }`);
+        headerLines.push(`
+int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
+    start = start == -1 ? std::string::npos : start;
+    int result = -1;
+    for (size_t i = 0; i < values.size(); i++) {
+        const ${className}& value = values[i];
+        int index = LastIndexOf(value, start);
+        if (index != -1) {
+            if (index > result) {
+                result = index;
+            }
+        }
+    }
+    return result;
+}`);
 
         // Replace
         headerLines.push(`    ${className} Replace(const ${className}& oldValue, const ${className}& newValue) const {`);
