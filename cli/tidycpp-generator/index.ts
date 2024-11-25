@@ -1102,7 +1102,7 @@ if (length == 0)
 	return L"";
 }
 
-std::wstring result(length - 1, L'\0');
+std::wstring result(length - 1, L'\\0');
 if (MultiByteToWideChar(fromCodePage, 0, value.c_str(), -1, &result[0], length) == 0)
 {
 	return L"";
