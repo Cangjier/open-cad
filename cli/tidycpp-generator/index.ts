@@ -659,17 +659,16 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`    }`);
 
         // RemoveChars
-        headerLines.push(`    ${className} RemoveChars(const ${className}& chars) const {`);
-        headerLines.push(`        ${className} result;
-        for (char item : Target)
-        {
-            if (!items.Contains(item))
-            {
-                result.Append(item);
+        headerLines.push(`
+    ${className} RemoveChars(const ${className}& chars) const {
+        ${className} result;
+        for(size_t i = 0; i < Target.size(); i++) {
+            if(chars.IndexOf(Target[i]) == -1) {
+                result.Append(Target[i]);
             }
         }
-        return result;`);
-        headerLines.push(`    }`);
+        return result;
+    }`);
 
         // IsEmpty
         headerLines.push(`    bool IsEmpty() const {`);
@@ -791,40 +790,76 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
     }`);
 
         // ToInt
-        headerLines.push(`    int ToInt() const {`);
-        headerLines.push(`        try {`);
-        headerLines.push(`            return std::stoi(Target);`);
-        headerLines.push(`        } catch (...) {`);
-        headerLines.push(`            throw new std::exception("String is not a number.");`);
-        headerLines.push(`        }`);
-        headerLines.push(`    }`);
+        headerLines.push(`
+    int ToInt() const {
+        try {
+#ifdef _MSC_VER
+#if _MSC_VER < 1900
+            return std::atoi(Target.c_str());
+#else
+            return std::stoi(Target);
+#endif
+#else
+            return std::stoi(Target);
+#endif
+        } catch (...) {
+            throw new std::exception("String is not a number.");
+        }
+    }`);
 
         // ToFloat
-        headerLines.push(`    float ToFloat() const {`);
-        headerLines.push(`        try {`);
-        headerLines.push(`            return std::stof(Target);`);
-        headerLines.push(`        } catch (...) {`);
-        headerLines.push(`            throw new std::exception("String is not a number.");`);
-        headerLines.push(`        }`);
-        headerLines.push(`    }`);
+        headerLines.push(`    
+    float ToFloat() const {
+        try {
+#ifdef _MSC_VER
+#if _MSC_VER < 1900
+            return std::atof(Target.c_str());
+#else
+            return std::stof(Target);
+#endif
+#else
+            return std::stof(Target);
+#endif
+        } catch (...) {
+            throw new std::exception("String is not a number.");
+        }
+    }`);
 
         // ToDouble
-        headerLines.push(`    double ToDouble() const {`);
-        headerLines.push(`        try {`);
-        headerLines.push(`            return std::stod(Target);`);
-        headerLines.push(`        } catch (...) {`);
-        headerLines.push(`            throw new std::exception("String is not a number.");`);
-        headerLines.push(`        }`);
-        headerLines.push(`    }`);
+        headerLines.push(`
+    double ToDouble() const {
+        try {
+        #ifdef _MSC_VER
+        #if _MSC_VER < 1900
+            return std::atof(Target.c_str());
+        #else
+            return std::stod(Target);
+        #endif
+        #else
+            return std::stod(Target);
+        #endif
+        } catch (...) {
+            throw new std::exception("String is not a number.");
+        }
+    }`);
 
         // ToInt64
-        headerLines.push(`    SUPPORT_INT64 ToInt64() const {`);
-        headerLines.push(`        try {`);
-        headerLines.push(`            return std::stoll(Target);`);
-        headerLines.push(`        } catch (...) {`);
-        headerLines.push(`            throw new std::exception("String is not a number.");`);
-        headerLines.push(`        }`);
-        headerLines.push(`    }`);
+        headerLines.push(`
+    SUPPORT_INT64 ToInt64() const {
+        try {
+        #ifdef _MSC_VER
+        #if _MSC_VER < 1900
+            return std::atoll(Target.c_str());
+        #else
+            return std::stoll(Target);
+        #endif
+        #else
+            return std::stoll(Target);
+        #endif
+        } catch (...) {
+            throw new std::exception("String is not a number.");
+        }
+    }`);
 
         // IsTrue
         headerLines.push(`    bool IsTrue() const {`);
@@ -853,18 +888,24 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`    }`);
 
         // ToLower
-        headerLines.push(`    ${className} ToLower() const {`);
-        headerLines.push(`        std::string result = Target;
-        std::transform(result.begin(), result.end(), result.begin(), ::tolower);
-        return result;`);
-        headerLines.push(`    }`);
+        headerLines.push(`
+    ${className} ToLower() const {
+        std::string result = "";
+        for(size_t i = 0; i < Target.size(); i++) {
+            result.append(1, std::tolower(Target[i]));
+        }
+        return result;
+    }`);
 
         // ToUpper
-        headerLines.push(`    ${className} ToUpper() const {`);
-        headerLines.push(`        std::string result = Target;
-        std::transform(result.begin(), result.end(), result.begin(), ::toupper);
-        return result;`);
-        headerLines.push(`    }`);
+        headerLines.push(`
+    ${className} ToUpper() const {
+        std::string result = "";
+        for(size_t i = 0; i < Target.size(); i++) {
+            result.append(1, std::toupper(Target[i]));
+        }
+        return result;
+    }`);
 
         // Split by chars
         headerLines.push(`    std::vector<${className}> Split(const ${className}& chars) const {`);
