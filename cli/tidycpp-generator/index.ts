@@ -21,6 +21,10 @@ let TidyCppGenerator = (config: {
 #else
 #define SUPPORT_STD_STRINGSTREAM 0
 #endif
+#endif
+
+#if SUPPORT_STD_STRINGSTREAM
+#include <sstream>
 #endif`;
     };
     let generate_SUPPORT_STD_WSTRING = () => {
@@ -30,6 +34,10 @@ let TidyCppGenerator = (config: {
 #else
 #define SUPPORT_STD_WSTRING 0
 #endif
+#endif
+
+#if SUPPORT_STD_WSTRING
+#include <wstring>
 #endif`;
     };
     let generate_SUPPORT_EXPLICIT = () => {
@@ -72,15 +80,25 @@ let TidyCppGenerator = (config: {
 #endif
 #endif`;
     };
+    let generate_SUPPORT_STD_FUNCTION = () => {
+        return `#ifndef SUPPORT_STD_FUNCTION
+#if __cplusplus >= 201103L
+#define SUPPORT_STD_FUNCTION 1
+#else
+#define SUPPORT_STD_FUNCTION 0
+#endif
+#endif
+
+#if SUPPORT_STD_FUNCTION
+#include <functional>
+#endif`;
+    };
     let generateStringClass = (namespace: string, className: string, targetEncoding: number, exportDefine: string, allStringClassNames: string[]) => {
         let lines = [] as string[];
         lines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
         lines.push(`#define __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
         lines.push(`#include <string>`);
         lines.push(`#include <vector>`);
-        lines.push(`#if SUPPORT_STD_WSTRING
-#include <wstring>
-#endif`);
         lines.push(`#include "${namespace}_StringUtil.h"`);
         lines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
@@ -95,6 +113,8 @@ let TidyCppGenerator = (config: {
         lines.push(generate_SUPPORT_STD_WSTRING());
         // SUPPORT_RVALUE_REFERENCES宏定义
         lines.push(generate_SUPPORT_RVALUE_REFERENCES());
+        // SUPPORT_STD_FUNCTION宏定义
+        lines.push(generate_SUPPORT_STD_FUNCTION());
         lines.push(`namespace ${namespace} {`);
         for (let i = 0; i < allStringClassNames.length; i++) {
             if (allStringClassNames[i] == className) {
@@ -791,14 +811,16 @@ let TidyCppGenerator = (config: {
         lines.push(`    }`);
 
         // Map
-        lines.push(`    ${className} Map(std::function<${className}(${className})> func) const {`);
-        lines.push(`        ${className} result;
+        lines.push(`#if SUPPORT_STD_FUNCTION
+        ${className} Map(std::function<${className}(${className})> func) const {
+        ${className} result;
         for (char item : Target)
         {
             result.Append(func(item));
         }
-        return result;`);
-        lines.push(`    }`);
+        return result;
+        }
+        #endif`);
 
         // Index
         lines.push(`    ${className} operator[](int index) const {`);
