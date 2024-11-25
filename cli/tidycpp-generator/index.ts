@@ -431,9 +431,9 @@ class ${allStringClassNames[i]};
         // SubString
         headerLines.push(`    ${className} SubString(int start, int length = -1) const {`);
         headerLines.push(`    if (length == -1)
-        return Target.substr(offset);
+        return Target.substr(start);
     else
-        return Target.substr(offset, length);`);
+        return Target.substr(start, length);`);
         headerLines.push(`    }`);
 
         // Insert
