@@ -112,11 +112,44 @@ let TidyCppGenerator = (config: {
     #include <functional>
 #endif`;
     };
-    let generate_SUPPORT_STD_TOSTRING = () => {
-        return `
+    let generateStringCommonClass = (namespace: string) => {
+        let header = `
 #ifndef SUPPORT_STD_TOSTRING
-    #define SUPPORT_STD_TOSTRING
-    #if SUPPORT_STD_STRINGSTREAM
+#define SUPPORT_STD_TOSTRING
+#if defined(_MSC_VER) && _MSC_VER < 1600
+namespace std {
+    std::string to_string(int value);
+    
+    std::string to_string(unsigned int value);
+
+    std::string to_string(long value);
+
+    std::string to_string(unsigned long value);
+
+    std::string to_string(long long value);
+
+    std::string to_string(unsigned long long value);
+
+    std::string to_string(float value);
+
+    std::string to_string(double value);
+
+    int stoi(const std::string& str);
+
+    long stol(const std::string& str);
+
+    long long stoll(const std::string& str);
+
+    float stof(const std::string& str);
+
+    double stod(const std::string& str);
+}
+    #endif
+#endif`;
+        let source = `
+#ifndef SUPPORT_STD_TOSTRING
+#define SUPPORT_STD_TOSTRING
+#if defined(_MSC_VER) && _MSC_VER < 1600
 namespace std {
     std::string to_string(int value) {
         std::stringstream ss;
@@ -203,6 +236,16 @@ namespace std {
 }
     #endif
 #endif`;
+        return [
+            {
+                FileName: `${namespace}_StringCommon.h`,
+                Content: header
+            },
+            {
+                FileName: `${namespace}_StringCommon.cpp`,
+                Content: source
+            }
+        ]
     };
     let generateStringClass = (namespace: string, className: string, targetEncoding: number, exportDefine: string, allStringClassNames: string[]) => {
         let headerLines = [] as string[];
@@ -214,12 +257,11 @@ using namespace ${namespace};`);
         headerLines.push(`#include <string>`);
         headerLines.push(`#include <vector>`);
         headerLines.push(`#include "${namespace}_StringUtil.h"`);
-        
+        headerLines.push(`#include "${namespace}_StringCommon.h"`);
+
         headerLines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
         headerLines.push(generate_SUPPORT_STD_STRINGSTREAM());
-        // SUPPORT_STD_TOSTRING宏定义
-        headerLines.push(generate_SUPPORT_STD_TOSTRING());
         // SUPPORT_EXPLICIT宏定义
         headerLines.push(generate_SUPPORT_EXPLICIT());
         // SUPPORT_INT64宏定义，64位
@@ -1317,6 +1359,9 @@ return result;
         let classNames = ['LocaleString', 'UTF8String', 'GBKString'];
         let files = [] as any;
         generateStringUtilClass(config.namespace, config.exportDefine).forEach((item) => {
+            files.push(item);
+        });
+        generateStringCommonClass(config.namespace).forEach((item) => {
             files.push(item);
         });
         for (let i = 0; i < targetEncodings.length; i++) {
