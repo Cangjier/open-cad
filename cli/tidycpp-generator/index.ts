@@ -511,12 +511,13 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`    }`);
 
         // Append values
-        headerLines.push(`    ${className}& Append(const std::vector<${className}>& values) {`);
-        headerLines.push(`        for (const ${className}& value : values) {`);
-        headerLines.push(`            this->Target.append(value.Target);`);
-        headerLines.push(`        }`);
-        headerLines.push(`        return *this;`);
-        headerLines.push(`    }`);
+        headerLines.push(`
+    ${className}& Append(const std::vector<${className}>& values) {
+        for(size_t i = 0; i < values.size(); i++) {
+            this->Target.append(values[i].Target);
+        }
+        return *this;
+    }`);
 
         // AppendLine
         headerLines.push(`    ${className}& AppendLine(const ${className}& value) {`);
