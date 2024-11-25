@@ -1110,21 +1110,23 @@ class ${allStringClassNames[i]};
         lines.push(`#define __${namespace.toUpperCase()}_STRING_UTIL_H__`);
         // SUPPORT_NULLPTR
         lines.push(generate_SUPPORT_NULLPTR());
-        // 
-        lines.push(`#include <string>`);
-        lines.push(`#include <vector>`);
-        lines.push(`namespace ${namespace} {`);
-        lines.push(`class ${exportDefine} StringUtil {`);
-        lines.push(`public:`);
-        lines.push(`    static unsigned int GetLocale();`);
-        lines.push(`    static std::string To(const std::string &value, unsigned int fromCodePage, unsigned int toCodePage);`);
-        lines.push(`    static std::string To(const wchar_t *value, unsigned int toCodePage);
+        // SUPPORT_WSTRING
+        lines.push(generate_SUPPORT_STD_WSTRING());
+        lines.push(`
+#include <string>
+#include <vector>
+namespace ${namespace} {
+    class ${exportDefine} StringUtil {
+    public:
+    static unsigned int GetLocale();
+    static std::string To(const std::string &value, unsigned int fromCodePage, unsigned int toCodePage);
+    static std::string To(const wchar_t *value, unsigned int toCodePage);
 #if SUPPORT_STD_WSTRING
     static std::wstring To(const std::string &value, unsigned int fromCodePage);
+#endif
+    };
+};
 #endif`);
-        lines.push(`};`);
-        lines.push(`};`);
-        lines.push(`#endif`);
         let classes = [] as {
             FileName: string,
             Content: string
