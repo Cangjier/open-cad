@@ -472,7 +472,7 @@ let TidyCppGenerator = (config: {
         lines.push(`    }`);
 
         // Repeat
-        lines.push(`    static ${className} Repeat(const ${className} value, int count) const {`);
+        lines.push(`    static ${className} Repeat(const ${className} value, int count) {`);
         lines.push(`        ${className} result;`);
         lines.push(`        for (int i = 0; i < count; i++) {`);
         lines.push(`            result.Append(value);`);
