@@ -1031,7 +1031,7 @@ let TidyCppGenerator = (config: {
 	}
 
 	size_t inBytesLeft = value.size();
-	size_t outBytesLeft = value.size() * 4; // 估计输出字节数
+	size_t outBytesLeft = value.size() * 4;
 
 	char* inBuf = const_cast<char*>(value.data());
 	char* outBuf = new char[outBytesLeft];
