@@ -179,15 +179,7 @@ using namespace ${namespace};`);
         headerLines.push(`#include <string>`);
         headerLines.push(`#include <vector>`);
         headerLines.push(`#include "${namespace}_StringUtil.h"`);
-        for (let i = 0; i < allStringClassNames.length; i++) {
-            if (allStringClassNames[i] == className) {
-                continue;
-            }
-            headerLines.push(`#include "${namespace}_${allStringClassNames[i]}.h"`);
-            headerLines.push(`namespace ${namespace} {
-class ${allStringClassNames[i]};
-}`);
-        }
+        
         headerLines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
         headerLines.push(generate_SUPPORT_STD_STRINGSTREAM());
@@ -205,6 +197,17 @@ class ${allStringClassNames[i]};
         headerLines.push(generate_SUPPORT_RVALUE_REFERENCES());
         // SUPPORT_STD_FUNCTION宏定义
         headerLines.push(generate_SUPPORT_STD_FUNCTION());
+
+        for (let i = 0; i < allStringClassNames.length; i++) {
+            if (allStringClassNames[i] == className) {
+                continue;
+            }
+            headerLines.push(`#include "${namespace}_${allStringClassNames[i]}.h"`);
+            headerLines.push(`namespace ${namespace} {
+class ${allStringClassNames[i]};
+}`);
+        }
+
         headerLines.push(`namespace ${namespace} {`);
         headerLines.push(`class ${exportDefine} ${className} {`);
         headerLines.push(`public:`);
