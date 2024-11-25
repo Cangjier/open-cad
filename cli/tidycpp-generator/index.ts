@@ -3,31 +3,36 @@ let TidyCppGenerator = (config: {
     namespace: string,
     exportDefine: string,
 }) => {
-    let generateStringClass = (namespace: string, className: string, targetEncoding: number, exportDefine: string, allStringClassNames: string[]) => {
+    let generate_SUPPORT_NULLPTR = () => {
         let lines = [] as string[];
-        lines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
-        lines.push(`#define __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
-        lines.push(`#include <string>`);
-        lines.push(`#include <vector>`);
-        lines.push(`#include <wstring>`);
-        // SUPPORT_STD_STRINGSTREAM宏定义
-        lines.push(`#ifndef SUPPORT_STD_STRINGSTREAM
+        lines.push(`#ifndef SUPPORT_NULLPTR`);
+        lines.push(`#if defined(_MSC_VER) && _MSC_VER >= 1600`);
+        lines.push(`#define SUPPORT_NULLPTR nullptr`);
+        lines.push(`#else`);
+        lines.push(`#define SUPPORT_NULLPTR NULL`);
+        lines.push(`#endif`);
+        return lines.join('\r\n');
+    };
+    let generate_SUPPORT_STD_STRINGSTREAM = () => {
+        return `#ifndef SUPPORT_STD_STRINGSTREAM
 #if _MSC_VER >= 1400
 #define SUPPORT_STD_STRINGSTREAM 1
 #else
 #define SUPPORT_STD_STRINGSTREAM 0
 #endif
-#endif`);
-        // SUPPORT_EXPLICIT宏定义
-        lines.push(`#ifndef SUPPORT_EXPLICIT
+#endif`;
+    };
+    let generate_SUPPORT_EXPLICIT = () => {
+        return `#ifndef SUPPORT_EXPLICIT
 #if __cplusplus >= 201103L
 #define SUPPORT_EXPLICIT explicit
 #else
 #define SUPPORT_EXPLICIT
 #endif
-#endif`);
-        // SUPPORT_INT64宏定义，64位
-        lines.push(`#ifndef SUPPORT_INT64
+#endif`;
+    };
+    let generate_SUPPORT_INT64 = () => {
+        return `#ifndef SUPPORT_INT64
 #ifdef _MSC_VER
 #if _MSC_VER <= 1800
 #define SUPPORT_INT64 __int64
@@ -37,15 +42,34 @@ let TidyCppGenerator = (config: {
 #else
 #define SUPPORT_INT64 std::int64_t
 #endif
-#endif`);
-        // SUPPORT_STD_OSTRINGSTREAM宏定义
-        lines.push(`#ifndef SUPPORT_STD_OSTRINGSTREAM
+#endif`;
+    };
+    let generate_SUPPORT_STD_OSTRINGSTREAM = () => {
+        return `#ifndef SUPPORT_STD_OSTRINGSTREAM
 #if _MSC_VER >= 1400
 #define SUPPORT_STD_OSTRINGSTREAM 1
 #else
 #define SUPPORT_STD_OSTRINGSTREAM 0
 #endif
-#endif`);
+#endif`;
+    };
+    let generateStringClass = (namespace: string, className: string, targetEncoding: number, exportDefine: string, allStringClassNames: string[]) => {
+        let lines = [] as string[];
+        lines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
+        lines.push(`#define __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
+        lines.push(`#include <string>`);
+        lines.push(`#include <vector>`);
+        lines.push(`#include <wstring>`);
+        lines.push(`#include "${namespace}_StringUtil.h"`);
+        lines.push(generate_SUPPORT_NULLPTR());
+        // SUPPORT_STD_STRINGSTREAM宏定义
+        lines.push(generate_SUPPORT_STD_STRINGSTREAM());
+        // SUPPORT_EXPLICIT宏定义
+        lines.push(generate_SUPPORT_EXPLICIT());
+        // SUPPORT_INT64宏定义，64位
+        lines.push(generate_SUPPORT_INT64());
+        // SUPPORT_STD_OSTRINGSTREAM宏定义
+        lines.push(generate_SUPPORT_STD_OSTRINGSTREAM());
         lines.push(`namespace ${namespace} {`);
         for (let i = 0; i < allStringClassNames.length; i++) {
             if (allStringClassNames[i] == className) {
@@ -65,7 +89,7 @@ let TidyCppGenerator = (config: {
         // 从wchar_t*转换的构造函数
         lines.push(`    ${className}(const wchar_t* target) {
         this->TargetEncoding = ${targetEncoding};
-        if (target == nullptr) {
+        if (target == SUPPORT_NULLPTR) {
             this->Target = "";
         } else {
             this->Target = StringUtil::To(target, TargetEncoding);
@@ -87,7 +111,7 @@ let TidyCppGenerator = (config: {
         // 从const char*转换的构造函数
         lines.push(`    ${className}(const char* target) {
         this->TargetEncoding = ${targetEncoding};
-        if (target == nullptr) {
+        if (target == SUPPORT_NULLPTR) {
             this->Target = "";
         } else {
             this->Target = target;
@@ -97,7 +121,7 @@ let TidyCppGenerator = (config: {
         // 从char*转换的构造函数
         lines.push(`    ${className}(char* target) {
         this->TargetEncoding = ${targetEncoding};
-        if (target == nullptr) {
+        if (target == SUPPORT_NULLPTR) {
             this->Target = "";
         } else {
             this->Target = target;
@@ -939,6 +963,9 @@ let TidyCppGenerator = (config: {
         let lines = [] as string[];
         lines.push(`#ifndef __${namespace.toUpperCase()}_STRING_UTIL_H__`);
         lines.push(`#define __${namespace.toUpperCase()}_STRING_UTIL_H__`);
+        // SUPPORT_NULLPTR
+        lines.push(generate_SUPPORT_NULLPTR());
+        // 
         lines.push(`#include <string>`);
         lines.push(`#include <vector>`);
         lines.push(`namespace ${namespace} {`);
@@ -960,7 +987,7 @@ let TidyCppGenerator = (config: {
             Content: lines.join('\r\n')
         });
         lines = [] as string[];
-        lines.push(`#include "StringUtil.h"`);
+        lines.push(`#include "${namespace}_StringUtil.h"`);
         lines.push(`#ifdef _MSC_VER
 #include "windows.h"
 #elif __linux__
@@ -1026,12 +1053,12 @@ let TidyCppGenerator = (config: {
 
         lines.push(`std::string StringUtil::To(const wchar_t *value, unsigned int toCodePage) {`);
         lines.push(`#ifdef _MSC_VER
-	int length = WideCharToMultiByte(toCodePage, 0, value, -1, nullptr, 0, nullptr, nullptr);
+	int length = WideCharToMultiByte(toCodePage, 0, value, -1, SUPPORT_NULLPTR, 0, SUPPORT_NULLPTR, SUPPORT_NULLPTR);
 	if (length == 0) {
 		return std::string();
 	}
 	std::string result(length - 1, '\0');
-	WideCharToMultiByte(toCodePage, 0, value, -1, &result[0], length, nullptr, nullptr);
+	WideCharToMultiByte(toCodePage, 0, value, -1, &result[0], length, SUPPORT_NULLPTR, SUPPORT_NULLPTR);
 	return result;
 #elif __linux__
 	std::string result;
@@ -1085,7 +1112,7 @@ return result;`);
 
         lines.push(`#endif`);
         classes.push({
-            FileName: 'StringUtil.cpp',
+            FileName: `${namespace}_StringUtil.cpp`,
             Content: lines.join('\r\n')
         });
         return classes;
