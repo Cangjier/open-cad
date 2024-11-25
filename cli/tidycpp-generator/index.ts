@@ -114,8 +114,10 @@ let TidyCppGenerator = (config: {
     };
     let generateStringCommonClass = (namespace: string) => {
         let header = `
+
 #ifndef SUPPORT_STD_TOSTRING
 #define SUPPORT_STD_TOSTRING
+#include <string>
 #if defined(_MSC_VER) && _MSC_VER < 1600
 namespace std {
     std::string to_string(int value);
@@ -147,9 +149,9 @@ namespace std {
     #endif
 #endif`;
         let source = `
-#ifndef SUPPORT_STD_TOSTRING
-#define SUPPORT_STD_TOSTRING
+#include "${namespace}_StringCommon.h"
 #if defined(_MSC_VER) && _MSC_VER < 1600
+#include <sstream>
 namespace std {
     std::string to_string(int value) {
         std::stringstream ss;
@@ -234,7 +236,6 @@ namespace std {
         return result;
     }
 }
-    #endif
 #endif`;
         return [
             {
