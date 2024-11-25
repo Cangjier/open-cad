@@ -1,9 +1,12 @@
 import { File } from "../.tsc/System/IO/File";
-let TidyCppGenerator = () => {
-    let generateString = (targetEncoding: number, className: string, exportDefine: string, allStringClassNames: string[]) => {
+let TidyCppGenerator = (config: {
+    namespace: string,
+    exportDefine: string,
+}) => {
+    let generateStringClass = (namespace: string, className: string, targetEncoding: number, exportDefine: string, allStringClassNames: string[]) => {
         let lines = [] as string[];
-        lines.push(`#ifndef ${className}_H`);
-        lines.push(`#define ${className}_H`);
+        lines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
+        lines.push(`#define __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
         lines.push(`#include <string>`);
         lines.push(`#include <vector>`);
         lines.push(`#include <wstring>`);
@@ -43,72 +46,79 @@ let TidyCppGenerator = () => {
 #define SUPPORT_STD_OSTRINGSTREAM 0
 #endif
 #endif`);
+        lines.push(`namespace ${namespace} {`);
+        for (let i = 0; i < allStringClassNames.length; i++) {
+            if (allStringClassNames[i] == className) {
+                continue;
+            }
+            lines.push(`class ${allStringClassNames[i]};`);
+        }
         lines.push(`class ${exportDefine} ${className} {`);
         lines.push(`public:`);
-        lines.push(`    std::string Target;`);
-        lines.push(`    int TargetEncoding;`);
-        lines.push(`    ${className}() {`);
-        lines.push(`        this->Target = "";`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`    }`);
+        lines.push(`    std::string Target;
+    int TargetEncoding;
+    ${className}() {
+        this->Target = "";
+        this->TargetEncoding = ${targetEncoding};
+    }`);
 
         // 从wchar_t*转换的构造函数
-        lines.push(`    ${className}(const wchar_t* target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        if (target == nullptr) {`);
-        lines.push(`            this->Target = "";`);
-        lines.push(`        } else {`);
-        lines.push(`            this->Target = StringUtil::To(target, TargetEncoding);`);
-        lines.push(`        }`);
-        lines.push(`    }`);
+        lines.push(`    ${className}(const wchar_t* target) {
+        this->TargetEncoding = ${targetEncoding};
+        if (target == nullptr) {
+            this->Target = "";
+        } else {
+            this->Target = StringUtil::To(target, TargetEncoding);
+        }
+    }`);
 
         // 从std::wstring转换的构造函数
-        lines.push(`    ${className}(const std::wstring& target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = StringUtil::To(target.c_str(), TargetEncoding);`);
-        lines.push(`    }`);
+        lines.push(`    ${className}(const std::wstring& target) {
+        this->TargetEncoding = ${targetEncoding};
+        this->Target = StringUtil::To(target.c_str(), TargetEncoding);
+    }`);
 
         // 从std::string转换的构造函数
-        lines.push(`    ${className}(const std::string& target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = target;`);
-        lines.push(`    }`);
+        lines.push(`    ${className}(const std::string& target) {
+        this->TargetEncoding = ${targetEncoding};
+        this->Target = target;
+    }`);
 
         // 从const char*转换的构造函数
-        lines.push(`    ${className}(const char* target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        if (target == nullptr) {`);
-        lines.push(`            this->Target = "";`);
-        lines.push(`        } else {`);
-        lines.push(`            this->Target = target;`);
-        lines.push(`        }`);
-        lines.push(`    }`);
+        lines.push(`    ${className}(const char* target) {
+        this->TargetEncoding = ${targetEncoding};
+        if (target == nullptr) {
+            this->Target = "";
+        } else {
+            this->Target = target;
+        }
+    }`);
 
         // 从char*转换的构造函数
-        lines.push(`    ${className}(char* target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        if (target == nullptr) {`);
-        lines.push(`            this->Target = "";`);
-        lines.push(`        } else {`);
-        lines.push(`            this->Target = target;`);
-        lines.push(`        }`);
-        lines.push(`    }`);
+        lines.push(`    ${className}(char* target) {
+        this->TargetEncoding = ${targetEncoding};
+        if (target == nullptr) {
+            this->Target = "";
+        } else {
+            this->Target = target;
+        }
+    }`);
 
         // 从std::stringstream转换的构造函数
-        lines.push(`#if SUPPORT_STD_STRINGSTREAM`);
-        lines.push(`    ${className}(const std::stringstream& target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        std::ostringstream ss;`);
-        lines.push(`        ss << target.rdbuf();`);
-        lines.push(`        this->Target = ss.str();`);
-        lines.push(`    }`);
-        lines.push(`#endif`);
+        lines.push(`#if SUPPORT_STD_STRINGSTREAM
+    ${className}(const std::stringstream& target) {
+        this->TargetEncoding = ${targetEncoding};
+        std::ostringstream ss;
+        ss << target.rdbuf();
+        this->Target = ss.str();
+    }
+#endif`);
 
         // 从int转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(int target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = std::to_string(target);`);
-        lines.push(`    }`);
+        lines.push(`    SUPPORT_EXPLICIT ${className}(int target) {
+        this->TargetEncoding = ${targetEncoding};
+        this->Target = std::to_string(target);
+    }`);
 
         // 从long转换的构造函数
         lines.push(`    SUPPORT_EXPLICIT ${className}(long target) {`);
@@ -915,33 +925,200 @@ let TidyCppGenerator = () => {
         }
 
         lines.push(`};`);
+        lines.push(`};`);
 
         lines.push(`#endif`);
 
-        return lines.join('\r\n');
+        return [{
+            FileName: `${namespace}_${className}.h`,
+            Content: lines.join('\r\n')
+        }];
     };
 
-    let generateStringClass = (exportDefine: string) => {
+    let generateStringUtilClass = (namespace: string, exportDefine: string) => {
+        let lines = [] as string[];
+        lines.push(`#ifndef __${namespace.toUpperCase()}_STRING_UTIL_H__`);
+        lines.push(`#define __${namespace.toUpperCase()}_STRING_UTIL_H__`);
+        lines.push(`#include <string>`);
+        lines.push(`#include <vector>`);
+        lines.push(`namespace ${namespace} {`);
+        lines.push(`class ${exportDefine} StringUtil {`);
+        lines.push(`public:`);
+        lines.push(`    static unsigned int GetLocale();`);
+        lines.push(`    static std::string To(const std::string &value, unsigned int fromCodePage, unsigned int toCodePage)`);
+        lines.push(`    static std::string To(const wchar_t *value, unsigned int toCodePage);`);
+        lines.push(`    static std::wstring To(const std::string &value, unsigned int fromCodePage);`);
+        lines.push(`};`);
+        lines.push(`};`);
+        lines.push(`#endif`);
+        let classes = [] as {
+            FileName: string,
+            Content: string
+        }[];
+        classes.push({
+            FileName: 'StringUtil.h',
+            Content: lines.join('\r\n')
+        });
+        lines = [] as string[];
+        lines.push(`#include "StringUtil.h"`);
+        lines.push(`#ifdef _MSC_VER
+#include "windows.h"
+#elif __linux__
+#include <iostream>
+#include <string>
+#include <cwchar>
+#include <iconv.h>
+#endif`);
+        lines.push(`using namespace ${namespace};`);
+        lines.push(`unsigned int StringUtil::GetLocale() {`);
+        lines.push(`#ifdef _MSC_VER`);
+        lines.push(`    return GetACP();`);
+        lines.push(`#elif __linux__`);
+        lines.push(`    return 65001;`);
+        lines.push(`#endif`);
+        lines.push(`}`);
+
+        lines.push(`std::string StringUtil::To(const std::string &value, unsigned int fromCodePage, unsigned int toCodePage) {`);
+        lines.push(`#ifdef _MSC_VER
+	int length = MultiByteToWideChar(fromCodePage, 0, value.c_str(), -1, NULL, 0);
+	wchar_t* wchars = new wchar_t[length + 1];
+	memset(wchars, 0, length * 2 + 2);
+	MultiByteToWideChar(fromCodePage, 0, value.c_str(), -1, wchars, length);
+	length = WideCharToMultiByte(toCodePage, 0, wchars, -1, NULL, 0, NULL, NULL);
+	char* str = new char[length + 1];
+	memset(str, 0, length + 1);
+	WideCharToMultiByte(toCodePage, 0, wchars, -1, str, length, NULL, NULL);
+	std::string strTemp(str);
+	if (wchars) delete[] wchars;
+	if (str) delete[] str;
+	return strTemp;
+#else
+	std::string result;
+
+	iconv_t converter = iconv_open(std::to_string(toCodePage).c_str(), std::to_string(fromCodePage).c_str());
+
+	if (converter == (iconv_t)-1) {
+		std::cout << "Failed to open converter." << std::endl;
+		return result;
+	}
+
+	size_t inBytesLeft = value.size();
+	size_t outBytesLeft = value.size() * 4; // 估计输出字节数
+
+	char* inBuf = const_cast<char*>(value.data());
+	char* outBuf = new char[outBytesLeft];
+	char* outBufStart = outBuf;
+
+	if (iconv(converter, &inBuf, &inBytesLeft, &outBuf, &outBytesLeft) == (size_t)-1) {
+		std::cout << "Failed to convert the string." << std::endl;
+	}
+	else {
+		result.assign(outBufStart, outBytesLeft - outBytesLeft);
+		std::cout << "Conversion successful." << std::endl;
+	}
+
+	delete[] outBufStart;
+	iconv_close(converter);
+
+	return result;
+#endif`);
+        lines.push(`}`);
+
+        lines.push(`std::string StringUtil::To(const wchar_t *value, unsigned int toCodePage) {`);
+        lines.push(`#ifdef _MSC_VER
+	int length = WideCharToMultiByte(toCodePage, 0, value, -1, nullptr, 0, nullptr, nullptr);
+	if (length == 0) {
+		return std::string();
+	}
+	std::string result(length - 1, '\0');
+	WideCharToMultiByte(toCodePage, 0, value, -1, &result[0], length, nullptr, nullptr);
+	return result;
+#elif __linux__
+	std::string result;
+	iconv_t conv = iconv_open(std::to_string(toCodePage).c_str(), "wchar_t");
+	if (conv == (iconv_t)-1) {
+		return result;
+	}
+	size_t inSize = wcslen(value) * sizeof(wchar_t);
+	size_t inBytesLeft = inSize;
+    
+	size_t outSize = inSize * 2;
+	size_t outBytesLeft = outSize;
+    
+	char* outBuffer = new char[outSize];
+	char* outPtr = outBuffer;
+
+	const char* inPtr = reinterpret_cast<const char*>(value);
+	if (iconv(conv, &inPtr, &inBytesLeft, &outPtr, &outBytesLeft) == (size_t)-1) {
+    
+		delete[] outBuffer;
+		iconv_close(conv);
+		return result;
+	}
+    
+	result.assign(outBuffer, outSize - outBytesLeft);
+
+	delete[] outBuffer;
+	iconv_close(conv);
+
+	return result;
+#else
+	return "";
+#endif`);
+        lines.push(`}`);
+
+        lines.push(`std::wstring StringUtil::To(const std::string &value, unsigned int fromCodePage) {`);
+        lines.push(`int length = MultiByteToWideChar(fromCodePage, 0, value.c_str(), -1, NULL, 0);
+if (length == 0)
+{
+	return L"";
+}
+
+std::wstring result(length - 1, L'\0');
+if (MultiByteToWideChar(fromCodePage, 0, value.c_str(), -1, &result[0], length) == 0)
+{
+	return L"";
+}
+
+return result;`);
+        lines.push(`}`);
+
+        lines.push(`#endif`);
+        classes.push({
+            FileName: 'StringUtil.cpp',
+            Content: lines.join('\r\n')
+        });
+        return classes;
+    };
+
+    let generateStringClasses = () => {
         let targetEncodings = [0, 65001, 936];
         let classNames = ['LocaleString', 'UTF8String', 'GBKString'];
-        let files = {} as any;
+        let files = [] as any;
+        generateStringUtilClass(config.namespace, config.exportDefine).forEach((item) => {
+            files.push(item);
+        });
         for (let i = 0; i < targetEncodings.length; i++) {
             let targetEncoding = targetEncodings[i];
             let className = classNames[i];
-            files[className] = generateString(targetEncoding, className, exportDefine, classNames);
+            let result = generateStringClass(config.namespace, className, targetEncoding, config.exportDefine, classNames);
+            result.forEach(item => {
+                files.push(item);
+            });
         }
         return files;
     };
 
     return {
-        generateStringClass
+        generateStringClasses
     };
 };
 
-let generator = TidyCppGenerator();
-let classes = generator.generateStringClass('');
-let keys = Object.keys(classes);
-for (let key of keys) {
-    let code = classes[key];
-    File.WriteAllText(`${key}.h`, code);
+let generator = TidyCppGenerator({
+    namespace: "Tidy",
+    exportDefine: "SUPPORT_EXPORT"
+});
+let classes = generator.generateStringClasses();
+for (let classFile of classes) {
+    File.WriteAllText(classFile.FileName, classFile.Content);
 }
