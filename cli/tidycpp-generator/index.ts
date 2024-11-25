@@ -1110,8 +1110,6 @@ if (MultiByteToWideChar(fromCodePage, 0, value.c_str(), -1, &result[0], length) 
 
 return result;`);
         lines.push(`}`);
-
-        lines.push(`#endif`);
         classes.push({
             FileName: `${namespace}_StringUtil.cpp`,
             Content: lines.join('\r\n')
