@@ -148,9 +148,10 @@ let cmakeManager = CMakeManager();
 
 let VsCodeManager = () => {
     let checkInstalled = async () => {
-        let output = (await cmdAsync(Environment.CurrentDirectory, "code --version")).output;
-        if (output != undefined) {
-            if (output.length > 0) {
+        let result = await cmdAsync(Environment.CurrentDirectory, "code --version");
+        console.log(result);
+        if (result.output != undefined) {
+            if (result.output.length > 0) {
                 return true;
             }
         }
