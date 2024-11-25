@@ -399,15 +399,9 @@ class ${allStringClassNames[i]};
         headerLines.push(`    }`);
 
         // FromPointer
-        headerLines.push(`    static ${className} FromPointer(void* value) {`);
-        headerLines.push(`#if SUPPORT_STD_STRINGSTREAM`);
-        headerLines.push(`        std::stringstream ss;`);
-        headerLines.push(`        ss << std::setfill('0') << std::setw(sizeof(void*) * 2) << std::hex << reinterpret_cast<uintptr_t>(target);`);
-        headerLines.push(`        return ss.str();`);
-        headerLines.push(`#else`);
-        headerLines.push(`        return Hex(reinterpret_cast<SUPPORT_INT64>(value));`);
-        headerLines.push(`#endif`);
-        headerLines.push(`    }`);
+        headerLines.push(`    static ${className} FromPointer(void* value) {
+        return "0x"+Hex(reinterpret_cast<SUPPORT_INT64>(value));
+}`);
 
         // ToChars
         headerLines.push(`    const char* ToChars() const {`);
