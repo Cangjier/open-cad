@@ -1182,11 +1182,11 @@ let cmd_init = async () => {
     // let vscodeLaunchText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "launch.json"), utf8);
     // await File.WriteAllTextAsync(vscodeLaunchPath, vscodeLaunchText, utf8);
     // 自动创建 .gitignore
-    let gitignorePath = Path.Combine(vscodeDirectory, ".gitignore");
+    let gitignorePath = Path.Combine(projectDirectory, ".gitignore");
     let gitignoreTemplatePath = Path.Combine(script_directory, "Project/Template/.gitignore");
     File.Copy(gitignoreTemplatePath, gitignorePath, true);
     // 自动创建 manifest.json
-    let manifestPath = Path.Combine(vscodeDirectory, "manifest.json");
+    let manifestPath = Path.Combine(projectDirectory, "manifest.json");
     let manifestTemplatePath = Path.Combine(script_directory, "Project/Template/manifest.json");
     File.Copy(manifestTemplatePath, manifestPath, true);
     // 自动创建 main.cpp
