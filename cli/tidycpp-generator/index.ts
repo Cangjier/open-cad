@@ -40,7 +40,7 @@ let TidyCppGenerator = (config: {
         #endif
     #endif
     #if SUPPORT_STD_WSTRING
-        #include <wstring>
+        // #include <wstring>
     #endif
 #endif`;
     };
