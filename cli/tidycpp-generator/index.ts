@@ -984,7 +984,7 @@ let TidyCppGenerator = (config: {
             Content: string
         }[];
         classes.push({
-            FileName: 'StringUtil.h',
+            FileName: `${namespace}_StringUtil.h`,
             Content: lines.join('\r\n')
         });
         lines = [] as string[];
