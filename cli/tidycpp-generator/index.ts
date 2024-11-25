@@ -112,7 +112,7 @@ let TidyCppGenerator = (config: {
     #include <functional>
 #endif`;
     };
-    let generate_SUPPORT_STD_TOSTRING=()=>{
+    let generate_SUPPORT_STD_TOSTRING = () => {
         return `
 #ifndef SUPPORT_STD_TOSTRING
     #define SUPPORT_STD_TOSTRING
@@ -170,45 +170,48 @@ namespace std {
 #endif`;
     };
     let generateStringClass = (namespace: string, className: string, targetEncoding: number, exportDefine: string, allStringClassNames: string[]) => {
-        let lines = [] as string[];
-        lines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
-        lines.push(`#define __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
-        lines.push(`#include <string>`);
-        lines.push(`#include <vector>`);
-        lines.push(`#include "${namespace}_StringUtil.h"`);
+        let headerLines = [] as string[];
+        let sourceLines = [] as string[];
+        sourceLines.push(`#include "${namespace}_${className}.h"
+using namespace ${namespace};`);
+        headerLines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
+        headerLines.push(`#define __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
+        headerLines.push(`#include <string>`);
+        headerLines.push(`#include <vector>`);
+        headerLines.push(`#include "${namespace}_StringUtil.h"`);
         for (let i = 0; i < allStringClassNames.length; i++) {
             if (allStringClassNames[i] == className) {
                 continue;
             }
-            lines.push(`#include "${namespace}_${allStringClassNames[i]}.h"`);
+            headerLines.push(`#include "${namespace}_${allStringClassNames[i]}.h"`);
         }
-        lines.push(generate_SUPPORT_NULLPTR());
+        headerLines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
-        lines.push(generate_SUPPORT_STD_STRINGSTREAM());
+        headerLines.push(generate_SUPPORT_STD_STRINGSTREAM());
         // SUPPORT_STD_TOSTRING宏定义
-        lines.push(generate_SUPPORT_STD_TOSTRING());
+        headerLines.push(generate_SUPPORT_STD_TOSTRING());
         // SUPPORT_EXPLICIT宏定义
-        lines.push(generate_SUPPORT_EXPLICIT());
+        headerLines.push(generate_SUPPORT_EXPLICIT());
         // SUPPORT_INT64宏定义，64位
-        lines.push(generate_SUPPORT_INT64());
+        headerLines.push(generate_SUPPORT_INT64());
         // SUPPORT_STD_OSTRINGSTREAM宏定义
-        lines.push(generate_SUPPORT_STD_OSTRINGSTREAM());
+        headerLines.push(generate_SUPPORT_STD_OSTRINGSTREAM());
         // SUPPORT_STD_WSTRING宏定义
-        lines.push(generate_SUPPORT_STD_WSTRING());
+        headerLines.push(generate_SUPPORT_STD_WSTRING());
         // SUPPORT_RVALUE_REFERENCES宏定义
-        lines.push(generate_SUPPORT_RVALUE_REFERENCES());
+        headerLines.push(generate_SUPPORT_RVALUE_REFERENCES());
         // SUPPORT_STD_FUNCTION宏定义
-        lines.push(generate_SUPPORT_STD_FUNCTION());
-        lines.push(`namespace ${namespace} {`);
+        headerLines.push(generate_SUPPORT_STD_FUNCTION());
+        headerLines.push(`namespace ${namespace} {`);
         for (let i = 0; i < allStringClassNames.length; i++) {
             if (allStringClassNames[i] == className) {
                 continue;
             }
-            lines.push(`class ${allStringClassNames[i]};`);
+            headerLines.push(`class ${allStringClassNames[i]};`);
         }
-        lines.push(`class ${exportDefine} ${className} {`);
-        lines.push(`public:`);
-        lines.push(`    std::string Target;
+        headerLines.push(`class ${exportDefine} ${className} {`);
+        headerLines.push(`public:`);
+        headerLines.push(`    std::string Target;
     int TargetEncoding;
     ${className}() {
         this->Target = "";
@@ -216,7 +219,7 @@ namespace std {
     }`);
 
         // 从wchar_t*转换的构造函数
-        lines.push(`    ${className}(const wchar_t* target) {
+        headerLines.push(`    ${className}(const wchar_t* target) {
         this->TargetEncoding = ${targetEncoding};
         if (target == SUPPORT_NULLPTR) {
             this->Target = "";
@@ -226,7 +229,7 @@ namespace std {
     }`);
 
         // 从std::wstring转换的构造函数
-        lines.push(`#if SUPPORT_STD_WSTRING
+        headerLines.push(`#if SUPPORT_STD_WSTRING
         ${className}(const std::wstring& target) {
         this->TargetEncoding = ${targetEncoding};
         this->Target = StringUtil::To(target.c_str(), TargetEncoding);
@@ -234,13 +237,13 @@ namespace std {
 #endif`);
 
         // 从std::string转换的构造函数
-        lines.push(`    ${className}(const std::string& target) {
+        headerLines.push(`    ${className}(const std::string& target) {
         this->TargetEncoding = ${targetEncoding};
         this->Target = target;
     }`);
 
         // 从const char*转换的构造函数
-        lines.push(`    ${className}(const char* target) {
+        headerLines.push(`    ${className}(const char* target) {
         this->TargetEncoding = ${targetEncoding};
         if (target == SUPPORT_NULLPTR) {
             this->Target = "";
@@ -250,7 +253,7 @@ namespace std {
     }`);
 
         // 从char*转换的构造函数
-        lines.push(`    ${className}(char* target) {
+        headerLines.push(`    ${className}(char* target) {
         this->TargetEncoding = ${targetEncoding};
         if (target == SUPPORT_NULLPTR) {
             this->Target = "";
@@ -260,7 +263,7 @@ namespace std {
     }`);
 
         // 从std::stringstream转换的构造函数
-        lines.push(`#if SUPPORT_STD_STRINGSTREAM
+        headerLines.push(`#if SUPPORT_STD_STRINGSTREAM
     ${className}(const std::stringstream& target) {
         this->TargetEncoding = ${targetEncoding};
         std::ostringstream ss;
@@ -270,212 +273,218 @@ namespace std {
 #endif`);
 
         // 从int转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(int target) {
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(int target) {
         this->TargetEncoding = ${targetEncoding};
         this->Target = std::to_string(target);
     }`);
 
         // 从long转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(long target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = std::to_string(target);`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(long target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = std::to_string(target);`);
+        headerLines.push(`    }`);
 
         // 从SUPPORT_INT64转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(SUPPORT_INT64 target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = std::to_string(target);`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(SUPPORT_INT64 target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = std::to_string(target);`);
+        headerLines.push(`    }`);
 
         // 从SUPPORT_INT64转换的构造函数，使用指定进制
-        lines.push(`    SUPPORT_EXPLICIT ${className}(SUPPORT_INT64 value, const ${className}& base) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = std::string();`);
-        lines.push(`        int baseLength = base.Length();`);
-        lines.push(`        while (true) {`);
-        lines.push(`            SUPPORT_INT64 next = value / baseLength;`);
-        lines.push(`            SUPPORT_INT64 mod = value % baseLength;`);
-        lines.push(`            Insert(0, base[(int)mod]);`);
-        lines.push(`            if (next == 0) {`);
-        lines.push(`                break;`);
-        lines.push(`            }`);
-        lines.push(`            value = next;`);
-        lines.push(`        }`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(SUPPORT_INT64 value, const ${className}& base) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = std::string();`);
+        headerLines.push(`        int baseLength = base.Length();`);
+        headerLines.push(`        while (true) {`);
+        headerLines.push(`            SUPPORT_INT64 next = value / baseLength;`);
+        headerLines.push(`            SUPPORT_INT64 mod = value % baseLength;`);
+        headerLines.push(`            Insert(0, base[(int)mod]);`);
+        headerLines.push(`            if (next == 0) {`);
+        headerLines.push(`                break;`);
+        headerLines.push(`            }`);
+        headerLines.push(`            value = next;`);
+        headerLines.push(`        }`);
+        headerLines.push(`    }`);
 
         // 从unsigned short转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(unsigned short target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = std::to_string(target);`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(unsigned short target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = std::to_string(target);`);
+        headerLines.push(`    }`);
 
         // 从unsigned int转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(unsigned int target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = std::to_string(target);`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(unsigned int target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = std::to_string(target);`);
+        headerLines.push(`    }`);
 
         // 从unsigned long long转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(unsigned long long target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = std::to_string(target);`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(unsigned long long target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = std::to_string(target);`);
+        headerLines.push(`    }`);
 
         // 从double转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(double target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`#if SUPPORT_STD_OSTRINGSTREAM`);
-        lines.push(`        std::ostringstream out;`);
-        lines.push(`        out.precision(14);`);
-        lines.push(`        out << std::fixed << target;`);
-        lines.push(`        this->Target = out.str();`);
-        lines.push(`#else`);
-        lines.push(`        this->Target = std::to_string(target);`);
-        lines.push(`#endif`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(double target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`#if SUPPORT_STD_OSTRINGSTREAM`);
+        headerLines.push(`        std::ostringstream out;`);
+        headerLines.push(`        out.precision(14);`);
+        headerLines.push(`        out << std::fixed << target;`);
+        headerLines.push(`        this->Target = out.str();`);
+        headerLines.push(`#else`);
+        headerLines.push(`        this->Target = std::to_string(target);`);
+        headerLines.push(`#endif`);
+        headerLines.push(`    }`);
 
         // 从char转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(char target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = std::string();`);
-        lines.push(`        this->Target.append(1, target);`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(char target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = std::string();`);
+        headerLines.push(`        this->Target.append(1, target);`);
+        headerLines.push(`    }`);
 
         // 从float转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(float target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = std::to_string(target);`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(float target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = std::to_string(target);`);
+        headerLines.push(`    }`);
 
         // 从bool转换的构造函数
-        lines.push(`    SUPPORT_EXPLICIT ${className}(bool target) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        this->Target = target ? "true" : "false";`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(bool target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = target ? "true" : "false";`);
+        headerLines.push(`    }`);
 
         // 从另一个String类转换的构造函数
         for (let stringClassName of allStringClassNames) {
             if (stringClassName == className) {
                 continue;
             }
-            lines.push(`    ${className}(const ${stringClassName}& target) {`);
-            lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-            lines.push(`        if (target.TargetEncoding == this->TargetEncoding) {`);
-            lines.push(`            this->Target = target.Target;`);
-            lines.push(`        } else {`);
-            lines.push(`            this->Target = StringUtil::To(target.Target, target.TargetEncoding, this->TargetEncoding);`);
-            lines.push(`        }`);
-            lines.push(`    }`);
+            headerLines.push(`    ${className}(const ${stringClassName}& target);`);
 
-            lines.push(`#if SUPPORT_RVALUE_REFERENCES`);
-            lines.push(`    ${className}(const ${stringClassName}&& target) {`);
-            lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-            lines.push(`        if (target.TargetEncoding == this->TargetEncoding) {`);
-            lines.push(`            this->Target = target.Target;`);
-            lines.push(`        } else {`);
-            lines.push(`            this->Target = StringUtil::To(target.Target, target.TargetEncoding, this->TargetEncoding);`);
-            lines.push(`        }`);
-            lines.push(`    }`);
-            lines.push(`#endif`);
+            headerLines.push(`#if SUPPORT_RVALUE_REFERENCES`);
+            headerLines.push(`    ${className}(const ${stringClassName}&& target);`);
+            headerLines.push(`#endif`);
+
+            sourceLines.push(`    ${className}(const ${stringClassName}& target) {`);
+            sourceLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+            sourceLines.push(`        if (target.TargetEncoding == this->TargetEncoding) {`);
+            sourceLines.push(`            this->Target = target.Target;`);
+            sourceLines.push(`        } else {`);
+            sourceLines.push(`            this->Target = StringUtil::To(target.Target, target.TargetEncoding, this->TargetEncoding);`);
+            sourceLines.push(`        }`);
+            sourceLines.push(`    }`);
+
+            sourceLines.push(`#if SUPPORT_RVALUE_REFERENCES`);
+            sourceLines.push(`    ${className}(const ${stringClassName}&& target) {`);
+            sourceLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+            sourceLines.push(`        if (target.TargetEncoding == this->TargetEncoding) {`);
+            sourceLines.push(`            this->Target = target.Target;`);
+            sourceLines.push(`        } else {`);
+            sourceLines.push(`            this->Target = StringUtil::To(target.Target, target.TargetEncoding, this->TargetEncoding);`);
+            sourceLines.push(`        }`);
+            sourceLines.push(`    }`);
+            sourceLines.push(`#endif`);
         }
 
         // hexbase
-        lines.push(`    static ${className} HexBase() {`);
-        lines.push(`        return "0123456789ABCDEF";`);
-        lines.push(`    }`);
+        headerLines.push(`    static ${className} HexBase() {`);
+        headerLines.push(`        return "0123456789ABCDEF";`);
+        headerLines.push(`    }`);
 
         // Hex
-        lines.push(`    static ${className} Hex(SUPPORT_INT64 value) {`);
-        lines.push(`        return ${className}(value, HexBase());`);
-        lines.push(`    }`);
+        headerLines.push(`    static ${className} Hex(SUPPORT_INT64 value) {`);
+        headerLines.push(`        return ${className}(value, HexBase());`);
+        headerLines.push(`    }`);
 
         // FromPointer
-        lines.push(`    static ${className} FromPointer(void* value) {`);
-        lines.push(`#if SUPPORT_STD_STRINGSTREAM`);
-        lines.push(`        std::stringstream ss;`);
-        lines.push(`        ss << std::setfill('0') << std::setw(sizeof(void*) * 2) << std::hex << reinterpret_cast<uintptr_t>(target);`);
-        lines.push(`        return ss.str();`);
-        lines.push(`#else`);
-        lines.push(`        return Hex(reinterpret_cast<SUPPORT_INT64>(value));`);
-        lines.push(`#endif`);
-        lines.push(`    }`);
+        headerLines.push(`    static ${className} FromPointer(void* value) {`);
+        headerLines.push(`#if SUPPORT_STD_STRINGSTREAM`);
+        headerLines.push(`        std::stringstream ss;`);
+        headerLines.push(`        ss << std::setfill('0') << std::setw(sizeof(void*) * 2) << std::hex << reinterpret_cast<uintptr_t>(target);`);
+        headerLines.push(`        return ss.str();`);
+        headerLines.push(`#else`);
+        headerLines.push(`        return Hex(reinterpret_cast<SUPPORT_INT64>(value));`);
+        headerLines.push(`#endif`);
+        headerLines.push(`    }`);
 
         // ToChars
-        lines.push(`    const char* ToChars() const {`);
-        lines.push(`        return this->Target.c_str();`);
-        lines.push(`    }`);
+        headerLines.push(`    const char* ToChars() const {`);
+        headerLines.push(`        return this->Target.c_str();`);
+        headerLines.push(`    }`);
 
         // Clone
-        lines.push(`    char* Clone() const {`);
-        lines.push(`        char* result = new char[this->Target.size() + 1];`);
-        lines.push(`        memset(result, 0, this->Target.size() + 1);`);
-        lines.push(`        strcpy(result, this->Target.c_str());`);
-        lines.push(`        return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    char* Clone() const {`);
+        headerLines.push(`        char* result = new char[this->Target.size() + 1];`);
+        headerLines.push(`        memset(result, 0, this->Target.size() + 1);`);
+        headerLines.push(`        strcpy(result, this->Target.c_str());`);
+        headerLines.push(`        return result;`);
+        headerLines.push(`    }`);
 
         // ToWString
-        lines.push(`#if SUPPORT_STD_WSTRING
+        headerLines.push(`#if SUPPORT_STD_WSTRING
     std::wstring ToWString() const {
     return StringUtil::To(Target, TargetEncoding);
     }
 #endif`);
 
         // Length
-        lines.push(`    int Length() const {`);
-        lines.push(`        return (int)this->Target.length();`);
-        lines.push(`    }`);
+        headerLines.push(`    int Length() const {`);
+        headerLines.push(`        return (int)this->Target.length();`);
+        headerLines.push(`    }`);
 
         // SubString
-        lines.push(`    ${className} SubString(int start, int length = -1) const {`);
-        lines.push(`    if (length == -1)
+        headerLines.push(`    ${className} SubString(int start, int length = -1) const {`);
+        headerLines.push(`    if (length == -1)
         return Target.substr(offset);
     else
         return Target.substr(offset, length);`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // Insert
-        lines.push(`     ${className}& Insert(int index, const ${className}& value) {`);
-        lines.push(`        this->Target.insert(index, value.Target);`);
-        lines.push(`        return *this;`);
-        lines.push(`    }`);
+        headerLines.push(`     ${className}& Insert(int index, const ${className}& value) {`);
+        headerLines.push(`        this->Target.insert(index, value.Target);`);
+        headerLines.push(`        return *this;`);
+        headerLines.push(`    }`);
 
         // IndexOf
-        lines.push(`    int IndexOf(const ${className}& value, int start = 0) const {`);
-        lines.push(`        size_t result = this->Target.find(value.Target, start);`);
-        lines.push(`        if (result == std::string::npos) {`);
-        lines.push(`            return -1;`);
-        lines.push(`        }`);
-        lines.push(`        return (int)result;`);
-        lines.push(`    }`);
+        headerLines.push(`    int IndexOf(const ${className}& value, int start = 0) const {`);
+        headerLines.push(`        size_t result = this->Target.find(value.Target, start);`);
+        headerLines.push(`        if (result == std::string::npos) {`);
+        headerLines.push(`            return -1;`);
+        headerLines.push(`        }`);
+        headerLines.push(`        return (int)result;`);
+        headerLines.push(`    }`);
 
         // LastIndexOf
-        lines.push(`    int LastIndexOf(const ${className}& value, int start = -1) const {`);
-        lines.push(`        start = start == -1 ? std::string::npos : start;`);
-        lines.push(`        size_t result = this->Target.rfind(value.Target, start);`);
-        lines.push(`        if (result == std::string::npos) {`);
-        lines.push(`            return -1;`);
-        lines.push(`        }`);
-        lines.push(`        return (int)result;`);
-        lines.push(`    }`);
+        headerLines.push(`    int LastIndexOf(const ${className}& value, int start = -1) const {`);
+        headerLines.push(`        start = start == -1 ? std::string::npos : start;`);
+        headerLines.push(`        size_t result = this->Target.rfind(value.Target, start);`);
+        headerLines.push(`        if (result == std::string::npos) {`);
+        headerLines.push(`            return -1;`);
+        headerLines.push(`        }`);
+        headerLines.push(`        return (int)result;`);
+        headerLines.push(`    }`);
 
         // LastIndexOf
-        lines.push(`    int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {`);
-        lines.push(`        start = start == -1 ? std::string::npos : start;`);
-        lines.push(`        int result = -1;`);
-        lines.push(`        for (const ${className}& value : values) {`);
-        lines.push(`            int index = LastIndexOf(value, start);`);
-        lines.push(`            if (index != -1) {`);
-        lines.push(`                if (index > result) {`);
-        lines.push(`                    result = index;`);
-        lines.push(`                }`);
-        lines.push(`            }`);
-        lines.push(`        }`);
-        lines.push(`        return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {`);
+        headerLines.push(`        start = start == -1 ? std::string::npos : start;`);
+        headerLines.push(`        int result = -1;`);
+        headerLines.push(`        for (const ${className}& value : values) {`);
+        headerLines.push(`            int index = LastIndexOf(value, start);`);
+        headerLines.push(`            if (index != -1) {`);
+        headerLines.push(`                if (index > result) {`);
+        headerLines.push(`                    result = index;`);
+        headerLines.push(`                }`);
+        headerLines.push(`            }`);
+        headerLines.push(`        }`);
+        headerLines.push(`        return result;`);
+        headerLines.push(`    }`);
 
         // Replace
-        lines.push(`    ${className} Replace(const ${className}& oldValue, const ${className}& newValue) const {`);
-        lines.push(`        std::string temp = Target;
+        headerLines.push(`    ${className} Replace(const ${className}& oldValue, const ${className}& newValue) const {`);
+        headerLines.push(`        std::string temp = Target;
         std::string oldString = oldValue.Target;
         std::string newString = newValue.Target;
         std::string::size_type index = 0;
@@ -488,47 +497,47 @@ namespace std {
             index = temp.find(oldString, (index + newLength));
         }
         return temp;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // Replace values
-        lines.push(`    ${className} Replace(const std::vector<${className}>& oldValues, const std::vector<${className}>& newValues) const {`);
-        lines.push(`        ${className} result = Target;`);
-        lines.push(`        for (size_t i = 0; i < oldValues.size(); i++) {`);
-        lines.push(`            result = result.Replace(oldValues[i], newValues[i]);`);
-        lines.push(`        }`);
-        lines.push(`        return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Replace(const std::vector<${className}>& oldValues, const std::vector<${className}>& newValues) const {`);
+        headerLines.push(`        ${className} result = Target;`);
+        headerLines.push(`        for (size_t i = 0; i < oldValues.size(); i++) {`);
+        headerLines.push(`            result = result.Replace(oldValues[i], newValues[i]);`);
+        headerLines.push(`        }`);
+        headerLines.push(`        return result;`);
+        headerLines.push(`    }`);
 
         // Append
-        lines.push(`    ${className}& Append(const ${className}& value) {`);
-        lines.push(`        this->Target.append(value.Target);`);
-        lines.push(`        return *this;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className}& Append(const ${className}& value) {`);
+        headerLines.push(`        this->Target.append(value.Target);`);
+        headerLines.push(`        return *this;`);
+        headerLines.push(`    }`);
 
         // Append values
-        lines.push(`    ${className}& Append(const std::vector<${className}>& values) {`);
-        lines.push(`        for (const ${className}& value : values) {`);
-        lines.push(`            this->Target.append(value.Target);`);
-        lines.push(`        }`);
-        lines.push(`        return *this;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className}& Append(const std::vector<${className}>& values) {`);
+        headerLines.push(`        for (const ${className}& value : values) {`);
+        headerLines.push(`            this->Target.append(value.Target);`);
+        headerLines.push(`        }`);
+        headerLines.push(`        return *this;`);
+        headerLines.push(`    }`);
 
         // AppendLine
-        lines.push(`    ${className}& AppendLine(const ${className}& value) {`);
-        lines.push(`        this->Target.append(value.Target);`);
-        lines.push(`        this->Target.append("\\r\\n");`);
-        lines.push(`        return *this;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className}& AppendLine(const ${className}& value) {`);
+        headerLines.push(`        this->Target.append(value.Target);`);
+        headerLines.push(`        this->Target.append("\\r\\n");`);
+        headerLines.push(`        return *this;`);
+        headerLines.push(`    }`);
 
         // AppendLine just line
-        lines.push(`    ${className}& AppendLine() {`);
-        lines.push(`        this->Target.append("\\r\\n");`);
-        lines.push(`        return *this;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className}& AppendLine() {`);
+        headerLines.push(`        this->Target.append("\\r\\n");`);
+        headerLines.push(`        return *this;`);
+        headerLines.push(`    }`);
 
         // MiddleValue
-        lines.push(`    ${className} MiddleValue(const ${className}& startValue, const ${className}& endValue, int index = 0) const {`);
-        lines.push(`        size_t offset = 0;
+        headerLines.push(`    ${className} MiddleValue(const ${className}& startValue, const ${className}& endValue, int index = 0) const {`);
+        headerLines.push(`        size_t offset = 0;
         for (int i = 0; i <= index; i++)
         {
             size_t startIndex = Target.find(startValue.Target, offset);
@@ -551,11 +560,11 @@ namespace std {
             }
         }
         return "";`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // MiddleCount
-        lines.push(`    int MiddleCount(const ${className}& startValue, const ${className}& endValue) const {`);
-        lines.push(`        size_t offset = 0;
+        headerLines.push(`    int MiddleCount(const ${className}& startValue, const ${className}& endValue) const {`);
+        headerLines.push(`        size_t offset = 0;
         int count = 0;
         while (true)
         {
@@ -573,29 +582,29 @@ namespace std {
             count++;
         }
         return count;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // Repeat
-        lines.push(`    static ${className} Repeat(const ${className} value, int count) {`);
-        lines.push(`        ${className} result;`);
-        lines.push(`        for (int i = 0; i < count; i++) {`);
-        lines.push(`            result.Append(value);`);
-        lines.push(`        }`);
-        lines.push(`        return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    static ${className} Repeat(const ${className} value, int count) {`);
+        headerLines.push(`        ${className} result;`);
+        headerLines.push(`        for (int i = 0; i < count; i++) {`);
+        headerLines.push(`            result.Append(value);`);
+        headerLines.push(`        }`);
+        headerLines.push(`        return result;`);
+        headerLines.push(`    }`);
 
         // Repeat
-        lines.push(`    ${className} Repeat(int count) const {`);
-        lines.push(`        ${className} result;`);
-        lines.push(`        for (int i = 0; i < count; i++) {`);
-        lines.push(`            result.Append(*this);`);
-        lines.push(`        }`);
-        lines.push(`        return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Repeat(int count) const {`);
+        headerLines.push(`        ${className} result;`);
+        headerLines.push(`        for (int i = 0; i < count; i++) {`);
+        headerLines.push(`            result.Append(*this);`);
+        headerLines.push(`        }`);
+        headerLines.push(`        return result;`);
+        headerLines.push(`    }`);
 
         // Trim
-        lines.push(`    ${className} Trim(const ${className}& chars = " ") const {`);
-        lines.push(`        std::string result = Target;
+        headerLines.push(`    ${className} Trim(const ${className}& chars = " ") const {`);
+        headerLines.push(`        std::string result = Target;
         std::string trimChars = chars.Target;
         // Trim from the beginning  
         auto it = result.begin();
@@ -612,11 +621,11 @@ namespace std {
         result.erase(rit.base(), result.end());
 
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // TrimStart
-        lines.push(`    ${className} TrimStart(const ${className}& chars = " ") const {`);
-        lines.push(`        std::string result = Target;
+        headerLines.push(`    ${className} TrimStart(const ${className}& chars = " ") const {`);
+        headerLines.push(`        std::string result = Target;
         std::string trimChars = chars.Target;
         size_t pos = result.find_first_not_of(trimChars);
         if (pos != std::string::npos) {
@@ -625,11 +634,11 @@ namespace std {
         else {
             return ""; // 如果整个字符串都是由要删除的字符组成，则返回空字符串  
         }`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // TrimEnd
-        lines.push(`    ${className} TrimEnd(const ${className}& chars = " ") const {`);
-        lines.push(`        std::string result = Target;
+        headerLines.push(`    ${className} TrimEnd(const ${className}& chars = " ") const {`);
+        headerLines.push(`        std::string result = Target;
         std::string trimChars = items.Target;
 
         auto rit = result.rbegin();
@@ -639,11 +648,11 @@ namespace std {
         result.erase(rit.base(), result.end());
 
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // OnlyNumber
-        lines.push(`    ${className} OnlyNumber() const {`);
-        lines.push(`        ${className} result;
+        headerLines.push(`    ${className} OnlyNumber() const {`);
+        headerLines.push(`        ${className} result;
         for (char item : Target)
         {
             if (item >= '0' && item <= '9')
@@ -652,11 +661,11 @@ namespace std {
             }
         }
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // RemoveChars
-        lines.push(`    ${className} RemoveChars(const ${className}& chars) const {`);
-        lines.push(`        ${className} result;
+        headerLines.push(`    ${className} RemoveChars(const ${className}& chars) const {`);
+        headerLines.push(`        ${className} result;
         for (char item : Target)
         {
             if (!items.Contains(item))
@@ -665,16 +674,16 @@ namespace std {
             }
         }
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // IsEmpty
-        lines.push(`    bool IsEmpty() const {`);
-        lines.push(`        return Target.empty();`);
-        lines.push(`    }`);
+        headerLines.push(`    bool IsEmpty() const {`);
+        headerLines.push(`        return Target.empty();`);
+        headerLines.push(`    }`);
 
         // Remove
-        lines.push(`    ${className} Remove(int start, int length = -1) const {`);
-        lines.push(`        std::string result = Target;
+        headerLines.push(`    ${className} Remove(int start, int length = -1) const {`);
+        headerLines.push(`        std::string result = Target;
 			if (length == -1)
 			{
 				result.erase(start);
@@ -684,97 +693,97 @@ namespace std {
 				result.erase(start, length);
 			}
 			return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // StartsWith
-        lines.push(`    bool StartsWith(const ${className}& value) const {`);
-        lines.push(`        return Target.find(value.Target) == 0;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool StartsWith(const ${className}& value) const {`);
+        headerLines.push(`        return Target.find(value.Target) == 0;`);
+        headerLines.push(`    }`);
 
         // EndsWith
-        lines.push(`    bool EndsWith(const ${className}& value) const {`);
-        lines.push(`        return Target.rfind(value.Target) == (Target.size() - value.Length());`);
-        lines.push(`    }`);
+        headerLines.push(`    bool EndsWith(const ${className}& value) const {`);
+        headerLines.push(`        return Target.rfind(value.Target) == (Target.size() - value.Length());`);
+        headerLines.push(`    }`);
 
         // Contains
-        lines.push(`    bool Contains(const ${className}& value) const {`);
-        lines.push(`        return Target.find(value.Target) != std::string::npos;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool Contains(const ${className}& value) const {`);
+        headerLines.push(`        return Target.find(value.Target) != std::string::npos;`);
+        headerLines.push(`    }`);
 
         // FillEnd
-        lines.push(`    ${className} FillEnd(int length, const ${className}& value) const {`);
-        lines.push(`        ${className} result = Target;
+        headerLines.push(`    ${className} FillEnd(int length, const ${className}& value) const {`);
+        headerLines.push(`        ${className} result = Target;
         while (result.Length() < length)
         {
             result.Append(value);
         }
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // FillStart
-        lines.push(`    ${className} FillStart(int length, const ${className}& value) const {`);
-        lines.push(`        ${className} result = Target;
+        headerLines.push(`    ${className} FillStart(int length, const ${className}& value) const {`);
+        headerLines.push(`        ${className} result = Target;
         while (result.Length() < length)
         {
             result.Insert(0, value);
         }
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // Format {0}
-        lines.push(`    ${className} Format(const ${className}& value0) const {`);
-        lines.push(`        return Replace("{0}", value0);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Format(const ${className}& value0) const {`);
+        headerLines.push(`        return Replace("{0}", value0);`);
+        headerLines.push(`    }`);
 
         // Format {0} {1}
-        lines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1) const {`);
-        lines.push(`        return Replace("{0}", value0).Replace("{1}", value1);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1) const {`);
+        headerLines.push(`        return Replace("{0}", value0).Replace("{1}", value1);`);
+        headerLines.push(`    }`);
 
         // Format {0} {1} {2}
-        lines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2) const {`);
-        lines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2) const {`);
+        headerLines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2);`);
+        headerLines.push(`    }`);
 
         // Format {0} {1} {2} {3}
-        lines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3) const {`);
-        lines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3) const {`);
+        headerLines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3);`);
+        headerLines.push(`    }`);
 
         // Format {0} {1} {2} {3} {4}
-        lines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4) const {`);
-        lines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4) const {`);
+        headerLines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4);`);
+        headerLines.push(`    }`);
 
         // Format {0} {1} {2} {3} {4} {5}
-        lines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4, const ${className}& value5) const {`);
-        lines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4).Replace("{5}", value5);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4, const ${className}& value5) const {`);
+        headerLines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4).Replace("{5}", value5);`);
+        headerLines.push(`    }`);
 
         // Format {0} {1} {2} {3} {4} {5} {6}
-        lines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4, const ${className}& value5, const ${className}& value6) const {`);
-        lines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4).Replace("{5}", value5).Replace("{6}", value6);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4, const ${className}& value5, const ${className}& value6) const {`);
+        headerLines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4).Replace("{5}", value5).Replace("{6}", value6);`);
+        headerLines.push(`    }`);
 
         // Format {0} {1} {2} {3} {4} {5} {6} {7}
-        lines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4, const ${className}& value5, const ${className}& value6, const ${className}& value7) const {`);
-        lines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4).Replace("{5}", value5).Replace("{6}", value6).Replace("{7}", value7);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4, const ${className}& value5, const ${className}& value6, const ${className}& value7) const {`);
+        headerLines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4).Replace("{5}", value5).Replace("{6}", value6).Replace("{7}", value7);`);
+        headerLines.push(`    }`);
 
         // Format {0} {1} {2} {3} {4} {5} {6} {7} {8}
-        lines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4, const ${className}& value5, const ${className}& value6, const ${className}& value7, const ${className}& value8) const {`);
-        lines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4).Replace("{5}", value5).Replace("{6}", value6).Replace("{7}", value7).Replace("{8}", value8);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} Format(const ${className}& value0, const ${className}& value1, const ${className}& value2, const ${className}& value3, const ${className}& value4, const ${className}& value5, const ${className}& value6, const ${className}& value7, const ${className}& value8) const {`);
+        headerLines.push(`        return Replace("{0}", value0).Replace("{1}", value1).Replace("{2}", value2).Replace("{3}", value3).Replace("{4}", value4).Replace("{5}", value5).Replace("{6}", value6).Replace("{7}", value7).Replace("{8}", value8);`);
+        headerLines.push(`    }`);
 
         // Clear
-        lines.push(`    ${className}& Clear() {`);
-        lines.push(`        this->Target.clear();`);
-        lines.push(`        return *this;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className}& Clear() {`);
+        headerLines.push(`        this->Target.clear();`);
+        headerLines.push(`        return *this;`);
+        headerLines.push(`    }`);
 
         // IsNumber
-        lines.push(`    bool IsNumber() const {`);
-        lines.push(`        if (Target.empty()) {
+        headerLines.push(`    bool IsNumber() const {`);
+        headerLines.push(`        if (Target.empty()) {
             return false;
         }
         for (char item : Target) {
@@ -783,87 +792,87 @@ namespace std {
             }
         }
         return true;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // ToInt
-        lines.push(`    int ToInt() const {`);
-        lines.push(`        try {`);
-        lines.push(`            return std::stoi(Target);`);
-        lines.push(`        } catch (...) {`);
-        lines.push(`            throw new std::exception("String is not a number.");`);
-        lines.push(`        }`);
-        lines.push(`    }`);
+        headerLines.push(`    int ToInt() const {`);
+        headerLines.push(`        try {`);
+        headerLines.push(`            return std::stoi(Target);`);
+        headerLines.push(`        } catch (...) {`);
+        headerLines.push(`            throw new std::exception("String is not a number.");`);
+        headerLines.push(`        }`);
+        headerLines.push(`    }`);
 
         // ToFloat
-        lines.push(`    float ToFloat() const {`);
-        lines.push(`        try {`);
-        lines.push(`            return std::stof(Target);`);
-        lines.push(`        } catch (...) {`);
-        lines.push(`            throw new std::exception("String is not a number.");`);
-        lines.push(`        }`);
-        lines.push(`    }`);
+        headerLines.push(`    float ToFloat() const {`);
+        headerLines.push(`        try {`);
+        headerLines.push(`            return std::stof(Target);`);
+        headerLines.push(`        } catch (...) {`);
+        headerLines.push(`            throw new std::exception("String is not a number.");`);
+        headerLines.push(`        }`);
+        headerLines.push(`    }`);
 
         // ToDouble
-        lines.push(`    double ToDouble() const {`);
-        lines.push(`        try {`);
-        lines.push(`            return std::stod(Target);`);
-        lines.push(`        } catch (...) {`);
-        lines.push(`            throw new std::exception("String is not a number.");`);
-        lines.push(`        }`);
-        lines.push(`    }`);
+        headerLines.push(`    double ToDouble() const {`);
+        headerLines.push(`        try {`);
+        headerLines.push(`            return std::stod(Target);`);
+        headerLines.push(`        } catch (...) {`);
+        headerLines.push(`            throw new std::exception("String is not a number.");`);
+        headerLines.push(`        }`);
+        headerLines.push(`    }`);
 
         // ToInt64
-        lines.push(`    SUPPORT_INT64 ToInt64() const {`);
-        lines.push(`        try {`);
-        lines.push(`            return std::stoll(Target);`);
-        lines.push(`        } catch (...) {`);
-        lines.push(`            throw new std::exception("String is not a number.");`);
-        lines.push(`        }`);
-        lines.push(`    }`);
+        headerLines.push(`    SUPPORT_INT64 ToInt64() const {`);
+        headerLines.push(`        try {`);
+        headerLines.push(`            return std::stoll(Target);`);
+        headerLines.push(`        } catch (...) {`);
+        headerLines.push(`            throw new std::exception("String is not a number.");`);
+        headerLines.push(`        }`);
+        headerLines.push(`    }`);
 
         // IsTrue
-        lines.push(`    bool IsTrue() const {`);
-        lines.push(`        return ToLower() == "true";`);
-        lines.push(`    }`);
+        headerLines.push(`    bool IsTrue() const {`);
+        headerLines.push(`        return ToLower() == "true";`);
+        headerLines.push(`    }`);
 
         // IsFalse
-        lines.push(`    bool IsFalse() const {`);
-        lines.push(`        return ToLower() == "false";`);
-        lines.push(`    }`);
+        headerLines.push(`    bool IsFalse() const {`);
+        headerLines.push(`        return ToLower() == "false";`);
+        headerLines.push(`    }`);
 
         // ToBool
-        lines.push(`    bool ToBool() const {`);
-        lines.push(`        if (ToLower() == "true") {`);
-        lines.push(`            return true;`);
-        lines.push(`        } else if (ToLower() == "false") {`);
-        lines.push(`            return false;`);
-        lines.push(`        } else {`);
-        lines.push(`            throw new std::exception("String is not a boolean.");`);
-        lines.push(`        }`);
-        lines.push(`    }`);
+        headerLines.push(`    bool ToBool() const {`);
+        headerLines.push(`        if (ToLower() == "true") {`);
+        headerLines.push(`            return true;`);
+        headerLines.push(`        } else if (ToLower() == "false") {`);
+        headerLines.push(`            return false;`);
+        headerLines.push(`        } else {`);
+        headerLines.push(`            throw new std::exception("String is not a boolean.");`);
+        headerLines.push(`        }`);
+        headerLines.push(`    }`);
 
         // To StdString
-        lines.push(`    std::string ToStdString(unsigned int encodingPage) const {`);
-        lines.push(`        return StringUtil::To(Target, TargetEncoding, encodingPage);`);
-        lines.push(`    }`);
+        headerLines.push(`    std::string ToStdString(unsigned int encodingPage) const {`);
+        headerLines.push(`        return StringUtil::To(Target, TargetEncoding, encodingPage);`);
+        headerLines.push(`    }`);
 
         // ToLower
-        lines.push(`    ${className} ToLower() const {`);
-        lines.push(`        std::string result = Target;
+        headerLines.push(`    ${className} ToLower() const {`);
+        headerLines.push(`        std::string result = Target;
         std::transform(result.begin(), result.end(), result.begin(), ::tolower);
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // ToUpper
-        lines.push(`    ${className} ToUpper() const {`);
-        lines.push(`        std::string result = Target;
+        headerLines.push(`    ${className} ToUpper() const {`);
+        headerLines.push(`        std::string result = Target;
         std::transform(result.begin(), result.end(), result.begin(), ::toupper);
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // Split by chars
-        lines.push(`    std::vector<${className}> Split(const ${className}& chars) const {`);
-        lines.push(`        std::vector<${className}> result;
+        headerLines.push(`    std::vector<${className}> Split(const ${className}& chars) const {`);
+        headerLines.push(`        std::vector<${className}> result;
         std::string temp = Target;
         std::string splitChars = chars.Target;
         size_t index = 0;
@@ -879,11 +888,11 @@ namespace std {
             index = nextIndex + splitChars.size();
         }
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // Intersect
-        lines.push(`    ${className} Intersect(const ${className}& value) const {`);
-        lines.push(`        std::string result;
+        headerLines.push(`    ${className} Intersect(const ${className}& value) const {`);
+        headerLines.push(`        std::string result;
         for (char item : Target)
         {
             if (value.Contains(item))
@@ -892,10 +901,10 @@ namespace std {
             }
         }
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         // Map
-        lines.push(`#if SUPPORT_STD_FUNCTION
+        headerLines.push(`#if SUPPORT_STD_FUNCTION
         ${className} Map(std::function<${className}(${className})> func) const {
         ${className} result;
         for (char item : Target)
@@ -907,162 +916,162 @@ namespace std {
         #endif`);
 
         // Index
-        lines.push(`    ${className} operator[](int index) const {`);
-        lines.push(`        return Target[index];`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator[](int index) const {`);
+        headerLines.push(`        return Target[index];`);
+        headerLines.push(`    }`);
 
         // =
-        lines.push(`    ${className}& operator=(const ${className}& value) {`);
-        lines.push(`        this->TargetEncoding = ${targetEncoding};`);
-        lines.push(`        if(this != &value) {`);
-        lines.push(`            this->Target = value.Target;`);
-        lines.push(`        }`);
-        lines.push(`        return *this;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className}& operator=(const ${className}& value) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        if(this != &value) {`);
+        headerLines.push(`            this->Target = value.Target;`);
+        headerLines.push(`        }`);
+        headerLines.push(`        return *this;`);
+        headerLines.push(`    }`);
 
         // + const char*
-        lines.push(`    ${className} operator+(const char* value) const {`);
-        lines.push(`        return Target + value;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(const char* value) const {`);
+        headerLines.push(`        return Target + value;`);
+        headerLines.push(`    }`);
 
         // + std::string
-        lines.push(`    ${className} operator+(const std::string& value) const {`);
-        lines.push(`        return Target + value;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(const std::string& value) const {`);
+        headerLines.push(`        return Target + value;`);
+        headerLines.push(`    }`);
 
         // +
-        lines.push(`    ${className} operator+(const ${className}& value) const {`);
-        lines.push(`        return Target + value.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(const ${className}& value) const {`);
+        headerLines.push(`        return Target + value.Target;`);
+        headerLines.push(`    }`);
 
         // + &&
-        lines.push(`#if SUPPORT_RVALUE_REFERENCES`);
-        lines.push(`    ${className} operator+(const ${className}&& value) const {`);
-        lines.push(`        return Target + value.Target;`);
-        lines.push(`    }`);
-        lines.push(`#endif`);
+        headerLines.push(`#if SUPPORT_RVALUE_REFERENCES`);
+        headerLines.push(`    ${className} operator+(const ${className}&& value) const {`);
+        headerLines.push(`        return Target + value.Target;`);
+        headerLines.push(`    }`);
+        headerLines.push(`#endif`);
 
         // + int
-        lines.push(`    ${className} operator+(int value) const {`);
-        lines.push(`        return Target + std::to_string(value);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(int value) const {`);
+        headerLines.push(`        return Target + std::to_string(value);`);
+        headerLines.push(`    }`);
 
         // + long
-        lines.push(`    ${className} operator+(long value) const {`);
-        lines.push(`        return Target + std::to_string(value);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(long value) const {`);
+        headerLines.push(`        return Target + std::to_string(value);`);
+        headerLines.push(`    }`);
 
         // + SUPPORT_INT64
-        lines.push(`    ${className} operator+(SUPPORT_INT64 value) const {`);
-        lines.push(`        return Target + std::to_string(value);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(SUPPORT_INT64 value) const {`);
+        headerLines.push(`        return Target + std::to_string(value);`);
+        headerLines.push(`    }`);
 
         // + unsigned int
-        lines.push(`    ${className} operator+(unsigned int value) const {`);
-        lines.push(`        return Target + std::to_string(value);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(unsigned int value) const {`);
+        headerLines.push(`        return Target + std::to_string(value);`);
+        headerLines.push(`    }`);
 
         // + float
-        lines.push(`    ${className} operator+(float value) const {`);
-        lines.push(`        return Target + std::to_string(value);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(float value) const {`);
+        headerLines.push(`        return Target + std::to_string(value);`);
+        headerLines.push(`    }`);
 
         // + double
-        lines.push(`    ${className} operator+(double value) const {`);
-        lines.push(`        return Target + std::to_string(value);`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(double value) const {`);
+        headerLines.push(`        return Target + std::to_string(value);`);
+        headerLines.push(`    }`);
 
         // + bool
-        lines.push(`    ${className} operator+(bool value) const {`);
-        lines.push(`        return Target + (value ? "true" : "false");`);
-        lines.push(`    }`);
+        headerLines.push(`    ${className} operator+(bool value) const {`);
+        headerLines.push(`        return Target + (value ? "true" : "false");`);
+        headerLines.push(`    }`);
 
         // + char
-        lines.push(`    ${className} operator+(char value) const {`);
-        lines.push(`        std::string result = Target;
+        headerLines.push(`    ${className} operator+(char value) const {`);
+        headerLines.push(`        std::string result = Target;
         result.append(1, value);
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         //friend + const char *
-        lines.push(`    friend ${className} operator+(const char* left, const ${className}& right) {`);
-        lines.push(`        return left + right.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    friend ${className} operator+(const char* left, const ${className}& right) {`);
+        headerLines.push(`        return left + right.Target;`);
+        headerLines.push(`    }`);
 
         //friend + std::string
-        lines.push(`    friend ${className} operator+(const std::string& left, const ${className}& right) {`);
-        lines.push(`        return left + right.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    friend ${className} operator+(const std::string& left, const ${className}& right) {`);
+        headerLines.push(`        return left + right.Target;`);
+        headerLines.push(`    }`);
 
         // ==
-        lines.push(`    bool operator==(const ${className}& value) const {`);
-        lines.push(`        return Target == value.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool operator==(const ${className}& value) const {`);
+        headerLines.push(`        return Target == value.Target;`);
+        headerLines.push(`    }`);
 
         // == const char *
-        lines.push(`    bool operator==(const char* value) const {`);
-        lines.push(`        return Target == value;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool operator==(const char* value) const {`);
+        headerLines.push(`        return Target == value;`);
+        headerLines.push(`    }`);
 
         // == std::string
-        lines.push(`    bool operator==(const std::string& value) const {`);
-        lines.push(`        return Target == value;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool operator==(const std::string& value) const {`);
+        headerLines.push(`        return Target == value;`);
+        headerLines.push(`    }`);
 
         // friend ==
-        lines.push(`    friend bool operator==(const char* left, const ${className}& right) {`);
-        lines.push(`        return left == right.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    friend bool operator==(const char* left, const ${className}& right) {`);
+        headerLines.push(`        return left == right.Target;`);
+        headerLines.push(`    }`);
 
         // friend ==
-        lines.push(`    friend bool operator==(const std::string& left, const ${className}& right) {`);
-        lines.push(`        return left == right.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    friend bool operator==(const std::string& left, const ${className}& right) {`);
+        headerLines.push(`        return left == right.Target;`);
+        headerLines.push(`    }`);
 
         // !=
-        lines.push(`    bool operator!=(const ${className}& value) const {`);
-        lines.push(`        return Target != value.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool operator!=(const ${className}& value) const {`);
+        headerLines.push(`        return Target != value.Target;`);
+        headerLines.push(`    }`);
 
         // !=
-        lines.push(`    bool operator!=(const char* value) const {`);
-        lines.push(`        return Target != value;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool operator!=(const char* value) const {`);
+        headerLines.push(`        return Target != value;`);
+        headerLines.push(`    }`);
 
         // !=
-        lines.push(`    bool operator!=(const std::string& value) const {`);
-        lines.push(`        return Target != value;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool operator!=(const std::string& value) const {`);
+        headerLines.push(`        return Target != value;`);
+        headerLines.push(`    }`);
 
         // friend !=
-        lines.push(`    friend bool operator!=(const char* left, const ${className}& right) {`);
-        lines.push(`        return left != right.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    friend bool operator!=(const char* left, const ${className}& right) {`);
+        headerLines.push(`        return left != right.Target;`);
+        headerLines.push(`    }`);
 
         // friend !=
-        lines.push(`    friend bool operator!=(const std::string& left, const ${className}& right) {`);
-        lines.push(`        return left != right.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    friend bool operator!=(const std::string& left, const ${className}& right) {`);
+        headerLines.push(`        return left != right.Target;`);
+        headerLines.push(`    }`);
 
         // <
-        lines.push(`    bool operator<(const ${className}& value) const {`);
-        lines.push(`        return Target < value.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool operator<(const ${className}& value) const {`);
+        headerLines.push(`        return Target < value.Target;`);
+        headerLines.push(`    }`);
 
         // >
-        lines.push(`    bool operator>(const ${className}& value) const {`);
-        lines.push(`        return Target > value.Target;`);
-        lines.push(`    }`);
+        headerLines.push(`    bool operator>(const ${className}& value) const {`);
+        headerLines.push(`        return Target > value.Target;`);
+        headerLines.push(`    }`);
 
         // std::ostream <<
-        lines.push(`    friend std::ostream& operator<<(std::ostream& out, const ${className}& value) {`);
-        lines.push(`        out << value.Target;`);
-        lines.push(`        return out;`);
-        lines.push(`    }`);
+        headerLines.push(`    friend std::ostream& operator<<(std::ostream& out, const ${className}& value) {`);
+        headerLines.push(`        out << value.Target;`);
+        headerLines.push(`        return out;`);
+        headerLines.push(`    }`);
 
         // Join
-        lines.push(`    static ${className} Join(const std::vector<${className}>& values, const ${className}& separator) {`);
-        lines.push(`        ${className} result;
+        headerLines.push(`    static ${className} Join(const std::vector<${className}>& values, const ${className}& separator) {`);
+        headerLines.push(`        ${className} result;
         for (size_t i = 0; i < values.size(); i++) {
             if (i != 0) {
                 result.Append(separator);
@@ -1070,7 +1079,7 @@ namespace std {
             result.Append(values[i]);
         }
         return result;`);
-        lines.push(`    }`);
+        headerLines.push(`    }`);
 
         for (let i = 0; i < 10; i++) {
             let parameters = [] as string[];
@@ -1078,23 +1087,26 @@ namespace std {
                 parameters.push(`const ${className}& value${j}`);
             }
             let parametersString = parameters.join(', ');
-            lines.push(`    static std::vector<${className}> Vector(${parametersString}) {`);
-            lines.push(`        std::vector<${className}> result;`);
+            headerLines.push(`    static std::vector<${className}> Vector(${parametersString}) {`);
+            headerLines.push(`        std::vector<${className}> result;`);
             for (let j = 0; j <= i; j++) {
-                lines.push(`        result.push_back(value${j});`);
+                headerLines.push(`        result.push_back(value${j});`);
             }
-            lines.push(`        return result;`);
-            lines.push(`    }`);
+            headerLines.push(`        return result;`);
+            headerLines.push(`    }`);
         }
 
-        lines.push(`};`);
-        lines.push(`};`);
+        headerLines.push(`};`);
+        headerLines.push(`};`);
 
-        lines.push(`#endif`);
+        headerLines.push(`#endif`);
 
         return [{
             FileName: `${namespace}_${className}.h`,
-            Content: lines.join('\r\n')
+            Content: headerLines.join('\r\n')
+        }, {
+            FileName: `${namespace}_${className}.cpp`,
+            Content: sourceLines.join('\r\n')
         }];
     };
 
@@ -1277,7 +1289,7 @@ return result;
         return files;
     };
 
-    
+
 
     return {
         generateStringClasses
