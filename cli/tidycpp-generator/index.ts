@@ -193,6 +193,13 @@ namespace std {
         iss >> result;
         return result;
     }
+
+    double stod(const std::string& str) {
+        double result = 0;
+        std::istringstream iss(str);
+        iss >> result;
+        return result;
+    }
 }
     #endif
 #endif`;
@@ -888,7 +895,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
     ${className} ToLower() const {
         std::string result = "";
         for(size_t i = 0; i < Target.size(); i++) {
-            result.append(1, std::tolower(Target[i]));
+            result.append(1, tolower(Target[i]));
         }
         return result;
     }`);
@@ -898,7 +905,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
     ${className} ToUpper() const {
         std::string result = "";
         for(size_t i = 0; i < Target.size(); i++) {
-            result.append(1, std::toupper(Target[i]));
+            result.append(1, toupper(Target[i]));
         }
         return result;
     }`);
