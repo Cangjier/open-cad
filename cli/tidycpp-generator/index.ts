@@ -69,7 +69,9 @@ let TidyCppGenerator = (config: {
         lines.push(`#define __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
         lines.push(`#include <string>`);
         lines.push(`#include <vector>`);
-        lines.push(`#include <wstring>`);
+        lines.push(`#if SUPPORT_STD_WSTRING
+#include <wstring>
+#endif`);
         lines.push(`#include "${namespace}_StringUtil.h"`);
         lines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
