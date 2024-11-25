@@ -184,6 +184,9 @@ using namespace ${namespace};`);
                 continue;
             }
             headerLines.push(`#include "${namespace}_${allStringClassNames[i]}.h"`);
+            headerLines.push(`namespace ${namespace} {
+class ${allStringClassNames[i]};
+}`);
         }
         headerLines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
@@ -203,12 +206,6 @@ using namespace ${namespace};`);
         // SUPPORT_STD_FUNCTION宏定义
         headerLines.push(generate_SUPPORT_STD_FUNCTION());
         headerLines.push(`namespace ${namespace} {`);
-        for (let i = 0; i < allStringClassNames.length; i++) {
-            if (allStringClassNames[i] == className) {
-                continue;
-            }
-            headerLines.push(`class ${allStringClassNames[i]};`);
-        }
         headerLines.push(`class ${exportDefine} ${className} {`);
         headerLines.push(`public:`);
         headerLines.push(`    std::string Target;
