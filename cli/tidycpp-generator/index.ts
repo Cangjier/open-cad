@@ -604,14 +604,14 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`        std::string result = Target;
         std::string trimChars = chars.Target;
         // Trim from the beginning  
-        auto it = result.begin();
+        std::string::iterator it = result.begin();
         while (it != result.end() && trimChars.find(*it) != std::string::npos) {
             ++it;
         }
         result.erase(result.begin(), it);
 
         // Trim from the end  
-        auto rit = result.rbegin();
+        std::reverse_iterator<std::string::iterator> rit = result.rbegin();
         while (rit != result.rend() && trimChars.find(*rit) != std::string::npos) {
             ++rit;
         }
@@ -638,7 +638,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`        std::string result = Target;
         std::string trimChars = items.Target;
 
-        auto rit = result.rbegin();
+        std::reverse_iterator<std::string::iterator> rit = result.rbegin();
         while (rit != result.rend() && trimChars.find(*rit) != std::string::npos) {
             ++rit;
         }
