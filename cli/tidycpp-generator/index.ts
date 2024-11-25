@@ -11,6 +11,7 @@ let TidyCppGenerator = (config: {
         lines.push(`#else`);
         lines.push(`#define SUPPORT_NULLPTR NULL`);
         lines.push(`#endif`);
+        lines.push(`#endif`);
         return lines.join('\r\n');
     };
     let generate_SUPPORT_STD_STRINGSTREAM = () => {
