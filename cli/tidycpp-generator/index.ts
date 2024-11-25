@@ -63,6 +63,15 @@ let TidyCppGenerator = (config: {
 #endif
 #endif`;
     };
+    let generate_SUPPORT_RVALUE_REFERENCES = () => {
+        return `#ifndef SUPPORT_RVALUE_REFERENCES
+#if __cplusplus >= 201103L
+#define SUPPORT_RVALUE_REFERENCES 1
+#else
+#define SUPPORT_RVALUE_REFERENCES 0
+#endif
+#endif`;
+    };
     let generateStringClass = (namespace: string, className: string, targetEncoding: number, exportDefine: string, allStringClassNames: string[]) => {
         let lines = [] as string[];
         lines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
@@ -84,6 +93,8 @@ let TidyCppGenerator = (config: {
         lines.push(generate_SUPPORT_STD_OSTRINGSTREAM());
         // SUPPORT_STD_WSTRING宏定义
         lines.push(generate_SUPPORT_STD_WSTRING());
+        // SUPPORT_RVALUE_REFERENCES宏定义
+        lines.push(generate_SUPPORT_RVALUE_REFERENCES());
         lines.push(`namespace ${namespace} {`);
         for (let i = 0; i < allStringClassNames.length; i++) {
             if (allStringClassNames[i] == className) {
@@ -252,6 +263,7 @@ let TidyCppGenerator = (config: {
             lines.push(`        }`);
             lines.push(`    }`);
 
+            lines.push(`#if SUPPORT_RVALUE_REFERENCES`);
             lines.push(`    ${className}(const ${stringClassName}&& target) {`);
             lines.push(`        this->TargetEncoding = ${targetEncoding};`);
             lines.push(`        if (target.TargetEncoding == this->TargetEncoding) {`);
@@ -260,6 +272,7 @@ let TidyCppGenerator = (config: {
             lines.push(`            this->Target = StringUtil::To(target.Target, target.TargetEncoding, this->TargetEncoding);`);
             lines.push(`        }`);
             lines.push(`    }`);
+            lines.push(`#endif`);
         }
 
         // hexbase
@@ -817,9 +830,11 @@ let TidyCppGenerator = (config: {
         lines.push(`    }`);
 
         // + &&
+        lines.push(`#if SUPPORT_RVALUE_REFERENCES`);
         lines.push(`    ${className} operator+(const ${className}&& value) const {`);
         lines.push(`        return Target + value.Target;`);
         lines.push(`    }`);
+        lines.push(`#endif`);
 
         // + int
         lines.push(`    ${className} operator+(int value) const {`);
