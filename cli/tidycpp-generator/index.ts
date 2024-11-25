@@ -402,7 +402,7 @@ class ${allStringClassNames[i]};
             headerLines.push(`    ${className}(const ${stringClassName}&& target);`);
             headerLines.push(`#endif`);
 
-            sourceLines.push(`    ${className}(const ${stringClassName}& target) {`);
+            sourceLines.push(`    ${className}::${className}(const ${stringClassName}& target) {`);
             sourceLines.push(`        this->TargetEncoding = ${targetEncoding};`);
             sourceLines.push(`        if (target.TargetEncoding == this->TargetEncoding) {`);
             sourceLines.push(`            this->Target = target.Target;`);
@@ -412,7 +412,7 @@ class ${allStringClassNames[i]};
             sourceLines.push(`    }`);
 
             sourceLines.push(`#if SUPPORT_RVALUE_REFERENCES`);
-            sourceLines.push(`    ${className}(const ${stringClassName}&& target) {`);
+            sourceLines.push(`    ${className}::${className}(const ${stringClassName}&& target) {`);
             sourceLines.push(`        this->TargetEncoding = ${targetEncoding};`);
             sourceLines.push(`        if (target.TargetEncoding == this->TargetEncoding) {`);
             sourceLines.push(`            this->Target = target.Target;`);
