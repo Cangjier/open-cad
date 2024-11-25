@@ -16,10 +16,13 @@ let TidyCppGenerator = (config: {
     };
     let generate_SUPPORT_STD_STRINGSTREAM = () => {
         return `#ifndef SUPPORT_STD_STRINGSTREAM
-#if _MSC_VER >= 1400
+#if __cplusplus >= 201103L
 #define SUPPORT_STD_STRINGSTREAM 1
 #else
 #define SUPPORT_STD_STRINGSTREAM 0
+#ifdef _MSC_VER
+#pagma message("Don't support std::stringstream")
+#endif
 #endif
 #endif
 
