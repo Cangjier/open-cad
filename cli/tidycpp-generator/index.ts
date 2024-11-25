@@ -16,92 +16,103 @@ let TidyCppGenerator = (config: {
     };
     let generate_SUPPORT_STD_STRINGSTREAM = () => {
         return `#ifndef SUPPORT_STD_STRINGSTREAM
-#if __cplusplus >= 201103L
-#define SUPPORT_STD_STRINGSTREAM 1
-#else
-#define SUPPORT_STD_STRINGSTREAM 0
 #ifdef _MSC_VER
-#define STRINGIZE(x) #x
-#define TO_STRING(x) STRINGIZE(x)
-#pragma message("Don't support std::stringstream" "_MSC_VER=" TO_STRING(_MSC_VER) " __cplusplus=" TO_STRING(__cplusplus))
+    #if _MSC_VER >= 1400
+    #define SUPPORT_STD_STRINGSTREAM 1
+    #else
+    #define SUPPORT_STD_STRINGSTREAM 0
+    #endif
 #endif
-#endif
-#endif
+
 
 #if SUPPORT_STD_STRINGSTREAM
 #include <sstream>
 #endif`;
     };
     let generate_SUPPORT_STD_WSTRING = () => {
-        return `#ifndef SUPPORT_STD_WSTRING
-#if __cplusplus >= 201103L
-#define SUPPORT_STD_WSTRING 1
-#else
-#define SUPPORT_STD_WSTRING 0
-#endif
-#endif
-
-#if SUPPORT_STD_WSTRING
-#include <wstring>
+        return `
+#ifndef SUPPORT_STD_WSTRING
+    #ifdef _MSC_VER
+        #if _MSC_VER >= 1200
+            #define SUPPORT_STD_WSTRING 1
+        #else
+            #define SUPPORT_STD_WSTRING 0
+        #endif
+    #endif
+    #if SUPPORT_STD_WSTRING
+        #include <wstring>
+    #endif
 #endif`;
     };
     let generate_SUPPORT_EXPLICIT = () => {
-        return `#ifndef SUPPORT_EXPLICIT
-#if __cplusplus >= 201103L
-#define SUPPORT_EXPLICIT explicit
-#else
-#define SUPPORT_EXPLICIT
+        return `
+#ifndef SUPPORT_EXPLICIT
+#ifdef _MSC_VER
+    #if _MSC_VER >= 1800
+        #define SUPPORT_EXPLICIT explicit
+    #else
+        #define SUPPORT_EXPLICIT
+    #endif
 #endif
 #endif`;
     };
     let generate_SUPPORT_INT64 = () => {
-        return `#ifndef SUPPORT_INT64
-#ifdef _MSC_VER
-#if _MSC_VER <= 1800
-#define SUPPORT_INT64 __int64
-#else
-#define SUPPORT_INT64 std::int64_t
-#endif
-#else
-#define SUPPORT_INT64 std::int64_t
-#endif
+        return `
+#ifndef SUPPORT_INT64
+    #ifdef _MSC_VER
+        #if _MSC_VER <= 1800
+            #define SUPPORT_INT64 __int64
+        #else
+            #define SUPPORT_INT64 std::int64_t
+        #endif
+    #else
+        #define SUPPORT_INT64 std::int64_t
+    #endif
 #endif`;
     };
     let generate_SUPPORT_STD_OSTRINGSTREAM = () => {
-        return `#ifndef SUPPORT_STD_OSTRINGSTREAM
-#if _MSC_VER >= 1400
-#define SUPPORT_STD_OSTRINGSTREAM 1
-#else
-#define SUPPORT_STD_OSTRINGSTREAM 0
-#endif
+        return `
+#ifndef SUPPORT_STD_OSTRINGSTREAM
+    #if _MSC_VER >= 1400
+        #define SUPPORT_STD_OSTRINGSTREAM 1
+    #else
+        #define SUPPORT_STD_OSTRINGSTREAM 0
+    #endif
 #endif`;
     };
     let generate_SUPPORT_RVALUE_REFERENCES = () => {
-        return `#ifndef SUPPORT_RVALUE_REFERENCES
-#if __cplusplus >= 201103L
-#define SUPPORT_RVALUE_REFERENCES 1
-#else
-#define SUPPORT_RVALUE_REFERENCES 0
-#endif
+        return `
+#ifndef SUPPORT_RVALUE_REFERENCES
+    #ifdef _MSC_VER
+        #if _MSC_VER >= 1800
+            #define SUPPORT_RVALUE_REFERENCES 1
+        #else
+            #define SUPPORT_RVALUE_REFERENCES 0
+        #endif
+    #endif
 #endif`;
     };
     let generate_SUPPORT_STD_FUNCTION = () => {
-        return `#ifndef SUPPORT_STD_FUNCTION
-#if __cplusplus >= 201103L
-#define SUPPORT_STD_FUNCTION 1
-#else
-#define SUPPORT_STD_FUNCTION 0
-#endif
+        return `
+#ifndef SUPPORT_STD_FUNCTION
+    #ifdef _MSC_VER
+        #if _MSC_VER >= 1200
+            #define SUPPORT_STD_FUNCTION 1
+        #else
+            #define SUPPORT_STD_FUNCTION 0
+        #endif
+    #endif
 #endif
 
 #if SUPPORT_STD_FUNCTION
-#include <functional>
+    #include <functional>
 #endif`;
     };
     let generate_SUPPORT_STD_TOSTRING=()=>{
-        return `#ifndef SUPPORT_STD_TOSTRING
-#define SUPPORT_STD_TOSTRING
-#if __cplusplus >= 201103L
+        return `
+#ifndef SUPPORT_STD_TOSTRING
+    #define SUPPORT_STD_TOSTRING
+    #if SUPPORT_STD_STRINGSTREAM
 namespace std {
     std::string to_string(int value) {
         std::stringstream ss;
@@ -151,7 +162,7 @@ namespace std {
         return ss.str();
     }
 }
-#endif
+    #endif
 #endif`;
     };
     let generateStringClass = (namespace: string, className: string, targetEncoding: number, exportDefine: string, allStringClassNames: string[]) => {
