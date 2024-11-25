@@ -21,7 +21,7 @@ let TidyCppGenerator = (config: {
 #else
 #define SUPPORT_STD_STRINGSTREAM 0
 #ifdef _MSC_VER
-#pragma message("Don't support std::stringstream")
+#pragma message("Don't support std::stringstream" "_MSC_VER=" _MSC_VER " __cplusplus=" __cplusplus)
 #endif
 #endif
 #endif
