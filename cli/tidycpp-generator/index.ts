@@ -115,8 +115,8 @@ let TidyCppGenerator = (config: {
         ${className}(const std::wstring& target) {
         this->TargetEncoding = ${targetEncoding};
         this->Target = StringUtil::To(target.c_str(), TargetEncoding);
-#endif
-    }`);
+    }
+#endif`);
 
         // 从std::string转换的构造函数
         lines.push(`    ${className}(const std::string& target) {
