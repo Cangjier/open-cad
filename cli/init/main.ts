@@ -8,6 +8,7 @@ import { EnvironmentVariableTarget } from "../.tsc/System/EnvironmentVariableTar
 import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
 import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
+import { OperatingSystem } from "../.tsc/System/OperatingSystem";
 let utf8 = new UTF8Encoding(false);
 let parameters = {} as { [key: string]: string };
 for (let i = 0; i < args.length; i++) {
@@ -35,10 +36,14 @@ let help = () => {
     console.log(File.ReadAllText(Path.Combine(Path.GetDirectoryName(script_path), "README.md"), utf8));
 };
 
-let OPEN_CAD_DIR = "C:\\OPEN_CAD";
-if (Environment.GetEnvironmentVariable("OPEN_CAD_DIR") == null) {
-    Environment.SetEnvironmentVariable("OPEN_CAD_DIR", OPEN_CAD_DIR, EnvironmentVariableTarget.User);
+let OPEN_CAD_DIR = "";
+if (OperatingSystem.IsWindows()) {
+    OPEN_CAD_DIR = "C:\\OPEN_CAD";
 }
+else if (OperatingSystem.IsLinux()) {
+    OPEN_CAD_DIR = "/OPEN_CAD";
+}
+
 let repositoryDirectory = Path.Combine(OPEN_CAD_DIR, "repository");
 if (Directory.Exists(repositoryDirectory) == false) {
     Directory.CreateDirectory(repositoryDirectory);
@@ -293,7 +298,7 @@ let VcpkgManager = () => {
 let vcpkgManager = VcpkgManager();
 
 let SDKManager = () => {
-    let installLatestSDK = async (cadName: string) => {
+    let installSDK = async (cadName: string, cadVersion: string) => {
         cadName = cadName.toUpperCase();
         // 安装cad的sdk
         let indexJson = await gitManager.getIndexJson();
@@ -306,7 +311,20 @@ let SDKManager = () => {
             throw `cadName ${cadName} not found`;
         }
         // 从sdks中找到最新的版本
-        let sdk = sdks[0];
+        let sdk = {} as {
+            name: string,
+            version: string,
+            download_url: string
+        } | undefined;
+        if (cadVersion == "latest") {
+            sdk = sdks[0];
+        }
+        else {
+            sdk = sdks.find(item => item.version == cadVersion);
+        }
+        if (sdk == undefined) {
+            throw `cadVersion ${cadVersion} not found`;
+        }
 
         let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
         let cadDirectory = Path.Combine(sdkDirectory, cadName);
@@ -321,21 +339,29 @@ let SDKManager = () => {
             await zip.extract(download_path, cadSdkDirectory);
             File.Delete(download_path);
         }
-        if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetFileName(cadSdkDirectory)}.cmake`)) == false) {
-            await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
+        if (["WindowsInclude"].includes(cadName) == false) {
+            if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetFileName(cadSdkDirectory)}.cmake`)) == false) {
+                await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
+            }
+        }
+
+        return sdk;
+    };
+    let install = async (cadName: string, cadVersion: string) => {
+        let sdk = await installSDK(cadName, cadVersion);
+        if (sdk.name == "CAA21") {
+            await installSDK("WindowsInclude", "2005");
         }
         return sdk;
     };
     return {
-        installLatestSDK
+        install
     };
 };
 
 let sdkManager = SDKManager();
 
 let main = async () => {
-
-
     if (await gitManager.clone() == false) {
         return;
     }
@@ -349,28 +375,34 @@ let main = async () => {
 
     let cadName = args[0];
 
+    let cadVersion = args.length > 1 ? args[1] : "latest";
+    if (cadVersion.startsWith("-")) {
+        cadVersion = "latest";
+    }
+
     // 安装cad的sdk
-    let cadSDK = await sdkManager.installLatestSDK(cadName);
+    let cadSDK = await sdkManager.install(cadName, cadVersion);
 
     // 检查是否安装了cmake
-    if (await cmakeManager.checkInstalled() == false) {
-        await cmakeManager.install();
+    if (OperatingSystem.IsWindows()) {
+        if (await cmakeManager.checkInstalled() == false) {
+            await cmakeManager.install();
+        }
+        // 检查是否安装了vscode
+        if (await vscodeManager.checkInstalled() == false) {
+            await vscodeManager.install();
+        }
+        // 检查是否安装了vcpkg
+        if (await vcpkgManager.checkInstalled() == false) {
+            await vcpkgManager.install();
+        }
+        // 检查是否安装了visual studio
+        if (await visualStudioManager.checkInstalled() == false) {
+            await visualStudioManager.install();
+        }
+        // 检查visual studio环境变量
+        await visualStudioManager.resgiterEnvironment();
     }
-    // 检查是否安装了vscode
-    if (await vscodeManager.checkInstalled() == false) {
-        await vscodeManager.install();
-    }
-    // 检查是否安装了vcpkg
-    if (await vcpkgManager.checkInstalled() == false) {
-        await vcpkgManager.install();
-    }
-    // 检查是否安装了visual studio
-    if (await visualStudioManager.checkInstalled() == false) {
-        await visualStudioManager.install();
-    }
-    // 检查visual studio环境变量
-    await visualStudioManager.resgiterEnvironment();
-
     await cmdAsync(Environment.CurrentDirectory, `opencad ${cadName}-init init ${cadSDK.name}`);
 
 };

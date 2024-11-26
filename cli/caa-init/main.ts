@@ -13,13 +13,17 @@ import { Match } from "../.tsc/System/Text/RegularExpressions/Match";
 import { code } from '../.tsc/Cangjie/TypeSharp/System/code';
 import { env } from "../.tsc/context";
 import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
+import { OperatingSystem } from "../.tsc/System/OperatingSystem";
 let utf8 = new UTF8Encoding(false);
 let gb2312 = Encoding.GetEncoding("gb2312");
 
 let script_directory = Path.GetDirectoryName(script_path);
-let OPEN_CAD_DIR = "C:\\OPEN_CAD";
-if (Environment.GetEnvironmentVariable("OPEN_CAD_DIR") == null) {
-    Environment.SetEnvironmentVariable("OPEN_CAD_DIR", OPEN_CAD_DIR, EnvironmentVariableTarget.User);
+let OPEN_CAD_DIR = "";
+if (OperatingSystem.IsWindows()) {
+    OPEN_CAD_DIR = "C:\\OPEN_CAD";
+}
+else if (OperatingSystem.IsLinux()) {
+    OPEN_CAD_DIR = "/OPEN_CAD";
 }
 let repositoryDirectory = Path.Combine(OPEN_CAD_DIR, "repository");
 if (Directory.Exists(repositoryDirectory) == false) {
@@ -267,7 +271,7 @@ let CATIA = () => {
             }
         }
         let desktopShortcuts = Directory.GetFiles(env("desktop"), "*.lnk");
- 
+
         return result;
     };
     return {
@@ -1101,7 +1105,7 @@ let ProjectV1 = (projectDirectory: string) => {
 
 let cmd_package_sdk = async () => {
     if (args.length < 3) {
-        console.log("Usage: caa package-sdk <CatiaDirectory> <OutputDirectory>");
+        console.log("Usage: caa-init package-sdk <CatiaDirectory> <OutputDirectory>");
         return;
     }
     let catiaDirectory = args[1];
@@ -1208,15 +1212,15 @@ let cmd_init = async () => {
 
 let main = async () => {
     if (args.length < 2) {
-        console.log("Usage: caa <command>");
+        console.log("Usage: caa-init <command>");
         return;
     }
     axios.setDefaultProxy();
-    let command = args[0];
-    if (command.toLowerCase() == "package-sdk") {
+    let command = args[0].toLowerCase();
+    if (command == "package-sdk") {
         await cmd_package_sdk();
     }
-    else if (command.toLowerCase() == "init") {
+    else if (command == "init") {
         await cmd_init();
     }
     else {

@@ -7,11 +7,18 @@
                 "version": "1926"
             }
         ],
-        "CAA":[
+        "CAA": [
             {
-                "name":"CAA21",
-                "download_url":"https://github.com/Cangjier/open-cad/releases/download/all-cad-sdk/CAA21.zip",
-                "version":"21"
+                "name": "CAA21",
+                "download_url": "https://github.com/Cangjier/open-cad/releases/download/all-cad-sdk/CAA21.zip",
+                "version": "21"
+            }
+        ],
+        "WindowsInclude": [
+            {
+                "name": "VS2005",
+                "download_url": "https://github.com/Cangjier/open-cad/releases/download/windows-include/VS2005.zip",
+                "version": "2005"
             }
         ]
     }

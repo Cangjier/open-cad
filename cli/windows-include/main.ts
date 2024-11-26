@@ -15,7 +15,8 @@ let VisualStudioManager = () => {
         ];
         let windowsSDKDefaultPaths = [
             `C:\\Program Files\\Microsoft SDKs\\Windows`,
-            `C:\\Program Files (x86)\\Microsoft SDKs\\Windows`
+            `C:\\Program Files (x86)\\Microsoft SDKs\\Windows`,
+            `D:\\Windows Kits`
         ];
         let packageInclude = (outputDirectory: string) => {
             if (Directory.Exists(vs2005DefaultPath)) {
