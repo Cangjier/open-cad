@@ -2953,7 +2953,7 @@ void Directory::Move(LocaleString sourceDirName, LocaleString destDirName, bool 
 		std::vector<LocaleString> files = GetFiles(sourceDirName);
         for(size_t i = 0; i < files.size(); i++)
         {
-            MoveFileExA(files[i].Target.c_str(), (destDirName.Target + "\\\\" + Path::GetFileName(files[i])).c_str(), MOVEFILE_REPLACE_EXISTING);
+            MoveFileExA(files[i].Target.c_str(), (destDirName + "\\\\" + Path::GetFileName(files[i])).Target.c_str(), MOVEFILE_REPLACE_EXISTING);
         }
 		std::vector<LocaleString> directories = GetDirectories(sourceDirName);
         for(szize_t i = 0; i < directories.size(); i++){
