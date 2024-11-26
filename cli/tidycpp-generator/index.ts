@@ -2451,7 +2451,7 @@ namespace ${namespace}
 		{
 		public:
 #ifndef ${namespace}_IO_File_RegisterAttribute
-#define ${namespace}_IO_File_RegisterAttribute(Name, NameStr) \
+#define ${namespace}_IO_File_RegisterAttribute(Name, NameStr) \\
 	LocaleString Get##Name() { return ReadAttribute(NameStr); }
 #endif // !${namespace}_IO_File_RegisterAttribute
 
@@ -2563,13 +2563,13 @@ LocaleString FileAttributes::ReadAttribute(LocaleString name)
 	GetFileVersionInfoA((LPCSTR)Target.ToChars(), Handle, Size, (void*)VersionData);
 	UINT QuerySize;
 	DWORD* TransTable;
-	if (!VerQueryValueA(VersionData, "\\VarFileInfo\\Translation", (void**)&TransTable, &QuerySize))
+	if (!VerQueryValueA(VersionData, "\\\\VarFileInfo\\\\Translation", (void**)&TransTable, &QuerySize))
 	{
 		return "";
 	}
 	DWORD CharSet = MAKELONG(HIWORD(TransTable[0]), LOWORD(TransTable[0]));
 	char Tmp[256];
-	sprintf_s(Tmp, 256, "\\StringFileInfo\\%08lx\\%s", CharSet, name.ToChars());
+	sprintf_s(Tmp, 256, "\\\\StringFileInfo\\\\%08lx\\\\%s", CharSet, name.ToChars());
 	LPVOID Data;
 	if (!VerQueryValueA((void*)VersionData, Tmp, &Data, &QuerySize))
 	{
@@ -2868,14 +2868,14 @@ std::vector<LocaleString> Directory::GetFiles(LocaleString path)
 {
 	std::vector<LocaleString> files;
 	WIN32_FIND_DATAA fd;
-	HANDLE hFind = FindFirstFileA((path.Target + "\\*").c_str(), &fd);
+	HANDLE hFind = FindFirstFileA((path.Target + "\\\\*").c_str(), &fd);
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
 		do
 		{
 			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
 			{
-				files.push_back(path.Target + "\\" + fd.cFileName);
+				files.push_back(path.Target + "\\\\" + fd.cFileName);
 			}
 		} while (FindNextFileA(hFind, &fd));
 		FindClose(hFind);
@@ -2887,14 +2887,14 @@ std::vector<LocaleString> Directory::GetDirectories(LocaleString path)
 {
 	std::vector<LocaleString> directories;
 	WIN32_FIND_DATAA fd;
-	HANDLE hFind = FindFirstFileA((path.Target + "\\*").c_str(), &fd);
+	HANDLE hFind = FindFirstFileA((path.Target + "\\\\*").c_str(), &fd);
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
 		do
 		{
 			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && (strcmp(fd.cFileName, ".") != 0) && (strcmp(fd.cFileName, "..") != 0))
 			{
-				directories.push_back(path.Target + "\\" + fd.cFileName);
+				directories.push_back(path.Target + "\\\\" + fd.cFileName);
 			}
 		} while (FindNextFileA(hFind, &fd));
 		FindClose(hFind);
@@ -2917,7 +2917,7 @@ void Directory::Move(LocaleString sourceDirName, LocaleString destDirName, bool 
 		for (const auto& file : files)
 		{
 			LocaleString destFilePath = destDirName;
-			destFilePath.Target += "\\" + file.Target.substr(sourceDirName.Target.size() + 1);
+			destFilePath.Target += "\\\\" + file.Target.substr(sourceDirName.Target.size() + 1);
 			MoveFileExA(file.Target.c_str(), destFilePath.Target.c_str(), MOVEFILE_REPLACE_EXISTING);
 		}
 
@@ -2925,7 +2925,7 @@ void Directory::Move(LocaleString sourceDirName, LocaleString destDirName, bool 
 		for (const auto& directory : directories)
 		{
 			LocaleString destSubDirPath = destDirName;
-			destSubDirPath.Target += "\\" + directory.Target.substr(sourceDirName.Target.size() + 1);
+			destSubDirPath.Target += "\\\\" + directory.Target.substr(sourceDirName.Target.size() + 1);
 			CreateDirectory(destSubDirPath);
 			Move(directory, destSubDirPath, true);
 		}
@@ -3186,13 +3186,13 @@ std::vector<FileInfo> DirectoryInfo::GetFiles()
 	intptr_t hFile = 0;
 	struct _finddata_t fileinfo;
 	std::string p;
-	if ((hFile = _findfirst((Target + "\\*").ToChars(), &fileinfo)) != -1)
+	if ((hFile = _findfirst((Target + "\\\\*").ToChars(), &fileinfo)) != -1)
 	{
 		while (true)
 		{
 			if (!(fileinfo.attrib & _A_SUBDIR))
 			{
-				result.push_back(Target + "\\" + fileinfo.name);
+				result.push_back(Target + "\\\\" + fileinfo.name);
 			}
 			if (_findnext(hFile, &fileinfo) != 0)
 			{
@@ -3219,13 +3219,13 @@ std::vector<DirectoryInfo> DirectoryInfo::GetDirectories()
 	intptr_t hFile = 0;
 	struct _finddata_t fileinfo;
 	std::string p;
-	if ((hFile = _findfirst((Target + "\\*").ToChars(), &fileinfo)) != -1)
+	if ((hFile = _findfirst((Target + "\\\\*").ToChars(), &fileinfo)) != -1)
 	{
 		while (true)
 		{
 			if ((fileinfo.attrib & _A_SUBDIR) && strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
 			{
-				result.push_back(Target + "\\" + fileinfo.name);
+				result.push_back(Target + "\\\\" + fileinfo.name);
 			}
 			if (_findnext(hFile, &fileinfo) != 0)
 			{
@@ -3263,7 +3263,7 @@ void DirectoryInfo::GetFiles(LocaleString path, std::vector<FileInfo>& result)
 	intptr_t hFile = 0;
 	struct _finddata_t fileinfo;
 	std::string p;
-	if ((hFile = _findfirst((path + "\\*").ToChars(), &fileinfo)) != -1)
+	if ((hFile = _findfirst((path + "\\\\*").ToChars(), &fileinfo)) != -1)
 	{
 		do
 		{
@@ -3271,12 +3271,12 @@ void DirectoryInfo::GetFiles(LocaleString path, std::vector<FileInfo>& result)
 			{
 				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
 				{
-					GetFiles(path + "\\" + fileinfo.name, result);
+					GetFiles(path + "\\\\" + fileinfo.name, result);
 				}
 			}
 			else
 			{
-				result.push_back(path + "\\" + fileinfo.name);
+				result.push_back(path + "\\\\" + fileinfo.name);
 			}
 		} while (_findnext(hFile, &fileinfo) == 0);
 		_findclose(hFile);
@@ -3370,7 +3370,7 @@ namespace ${namespace}
             static LocaleString Combine(const LocaleString &arg, Args... args)
             {
                 auto splitChar = GetSplitChar(UTF8String::Vector(arg, args...));
-                return arg.TrimEnd("\\/") + splitChar + Combine(args...);
+                return arg.TrimEnd("\\\\/") + splitChar + Combine(args...);
             }
 #endif
 #else
@@ -3383,7 +3383,7 @@ namespace ${namespace}
             static LocaleString Combine(const LocaleString &arg, Args... args)
             {
                 auto splitChar = GetSplitChar(UTF8String::Vector(arg, args...));
-                return arg.TrimEnd("\\/") + splitChar + Combine(args...);
+                return arg.TrimEnd("\\\\/") + splitChar + Combine(args...);
             }
 #endif
         };
