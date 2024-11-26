@@ -1,6 +1,7 @@
 import { args, copyDirectory } from "../.tsc/context";
 import { Directory } from "../.tsc/System/IO/Directory";
 import { Environment } from "../.tsc/System/Environment";
+import { SearchOption } from "../.tsc/System/IO/SearchOption";
 
 let VisualStudioManager = () => {
     let getVS2005 = () => {
@@ -12,18 +13,36 @@ let VisualStudioManager = () => {
             `${vcDefaultPath}\\ce\\include`,
             `${vcDefaultPath}\\ce\\atlmfc\\include`
         ];
+        let windowsSDKDefaultPaths = [
+            `C:\\Program Files\\Microsoft SDKs\\Windows`,
+            `C:\\Program Files (x86)\\Microsoft SDKs\\Windows`
+        ];
         let packageInclude = (outputDirectory: string) => {
-            if (Directory.Exists(vs2005DefaultPath) == false) {
-                throw "Visual Studio 2005 not found";
+            if (Directory.Exists(vs2005DefaultPath)) {
+                Directory.CreateDirectory(`${outputDirectory}\\VC\\include`);
+                Directory.CreateDirectory(`${outputDirectory}\\VC\\atlmfc\\include`);
+                Directory.CreateDirectory(`${outputDirectory}\\VC\\ce\\include`);
+                Directory.CreateDirectory(`${outputDirectory}\\VC\\ce\\atlmfc\\include`);
+                copyDirectory(`${vcDefaultPath}\\include`, `${outputDirectory}\\VC\\include`);
+                copyDirectory(`${vcDefaultPath}\\atlmfc\\include`, `${outputDirectory}\\VC\\atlmfc\\include`);
+                copyDirectory(`${vcDefaultPath}\\ce\\include`, `${outputDirectory}\\VC\\ce\\include`);
+                copyDirectory(`${vcDefaultPath}\\ce\\atlmfc\\include`, `${outputDirectory}\\VC\\ce\\atlmfc\\include`);
             }
-            Directory.CreateDirectory(`${outputDirectory}\\include`);
-            Directory.CreateDirectory(`${outputDirectory}\\atlmfc\\include`);
-            Directory.CreateDirectory(`${outputDirectory}\\ce\\include`);
-            Directory.CreateDirectory(`${outputDirectory}\\ce\\atlmfc\\include`);
-            copyDirectory(`${vcDefaultPath}\\include`, `${outputDirectory}\\include`);
-            copyDirectory(`${vcDefaultPath}\\atlmfc\\include`, `${outputDirectory}\\atlmfc\\include`);
-            copyDirectory(`${vcDefaultPath}\\ce\\include`, `${outputDirectory}\\ce\\include`);
-            copyDirectory(`${vcDefaultPath}\\ce\\atlmfc\\include`, `${outputDirectory}\\ce\\atlmfc\\include`);
+            let outputWindowsSDKDirectory = `${outputDirectory}\\Windows Kits`;
+            let outputWindowsSDKDirectoryx86 = `${outputWindowsSDKDirectory}\\x86`;
+            let outputWindowsSDKDirectoryx64 = `${outputWindowsSDKDirectory}\\x64`;
+            for (let windowsSDKDefaultPath of windowsSDKDefaultPaths) {
+                if (Directory.Exists(windowsSDKDefaultPath)) {
+                    let isx86 = windowsSDKDefaultPath.includes("x86");
+                    let includePaths = Directory.GetDirectories(windowsSDKDefaultPath, "Include", SearchOption.AllDirectories);
+                    for (let includePath of includePaths) {
+                        let includePathRelative = includePath.replace(windowsSDKDefaultPath, "");
+                        let outputIncludePath = `${isx86 ? outputWindowsSDKDirectoryx86 : outputWindowsSDKDirectoryx64}${includePathRelative}`;
+                        Directory.CreateDirectory(outputIncludePath);
+                        copyDirectory(includePath, outputIncludePath);
+                    }
+                }
+            }
         };
         return {
             default: {
