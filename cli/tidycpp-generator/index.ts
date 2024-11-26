@@ -2230,8 +2230,8 @@ bool File::Exists(LocaleString path)
 
 void IO::File::Copy(LocaleString sourcePath, LocaleString destPath)
 {
-	std::ifstream source(sourcePath.Target, std::ios::binary);
-	std::ofstream dest(destPath.Target, std::ios::binary);
+	std::ifstream source(sourcePath.Target.c_str(), std::ios::binary);
+	std::ofstream dest(destPath.Target.c_str(), std::ios::binary);
 
 	if (source && dest)
 	{
@@ -2241,7 +2241,7 @@ void IO::File::Copy(LocaleString sourcePath, LocaleString destPath)
 
 void IO::File::Copy(LocaleString sourcePath, LocaleString destPath, bool overwrite)
 {
-	if (!overwrite && std::ifstream(destPath.Target))
+	if (!overwrite && std::ifstream(destPath.Target.c_str()))
 	{
 		return;
 	}
@@ -2262,7 +2262,7 @@ void IO::File::Delete(LocaleString path)
 
 void IO::File::CreateEmptyFile(LocaleString path)
 {
-	std::ofstream file(path.Target);
+	std::ofstream file(path.Target.c_str());
 	if (!file)
 	{
 		std::cerr << "Failed to create file." << std::endl;
@@ -2272,7 +2272,7 @@ void IO::File::CreateEmptyFile(LocaleString path)
 
 std::string IO::File::ReadAllText(LocaleString path)
 {
-	std::ifstream file(path.Target);
+	std::ifstream file(path.Target.c_str());
 	if (file)
 	{
 		std::string contents((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -2297,7 +2297,7 @@ UTF8String IO::File::ReadAllText(LocaleString path, const Encoding& encoding)
 
 Bytes IO::File::ReadAllBytes(LocaleString path)
 {
-	std::ifstream file(path.Target, std::ios::binary);
+	std::ifstream file(path.Target.c_str(), std::ios::binary);
 	if (!file.is_open()) {
 		return Bytes();
 	}
@@ -2313,7 +2313,7 @@ Bytes IO::File::ReadAllBytes(LocaleString path)
 
 bool IO::File::WriteAllText(LocaleString path, const std::string& contents)
 {
-	std::ofstream file(path.Target);
+	std::ofstream file(path.Target.c_str());
 	if (file)
 	{
 		file << contents;
@@ -2338,7 +2338,7 @@ bool IO::File::WriteAllText(LocaleString path, const UTF8String& contents, const
 std::vector<std::string> IO::File::ReadAllLines(LocaleString path)
 {
 	std::vector<std::string> lines;
-	std::ifstream file(path.Target);
+	std::ifstream file(path.Target.c_str());
 	if (file)
 	{
 		std::string line;
@@ -2357,7 +2357,7 @@ std::vector<std::string> IO::File::ReadAllLines(LocaleString path)
 std::vector<UTF8String> IO::File::ReadAllLines(LocaleString path, const Encoding& encoding)
 {
 	std::vector<UTF8String> lines;
-	std::ifstream file(path.Target);
+	std::ifstream file(path.Target.c_str());
 	if (file)
 	{
 		std::string line;
@@ -2381,7 +2381,7 @@ std::vector<UTF8String> IO::File::ReadAllLines(LocaleString path, const Encoding
 
 void IO::File::WriteAllLines(LocaleString path, const std::vector<std::string>& lines)
 {
-	std::ofstream file(path.Target);
+	std::ofstream file(path.Target.c_str());
 	if (file)
 	{
 		for (const auto& line : lines)
@@ -2397,7 +2397,7 @@ void IO::File::WriteAllLines(LocaleString path, const std::vector<std::string>& 
 
 void IO::File::WriteAllLines(LocaleString path, const std::vector<UTF8String>& lines, const Encoding& encoding)
 {
-	std::ofstream file(path.Target);
+	std::ofstream file(path.Target.c_str());
 	if (file)
 	{
 		for (const auto& line : lines)
@@ -2418,7 +2418,7 @@ void IO::File::WriteAllLines(LocaleString path, const std::vector<UTF8String>& l
 
 bool IO::File::AppendAllText(LocaleString path, const std::string& contents)
 {
-	std::ofstream file(path.Target, std::ios::app);
+	std::ofstream file(path.Target.c_str(), std::ios::app);
 	if (file)
 	{
 		file << contents;
@@ -2432,7 +2432,7 @@ bool IO::File::AppendAllText(LocaleString path, const std::string& contents)
 
 bool IO::File::AppendAllText(LocaleString path, const UTF8String& contents, const Encoding& encoding)
 {
-	std::ofstream file(path.Target, std::ios::app);
+	std::ofstream file(path.Target.c_str(), std::ios::app);
 	if (file)
 	{
 		if (encoding != Encoding::UTF8) {
@@ -2807,7 +2807,6 @@ namespace ${namespace}
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <chrono>
 #include <ctime>
 
 using namespace ${namespace};
