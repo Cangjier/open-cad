@@ -1562,7 +1562,7 @@ void TimeSpan::Join(UTF8String& result, double& total, long long limit, UTF8Stri
 #ifndef __${namespace.toUpperCase()}_DATETIME_H__
 #define __${namespace.toUpperCase()}_DATETIME_H__
 #include <ctime>
-#include "${namespace}_String.h"
+#include "${namespace}_UTF8String.h"
 #ifndef NOTSUPPORT_CHRONO
 #if defined(_MSC_VER) && _MSC_VER <= 1800
 #define NOTSUPPORT_CHRONO 1
