@@ -2708,7 +2708,7 @@ DateTime IO::FileInfo::GetLastModifiedTime()
 	FILETIME lastWriteTime;
 	GetFileTime(hFile, NULL, NULL, &lastWriteTime);
 	CloseHandle(hFile);
-	return DateTime(lastWriteTime);
+	return DateTime(FileTimeToTimeT(lastWriteTime));
 #else
 	struct stat result;
 	if (stat(Target.ToChars(), &result) == 0)
