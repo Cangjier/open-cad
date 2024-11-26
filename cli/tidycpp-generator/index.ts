@@ -1675,7 +1675,7 @@ namespace ${namespace}
 		static DateTime Now()
 		{
 #if NOTSUPPORT_CHRONO
-			return DateTime(std::time(nullptr));
+			return DateTime(std::time(SUPPORT_NULLPTR));
 #else
 			return DateTime(std::chrono::system_clock::now());
 #endif
