@@ -1662,13 +1662,13 @@ namespace ${namespace}
 
 		std::tm LocalTime()
 		{
-			auto temp = time_t();
+			std::time_t temp = time_t();
 			return *std::localtime(&temp);
 		}
 
 		std::tm UTCTime()
 		{
-			auto temp = time_t();
+			std::time_t temp = time_t();
 			return *std::gmtime(&temp);
 		}
 
@@ -1686,7 +1686,7 @@ namespace ${namespace}
 		DateTimeInfomation Infomation()
 		{
 			DateTimeInfomation result;
-			auto time = LocalTime();
+			std::tm time = LocalTime();
 			result.Year = 1900 + time.tm_year;
 			result.Month = 1 + time.tm_mon;
 			result.Day = time.tm_mday;
@@ -1834,7 +1834,7 @@ DateTime DateTime::AddWeeks(double value)
 
 UTF8String DateTime::ToString(UTF8String format)
 {
-	auto Info = Infomation();
+	DateTimeInfomation Info = Infomation();
 	return format.
 		Replace("yyyy", Info.Year).
 		Replace("MM", UTF8String(Info.Month).FillStart(2, "0")).
