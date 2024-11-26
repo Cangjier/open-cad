@@ -39,14 +39,6 @@ let cmd_add_find_package = async () => {
     }
     let cmakeListsPath = args[1];
     let cmakePath = args[2];
-    if (Path.GetFileName(cmakeListsPath).toLowerCase() != "cmakelists.txt") {
-        console.log("The first argument must be a CMakeLists.txt file");
-        return;
-    }
-    if (Path.GetExtension(cmakePath).toLowerCase() != ".cmake") {
-        console.log("The second argument must be a .cmake file");
-        return;
-    }
     await addFindPackage(cmakeListsPath, cmakePath);
 };
 
