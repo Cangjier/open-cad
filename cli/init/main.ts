@@ -59,6 +59,7 @@ if (Directory.Exists(sdkDirectory) == false) {
 
 
 let GitManager = () => {
+    let cache = {} as { [key: string]: any };
     let clone = async () => {
         let gitDirectory = Path.Combine(repositoryDirectory, ".git");
         if (Directory.Exists(gitDirectory)) {
@@ -81,7 +82,10 @@ let GitManager = () => {
     };
     let getIndexJson = async () => {
         let indexJsonPath = Path.Combine(repositoryDirectory, "index.json");
-        return await Json.LoadAsync(indexJsonPath);
+        if (cache["indexJson"] == undefined) {
+            cache["indexJson"] = await Json.LoadAsync(indexJsonPath);
+        }
+        return cache["indexJson"];
     };
     let getHttpProxy = async () => {
         return (await cmdAsync(Environment.CurrentDirectory, "git config --get http.proxy")).output ?? "";
@@ -314,7 +318,11 @@ let SDKManager = () => {
         let sdk = {} as {
             name: string,
             version: string,
-            download_url: string
+            download_url: string,
+            dependency?: {
+                sdkName: string,
+                version: string
+            }[]
         } | undefined;
         if (cadVersion == "latest") {
             sdk = sdks[0];
@@ -349,8 +357,10 @@ let SDKManager = () => {
     };
     let install = async (cadName: string, cadVersion: string) => {
         let sdk = await installSDK(cadName, cadVersion);
-        if (sdk.name == "CAA21") {
-            await installSDK("WindowsInclude", "2005");
+        if (sdk.dependency) {
+            for (let item of sdk.dependency) {
+                await installSDK(item.sdkName, item.version);
+            }
         }
         return sdk;
     };

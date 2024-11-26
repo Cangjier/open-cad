@@ -11,7 +11,13 @@
             {
                 "name": "CAA21",
                 "download_url": "https://github.com/Cangjier/open-cad/releases/download/all-cad-sdk/CAA21.zip",
-                "version": "21"
+                "version": "21",
+                "dependency": [
+                    {
+                        "sdkName": "WindowsInclude",
+                        "version": "2005"
+                    }
+                ]
             }
         ],
         "WindowsInclude": [
