@@ -2384,10 +2384,14 @@ void IO::File::WriteAllLines(LocaleString path, const std::vector<std::string>& 
 	std::ofstream file(path.Target.c_str());
 	if (file)
 	{
-		for (const auto& line : lines)
-		{
-			file << line << std::endl;
-		}
+        for(size_t i = 0; i < lines.size(); i++)
+        {
+            file << lines[i];
+            if(i != lines.size() - 1)
+            {
+                file << std::endl;
+            }
+        }
 	}
 	else
 	{
@@ -2400,15 +2404,15 @@ void IO::File::WriteAllLines(LocaleString path, const std::vector<UTF8String>& l
 	std::ofstream file(path.Target.c_str());
 	if (file)
 	{
-		for (const auto& line : lines)
-		{
-			if (encoding != Encoding::UTF8) {
-				file << StringUtil::To(line.Target, Encoding::UTF8.Target, encoding.Target) << std::endl;
-			}
-			else {
-				file << line.Target << std::endl;
-			}
-		}
+        for(size_t i = 0; i < lines.size(); i++)
+        {
+            if (encoding != Encoding::UTF8) {
+                file << StringUtil::To(lines[i].Target, Encoding::UTF8.Target, encoding.Target) << std::endl;
+            }
+            else {
+                file << lines[i].Target << std::endl;
+            }
+        }
 	}
 	else
 	{
@@ -2637,7 +2641,7 @@ int FileInfo::Size()
 
 	LARGE_INTEGER fileSize;
 	GetFileSizeEx(hFile, &fileSize);
-	auto result = fileSize.QuadPart;
+	long long result = fileSize.QuadPart;
 	CloseHandle(hFile);
 	return result;
 #else
@@ -2834,7 +2838,7 @@ DirectoryInfo Directory::CreateDirectory(LocaleString path)
 
 LocaleString IO::Directory::TryCreateDirectory(LocaleString path)
 {
-	auto parent = Path::GetDirectoryName(path);
+	LocaleString parent = Path::GetDirectoryName(path);
 	if (!Exists(parent)) {
 		TryCreateDirectory(parent);
 	}
@@ -2938,21 +2942,14 @@ void Directory::Move(LocaleString sourceDirName, LocaleString destDirName, bool 
 	if (recursive)
 	{
 		std::vector<LocaleString> files = GetFiles(sourceDirName);
-		for (const auto& file : files)
-		{
-			LocaleString destFilePath = destDirName;
-			destFilePath.Target += "\\\\" + file.Target.substr(sourceDirName.Target.size() + 1);
-			MoveFileExA(file.Target.c_str(), destFilePath.Target.c_str(), MOVEFILE_REPLACE_EXISTING);
-		}
-
+        for(size_t i = 0; i < files.size(); i++)
+        {
+            MoveFileExA(files[i].Target.c_str(), (destDirName.Target + "\\\\" + Path::GetFileName(files[i])).c_str(), MOVEFILE_REPLACE_EXISTING);
+        }
 		std::vector<LocaleString> directories = GetDirectories(sourceDirName);
-		for (const auto& directory : directories)
-		{
-			LocaleString destSubDirPath = destDirName;
-			destSubDirPath.Target += "\\\\" + directory.Target.substr(sourceDirName.Target.size() + 1);
-			CreateDirectory(destSubDirPath);
-			Move(directory, destSubDirPath, true);
-		}
+        for(szize_t i = 0; i < directories.size(); i++){
+            Move(directories[i], destDirName + "\\\\" + Path::GetFileName(directories[i]), true);
+        }
 	}
 
 	
@@ -2963,16 +2960,16 @@ void Directory::Delete(LocaleString path, bool recursive)
 	if (recursive)
 	{
 		std::vector<LocaleString> files = GetFiles(path);
-		for (const auto& file : files)
-		{
-			DeleteFileA(file.Target.c_str());
-		}
+        for(size_t i = 0; i < files.size(); i++)
+        {
+            DeleteFileA(files[i].Target.c_str());
+        }
 
 		std::vector<LocaleString> directories = GetDirectories(path);
-		for (const auto& directory : directories)
-		{
-			Delete(directory, recursive);
-		}
+        for(size_t i = 0; i < directories.size(); i++)
+        {
+            Delete(directories[i], recursive);
+        }
 	}
 
 	RemoveDirectoryA(path.Target.c_str());
@@ -3070,7 +3067,7 @@ LocaleString Directory::GetTemporaryDirectory()
 
 LocaleString Directory::GenerateTemporaryDirectory()
 {
-	auto result = GetTemporaryDirectory() + ID::GeneratePathName();
+	LocaleString result = GetTemporaryDirectory() + ID::GeneratePathName();
 	CreateDirectory(result);
 	return result;
 }
@@ -3501,10 +3498,11 @@ UTF8String Path::GetSplitChar(UTF8String value)
 
 UTF8String IO::Path::GetSplitChar(std::vector<UTF8String> values)
 {
-	for (UTF8String item : values) {
-		if (item.Contains("/"))return "/";
-		else if (item.Contains("\\\\"))return "\\\\";
-	}
+    for(size_t i = 0; i < values.size(); i++)
+    {
+        if (values[i].Contains("/"))return "/";
+        else if (values[i].Contains("\\\\"))return "\\\\";
+    }
 	return "\\\\";
 }
 
