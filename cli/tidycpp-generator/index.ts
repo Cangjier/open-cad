@@ -2857,7 +2857,11 @@ bool Directory::Exists(LocaleString path)
 FILETIME _DateTimeToFileTime(DateTime value)
 {
 	ULARGE_INTEGER uli;
+#if NOTSUPPORT_CHRONO
+    uli.QuadPart = static_cast<ULONGLONG>(value.Target)*1000*1000*10 + 116444736000000000ULL; // 100 ns intervals from 1/1/1601 to 1/1/1970
+#else
 	uli.QuadPart = static_cast<ULONGLONG>(value.Target.time_since_epoch().count()) + 116444736000000000ULL; // 100 ns intervals from 1/1/1601 to 1/1/1970
+#endif
 	FILETIME ft;
 	ft.dwLowDateTime = uli.LowPart;
 	ft.dwHighDateTime = uli.HighPart;
