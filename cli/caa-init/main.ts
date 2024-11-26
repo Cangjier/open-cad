@@ -1150,7 +1150,7 @@ let cmd_init = async () => {
     let sdkName = args[1];
     let projectDirectory = Environment.CurrentDirectory;
     let projectName = Path.GetFileName(projectDirectory);
-
+    projectName = projectName.replace("_", "");
     let cmakePath = Path.Combine(sdkDirectory, cadName, sdkName, `Find${sdkName}.cmake`);
     // 自动创建CMakeLists.txt
     let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt");
