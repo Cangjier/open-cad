@@ -2199,6 +2199,7 @@ namespace ${namespace}
         let source = `#include <fstream>
 #include <iostream>
 #include <fstream>
+#include "${namespace}_IO_File.h"
 #include "${namespace}_IO_Path.h"
 #include "${namespace}_IO_Directory.h"
 
