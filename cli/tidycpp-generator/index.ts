@@ -3164,7 +3164,7 @@ DirectoryInfo::DirectoryInfo(LocaleString target)
 
 DirectoryInfo DirectoryInfo::Create(LocaleString path)
 {
-	auto result = DirectoryInfo(path);
+	DirectoryInfo result = DirectoryInfo(path);
 #ifdef _MSC_VER
 	if (mkdir(path.ToChars()) == -1)
 	{
@@ -3395,7 +3395,7 @@ namespace ${namespace}
             template <typename... Args>
             static LocaleString Combine(const LocaleString &arg, Args... args)
             {
-                auto splitChar = GetSplitChar(UTF8String::Vector(arg, args...));
+                UTF8String splitChar = GetSplitChar(UTF8String::Vector(arg, args...));
                 return arg.TrimEnd("\\\\/") + splitChar + Combine(args...);
             }
 #endif
@@ -3408,7 +3408,7 @@ namespace ${namespace}
             template <typename... Args>
             static LocaleString Combine(const LocaleString &arg, Args... args)
             {
-                auto splitChar = GetSplitChar(UTF8String::Vector(arg, args...));
+                UTF8String splitChar = GetSplitChar(UTF8String::Vector(arg, args...));
                 return arg.TrimEnd("\\\\/") + splitChar + Combine(args...);
             }
 #endif
@@ -3455,7 +3455,7 @@ UTF8String Path::GetFileName(UTF8String value)
 
 UTF8String Path::GetFileExtension(UTF8String value)
 {
-	auto name = GetFileName(value);
+	UTF8String name = GetFileName(value);
 	int Index = name.LastIndexOf(".");
 	if (Index == -1)return "";
 	else return name.SubString(Index);
@@ -3463,7 +3463,7 @@ UTF8String Path::GetFileExtension(UTF8String value)
 
 UTF8String Path::GetFileNameWithoutExtension(UTF8String value)
 {
-	auto name = GetFileName(value);
+	UTF8String name = GetFileName(value);
 	int Index = name.LastIndexOf(".");
 	if (Index == -1)return name;
 	else return name.SubString(0, Index);
@@ -3501,7 +3501,7 @@ UTF8String Path::GetSplitChar(UTF8String value)
 
 UTF8String IO::Path::GetSplitChar(std::vector<UTF8String> values)
 {
-	for (auto item : values) {
+	for (UTF8String item : values) {
 		if (item.Contains("/"))return "/";
 		else if (item.Contains("\\\\"))return "\\\\";
 	}
@@ -3541,7 +3541,7 @@ LocaleString IO::Path::GenerateTemporaryPath()
 
 LocaleString IO::Path::GenerateTemporaryDirectory()
 {
-	auto tempDirectory = Combine(GetTempPath(),ID::GenerateGUID());
+	LocaleString tempDirectory = Combine(GetTempPath(),ID::GenerateGUID());
 	Directory::CreateDirectory(tempDirectory);
 	return tempDirectory;
 }
@@ -3628,25 +3628,25 @@ LocaleString IO::Path::GetModulePath(void* func)
 #if _MSC_VER <= 1800
 LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath)
 {
-	auto splitChar = GetSplitChar(UTF8String::Vector(directory, subPath));
+	UTF8String splitChar = GetSplitChar(UTF8String::Vector(directory, subPath));
 	return directory.TrimEnd("\\\\/") + splitChar + subPath.TrimStart("\\\\/");
 }
 
 LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, LocaleString subPath2)
 {
-	auto splitChar = GetSplitChar(UTF8String::Vector(directory, subPath1, subPath2));
+	UTF8String splitChar = GetSplitChar(UTF8String::Vector(directory, subPath1, subPath2));
 	return directory.TrimEnd("\\\\/") + splitChar + subPath1.Trim("\\\\/") + splitChar + subPath2.TrimStart("\\\\/");
 }
 
 LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, LocaleString subPath2, LocaleString subPath3)
 {
-	auto splitChar = GetSplitChar(UTF8String::Vector(directory, subPath1, subPath2, subPath3));
+	UTF8String splitChar = GetSplitChar(UTF8String::Vector(directory, subPath1, subPath2, subPath3));
 	return directory.TrimEnd("\\\\/") + splitChar + subPath1.Trim("\\\\/") + splitChar + subPath2.Trim("\\\\/") + splitChar + subPath3.TrimStart("\\\\/");
 }
 
 LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, LocaleString subPath2, LocaleString subPath3, LocaleString subPath4)
 {
-	auto splitChar = GetSplitChar(UTF8String::Vector(directory, subPath1, subPath2, subPath3, subPath4));
+	UTF8String splitChar = GetSplitChar(UTF8String::Vector(directory, subPath1, subPath2, subPath3, subPath4));
 	return directory.TrimEnd("\\\\/") + splitChar + subPath1.Trim("\\\\/") + splitChar + subPath2.Trim("\\\\/") + splitChar + subPath3.Trim("\\\\/") + splitChar + subPath4.TrimStart("\\\\/");
 }
 #endif
