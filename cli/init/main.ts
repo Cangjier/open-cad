@@ -302,17 +302,21 @@ let VcpkgManager = () => {
 let vcpkgManager = VcpkgManager();
 
 let SDKManager = () => {
-    let installSDK = async (cadName: string, cadVersion: string) => {
-        cadName = cadName.toUpperCase();
+    let installSDK = async (sdkName: string, cadVersion: string) => {
         // 安装cad的sdk
         let indexJson = await gitManager.getIndexJson();
-        let sdks = indexJson.SDK[cadName] as {
+        let sdkKeys = Object.keys(indexJson.SDK);
+        let formatSDKName = sdkKeys.find(item => item.toUpperCase() == sdkName.toUpperCase());
+        if (formatSDKName == undefined) {
+            throw `SDK ${sdkName} not found`;
+        }
+        let sdks = indexJson.SDK[formatSDKName] as {
             name: string,
             version: string,
             download_url: string
         }[];
         if (sdks == undefined) {
-            throw `cadName ${cadName} not found`;
+            throw `SDKName ${formatSDKName} not found`;
         }
         // 从sdks中找到最新的版本
         let sdk = {} as {
@@ -335,7 +339,7 @@ let SDKManager = () => {
         }
 
         let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
-        let cadDirectory = Path.Combine(sdkDirectory, cadName);
+        let cadDirectory = Path.Combine(sdkDirectory, formatSDKName);
         let cadSdkDirectory = Path.Combine(cadDirectory, sdk.name);
         if ((Directory.Exists(cadSdkDirectory) == false) || (Directory.GetFiles(cadSdkDirectory).length == 0)) {
             console.log(`downloading ${sdk.download_url} to ${download_path}`);
@@ -347,7 +351,7 @@ let SDKManager = () => {
             await zip.extract(download_path, cadSdkDirectory);
             File.Delete(download_path);
         }
-        if (["WindowsInclude"].includes(cadName) == false) {
+        if (["windowsinclude"].includes(formatSDKName.toLowerCase()) == false) {
             if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetFileName(cadSdkDirectory)}.cmake`)) == false) {
                 await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
             }
