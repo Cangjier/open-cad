@@ -1376,10 +1376,629 @@ return result;
         return files;
     };
 
+    let generateTimeSpanClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_TIMESPAN_H__
+#define __${namespace.toUpperCase()}_TIMESPAN_H__
+#include "${namespace}_UTF8String.h"
 
+#ifndef NOTSUPPORT_CHRONO
+#if defined(_MSC_VER) && _MSC_VER <= 1800
+#define NOTSUPPORT_CHRONO 1
+#else
+#define NOTSUPPORT_CHRONO 0
+#include <chrono>
+#endif
+#endif
+namespace ${namespace}
+{
+	class ${exportDefine} TimeSpan
+	{
+	public:
+#if NOTSUPPORT_CHRONO
+		TimeSpan(long long target);
+#else
+		TimeSpan(std::chrono::system_clock::duration target);
+#endif
+
+		TimeSpan(double hour, double minute, double second);
+
+		TimeSpan(double day, double hour, double minute, double second);
+
+#if NOTSUPPORT_CHRONO
+		long long Target;
+#else
+		std::chrono::system_clock::duration Target;
+#endif
+
+		double TotalSeconds();
+
+		double TotalMilliseconds();
+
+		double TotalMicroseconds();
+        
+		long long Ticks();
+        
+		UTF8String ToString();
+
+	private:
+    
+		static void Join(UTF8String &result, double &total, long long limit, UTF8String unit);
+	};
+}
+#endif`;
+        let source = `#include "${namespace}_TimeSpan.h"
+using namespace ${namespace};
+#if NOTSUPPORT_CHRONO
+TimeSpan::TimeSpan(long long target)
+{
+	this->Target = target;
+}
+#else
+TimeSpan::TimeSpan(std::chrono::system_clock::duration target)
+{
+    this->Target = target;
+}
+#endif
+
+TimeSpan::TimeSpan(double hour, double minute, double second)
+{
+#if NOTSUPPORT_CHRONO
+	this->Target = (long long)(
+		hour * 60 * 60 +
+		minute * 60 +
+		second
+    );
+#else
+    this->Target = std::chrono::system_clock::duration((long long)(
+        hour * 60 * 60 * 1000 * 10000 +
+        minute * 60 * 1000 * 10000 +
+        second * 1000 * 10000
+        ));
+#endif
+}
+
+TimeSpan::TimeSpan(double day, double hour, double minute, double second)
+{
+#if NOTSUPPORT_CHRONO
+	this->Target = (long long)(
+		day * 24 * 60 * 60 +
+		hour * 60 * 60 +
+		minute * 60 +
+		second
+		);
+#else
+    this->Target = std::chrono::system_clock::duration((long long)(
+        day * 24 * 60 * 60 * 1000 * 10000 +
+        hour * 60 * 60 * 1000 * 10000 +
+        minute * 60 * 1000 * 10000 +
+        second * 1000 * 10000
+        ));
+#endif
+}
+
+double TimeSpan::TotalSeconds()
+{
+#if NOTSUPPORT_CHRONO
+	return Target;
+#else
+    return Target.count() / 10000000.0;
+#endif
+}
+
+double TimeSpan::TotalMilliseconds()
+{
+#if NOTSUPPORT_CHRONO
+    return Target * 1000;
+#else
+    return Target.count() / 10000.0;
+#endif
+}
+
+double TimeSpan::TotalMicroseconds()
+{
+#if NOTSUPPORT_CHRONO
+    return Target * 1000 * 1000;
+#else
+	return Target.count() / 10.0;
+#endif
+}
+
+long long TimeSpan::Ticks()
+{
+#if NOTSUPPORT_CHRONO
+	return Target;
+#else
+    return Target.count();
+#endif
+}
+
+UTF8String TimeSpan::ToString()
+{
+    static long long yearLimit = (long long)365 * 24 * 60 * 60 * 1000;
+    static long long monthLimit = (long long)30 * 24 * 60 * 60 * 1000;
+    static long long dayLimit = (long long)24 * 60 * 60 * 1000;
+    static long long hourLimit = (long long)60 * 60 * 1000;
+    static long long minuteLimit = (long long)60 * 1000;
+    static long long secondLimit = (long long)1000;
+    double total = TotalMilliseconds();
+    UTF8String result;
+    Join(result, total, yearLimit, LocaleString("Year"));
+    Join(result, total, monthLimit, LocaleString("Month"));
+    Join(result, total, dayLimit, LocaleString("Day"));
+    Join(result, total, hourLimit, LocaleString("h"));
+    Join(result, total, minuteLimit, LocaleString("m"));
+    Join(result, total, secondLimit, LocaleString("s"));
+    if (total > 0)
+    {
+        result.Append(total);
+        result.Append(LocaleString("ms"));
+    }
+    return result;
+}
+
+void TimeSpan::Join(UTF8String& result, double& total, long long limit, UTF8String unit)
+{
+    if (total > limit)
+    {
+        int count = (int)(total / limit);
+        result.Append(count);
+        result.Append(unit);
+        total = total - count * limit;
+    }
+}
+`;
+        return [{
+            FileName: `${namespace}_TimeSpan.h`,
+            Content: header
+        }, {
+            FileName: `${namespace}_TimeSpan.cpp`,
+            Content: source
+        }];
+    };
+
+    let generateDateTimeClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_DATETIME_H__
+#define __${namespace.toUpperCase()}_DATETIME_H__
+#include <ctime>
+#include "${namespace}_String.h"
+#ifndef NOTSUPPORT_CHRONO
+#if defined(_MSC_VER) && _MSC_VER <= 1800
+#define NOTSUPPORT_CHRONO 1
+
+#else
+#define NOTSUPPORT_CHRONO 0
+#include <chrono>
+#endif
+#endif
+namespace ${namespace}
+{
+	class ${exportDefine} DateTimeInfomation
+	{
+	public:
+		DateTimeInfomation()
+		{
+			Year = 0;
+			Month = 0;
+			Day = 0;
+			Week = 0;
+			Hour = 0;
+			Minute = 0;
+			Second = 0;
+		}
+		int Year;
+		int Month;
+		int Day;
+		int Week;
+		int Hour;
+		int Minute;
+		int Second;
+	};
+
+	class TimeSpan;
+	class ${exportDefine} DateTime
+	{
+	public:
+		DateTime()
+		{
+#if NOTSUPPORT_CHRONO
+			Target = time_t();
+#else
+			Target = std::chrono::system_clock::now();
+#endif
+		}
+
+		DateTime(time_t target)
+		{
+#if NOTSUPPORT_CHRONO
+			this->Target = target;
+#else
+			this->Target = std::chrono::system_clock::from_time_t(target);
+#endif
+		}
+
+#if NOTSUPPORT_CHRONO
+#else
+		DateTime(std::chrono::system_clock::time_point target)
+		{
+			this->Target = target;
+		}
+#endif
+		
+
+		DateTime(int year, int month, int day, int hour, int minute, int second)
+		{
+			std::time_t timeLong;
+			std::time(&timeLong);
+			std::tm localTime = *std::localtime(&timeLong);
+			localTime.tm_year = year - 1900;
+			localTime.tm_mon = month - 1;
+			localTime.tm_mday = day;
+			localTime.tm_hour = hour;
+			localTime.tm_min = minute;
+			localTime.tm_sec = second;
+#if NOTSUPPORT_CHRONO
+			this->Target = std::mktime(&localTime);
+#else
+			this->Target = std::chrono::time_point<std::chrono::system_clock>(std::chrono::duration<long long, std::ratio<1, 1>>(std::mktime(&localTime)));
+#endif	
+		}
+
+#if NOTSUPPORT_CHRONO
+		std::time_t Target;
+#else
+		std::chrono::system_clock::time_point Target;
+#endif
+
+		std::time_t time_t()
+		{
+#if NOTSUPPORT_CHRONO
+			return Target;
+#else
+			return std::chrono::system_clock::to_time_t(Target);
+#endif
+		}
+
+		std::tm LocalTime()
+		{
+			auto temp = time_t();
+			return *std::localtime(&temp);
+		}
+
+		std::tm UTCTime()
+		{
+			auto temp = time_t();
+			return *std::gmtime(&temp);
+		}
+
+		static DateTime Now()
+		{
+#if NOTSUPPORT_CHRONO
+			return DateTime(std::time(nullptr));
+#else
+			return DateTime(std::chrono::system_clock::now());
+#endif
+		}
+
+		static long long GetMillisecondsSinceMidnight();
+
+		DateTimeInfomation Infomation()
+		{
+			DateTimeInfomation result;
+			auto time = LocalTime();
+			result.Year = 1900 + time.tm_year;
+			result.Month = 1 + time.tm_mon;
+			result.Day = time.tm_mday;
+			result.Week = time.tm_wday;
+			result.Hour = time.tm_hour;
+			result.Minute = time.tm_min;
+			result.Second = time.tm_sec;
+			return result;
+		}
+
+		int Year()
+		{
+			return Infomation().Year;
+		}
+
+		int Month()
+		{
+			return Infomation().Month;
+		}
+
+		int Day()
+		{
+			return Infomation().Day;
+		}
+
+		int Week()
+		{
+			return Infomation().Week;
+		}
+
+		int Hour()
+		{
+			return Infomation().Hour;
+		}
+
+		int Minute()
+		{
+			return Infomation().Minute;
+		}
+
+		int Second()
+		{
+			return Infomation().Second;
+		}
+
+		DateTime AddMilliseconds(double value);
+
+		DateTime AddSeconds(double value);
+
+		DateTime AddMinutes(double value);
+
+		DateTime AddHours(double value);
+
+		DateTime AddDays(double value);
+
+		DateTime AddWeeks(double value);
+
+		UTF8String ToString(UTF8String format = "yyyy/MM/dd HH:mm:ss");
+
+		TimeSpan operator-(const DateTime &right);
+
+		DateTime operator+(const TimeSpan &right);
+	};
+}
+#endif`;
+        let source = `
+#include "${namespace}_DateTime.h"
+#include "${namespace}_TimeSpan.h"
+using namespace ${namespace};
+
+long long DateTime::GetMillisecondsSinceMidnight()
+{
+#if NOTSUPPORT_CHRONO
+	SYSTEMTIME st;
+	GetLocalTime(&st);
+	return st.wHour * 60 * 60 * 1000 + st.wMinute * 60 * 1000 + st.wSecond * 1000 + st.wMilliseconds;
+#else
+	auto now = std::chrono::system_clock::now();
+	auto current_date = std::chrono::system_clock::to_time_t(now);
+	struct std::tm* time_info = std::localtime(&current_date);
+	time_info->tm_hour = 0;
+	time_info->tm_min = 0;
+	time_info->tm_sec = 0;
+	auto midnight = std::chrono::system_clock::from_time_t(std::mktime(time_info));
+	auto milliseconds_since_midnight = std::chrono::duration_cast<std::chrono::milliseconds>(now - midnight).count();
+	return milliseconds_since_midnight;
+#endif
+}
+
+DateTime DateTime::AddMilliseconds(double value)
+{
+#if NOTSUPPORT_CHRONO
+	return Target + (long long)(value / 1000);
+#else
+	return Target + std::chrono::system_clock::time_point::duration((long long)(value * (long long)10000));
+#endif
+}
+
+DateTime DateTime::AddSeconds(double value)
+{
+#if NOTSUPPORT_CHRONO
+	return Target + (long long)value;
+#else
+	return Target + std::chrono::system_clock::time_point::duration((long long)(value * (long long)10000000));
+#endif
+	
+}
+
+DateTime DateTime::AddMinutes(double value)
+{
+#if NOTSUPPORT_CHRONO
+	return Target + (long long)(value * 60);
+#else
+	return Target + std::chrono::system_clock::time_point::duration((long long)(value * (long long)60 * 10000000));
+#endif
+	
+}
+
+DateTime DateTime::AddHours(double value)
+{
+#if NOTSUPPORT_CHRONO
+	return Target + (long long)(value * 60 * 60);
+#else
+	return Target + std::chrono::system_clock::time_point::duration((long long)(value * (long long)60 * 60 * 10000000));
+#endif
+}
+
+DateTime DateTime::AddDays(double value)
+{
+#if NOTSUPPORT_CHRONO
+	return Target + (long long)(value * 24 * 60 * 60);
+#else
+	return Target + std::chrono::system_clock::time_point::duration((long long)(value * (long long)24 * 60 * 60 * 10000000));
+#endif
+}
+
+DateTime DateTime::AddWeeks(double value)
+{
+#if NOTSUPPORT_CHRONO
+	return Target + (long long)(value * 7 * 24 * 60 * 60);
+#else
+	return Target + std::chrono::system_clock::time_point::duration((long long)(value * (long long)7 * 24 * 60 * 60 * 10000000));
+#endif
+}
+
+UTF8String DateTime::ToString(UTF8String format)
+{
+	auto Info = Infomation();
+	return format.
+		Replace("yyyy", Info.Year).
+		Replace("MM", UTF8String(Info.Month).FillStart(2, "0")).
+		Replace("dd", UTF8String(Info.Day).FillStart(2, "0")).
+		Replace("HH", UTF8String(Info.Hour).FillStart(2, "0")).
+		Replace("mm", UTF8String(Info.Minute).FillStart(2, "0")).
+		Replace("ss", UTF8String(Info.Second).FillStart(2, "0"));
+}
+
+TimeSpan DateTime::operator-(const DateTime& right)
+{
+	return Target - right.Target;
+}
+
+DateTime DateTime::operator+(const TimeSpan& right)
+{
+	return Target + right.Target;
+}
+`;
+        return [{
+            FileName: `${namespace}_DateTime.h`,
+            Content: header
+        }, {
+            FileName: `${namespace}_DateTime.cpp`,
+            Content: source
+        }];
+    };
+
+    let generateIDClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_ID_H__
+#define __${namespace.toUpperCase()}_ID_H__
+#include "${namespace}_UTF8String.h"
+namespace ${namespace} {
+class ${exportDefine} ID
+{
+public:
+    static UTF8String GenerateID(const UTF8String &base, int length);
+
+    static UTF8String GenerateID(int length);
+
+    static UTF8String ConvertToID(SUPPORT_INT64 value);
+    
+    static UTF8String GeneratePathName();
+    
+    static UTF8String GenerateGUID();
+};
+}
+#endif`;
+
+        let source = `#include "${namespace}_ID.h"
+#include <iostream>
+#include <random>
+#include "${namespace}_DateTime.h"
+#ifdef _MSC_VER
+#include <iomanip>
+#include <windows.h>
+#else
+#include <uuid/uuid.h>
+#endif // _MSC_VER
+
+namespace ${namespace} {
+	UTF8String ID::GenerateID(const UTF8String& base, int length)
+	{
+#if _MSC_VER <= 1500
+		UTF8String result;
+		for (int i = 0; i < length; i++) {
+			result.Append(base[rand() % base.Length()]);
+		}
+		return result;
+#else
+
+		static std::mt19937 gen(std::random_device{}());
+		std::uniform_int_distribution<> dist(0, base.Length() - 1);
+		UTF8String result;
+		for (int i = 0; i < length; i++) {
+			result.Append(base[dist(gen)]);
+		}
+		return result;
+#endif
+		
+	}
+
+	UTF8String ID::GenerateID(int length)
+	{
+		static UTF8String base = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		return GenerateID(base,length);
+	}
+
+	UTF8String ID::ConvertToID(SUPPORT_INT64 value)
+	{
+		static UTF8String base = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		return UTF8String(value,base);
+	}
+
+	UTF8String ID::GeneratePathName()
+	{
+		return GenerateID(4);
+	}
+
+	UTF8String ID::GenerateGUID()
+	{
+#ifdef _MSC_VER
+		GUID guid;
+		CoCreateGuid(&guid);
+
+		std::stringstream ss;
+		ss << std::hex
+			<< std::setfill('0') << std::setw(8) << guid.Data1
+			<< "-"
+			<< std::setfill('0') << std::setw(4) << guid.Data2
+			<< "-"
+			<< std::setfill('0') << std::setw(4) << guid.Data3
+			<< "-"
+			<< std::setfill('0') << std::setw(2);
+		for (int i = 0; i < 8; i++) {
+			ss << std::hex << static_cast<int>(guid.Data4[i]);
+		}
+
+		return ss.str();
+#else
+		uuid_t uuid;
+		uuid_generate(uuid);
+
+		char uuid_str[37];
+		uuid_unparse(uuid, uuid_str);
+
+		return uuid_str;
+#endif
+	}
+}
+
+`;
+        return [{
+            FileName: `${namespace}_ID.h`,
+            Content: header
+        }, {
+            FileName: `${namespace}_ID.cpp`,
+            Content: source
+        }];
+    };
+
+    let generate = () => {
+        let classes = [] as {
+            FileName: string,
+            Content: string
+        }[];
+        generateStringClasses().forEach((item) => {
+            classes.push(item);
+        });
+        generateTimeSpanClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        generateDateTimeClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        generateIDClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        return classes;
+    };
 
     return {
-        generateStringClasses
+        generate
     };
 };
 
@@ -1387,7 +2006,7 @@ let generator = TidyCppGenerator({
     namespace: "Tidy",
     exportDefine: ""
 });
-let classes = generator.generateStringClasses();
+let classes = generator.generate();
 for (let classFile of classes) {
     File.WriteAllText(classFile.FileName, classFile.Content);
 }
