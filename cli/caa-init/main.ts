@@ -1155,10 +1155,10 @@ let cmd_init = async () => {
 
     let cmakePath = Path.Combine(sdkDirectory, cadName, sdkName, `Find${sdkName}.cmake`);
     // 自动创建CMakeLists.txt
-    let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt");
+    let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt.disable");
     let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "Project", "CMakeLists.txt"), utf8);
     cmakeListsText = cmakeListsText.replace("__PROJECT_NAME__", projectName);
-    await File.WriteAllTextAsync(Path.Combine(projectDirectory, "CMakeLists.txt"), cmakeListsText, utf8);
+    await File.WriteAllTextAsync(cmakeListsPath, cmakeListsText, utf8);
     await cmdAsync(Environment.CurrentDirectory, `opencad cmake add_find_package ${cmakeListsPath} ${cmakePath}`);
     await cmdAsync(Environment.CurrentDirectory, `opencad cmake set_toolchain ${cmakeListsPath} ${Path.Combine(OPEN_CAD_DIR, "vcpkg\\scripts\\buildsystems\\vcpkg.cmake").replace("\\", "/")}`);
     // 自动创建.vscode/settings.json
@@ -1170,9 +1170,9 @@ let cmd_init = async () => {
     let vscodeSettingsText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "settings.json"), utf8);
     await File.WriteAllTextAsync(vscodeSettingsPath, vscodeSettingsText, utf8);
     // 自动创建.vscode/c_cpp_properties.json
-    // let vscodeCppPropertiesPath = Path.Combine(vscodeDirectory, "c_cpp_properties.json");
-    // let vscodeCppPropertiesText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "c_cpp_properties.json"), utf8);
-    // await File.WriteAllTextAsync(vscodeCppPropertiesPath, vscodeCppPropertiesText, utf8);
+    let vscodeCppPropertiesPath = Path.Combine(vscodeDirectory, "c_cpp_properties.json");
+    let vscodeCppPropertiesText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "c_cpp_properties.json"), utf8);
+    await File.WriteAllTextAsync(vscodeCppPropertiesPath, vscodeCppPropertiesText, utf8);
     // 自动创建.vscode/tasks.json
     // let vscodeTasksPath = Path.Combine(vscodeDirectory, "tasks.json");
     // let vscodeTasksText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "tasks.json"), utf8);

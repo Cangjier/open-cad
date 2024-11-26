@@ -1,0 +1,9 @@
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\atlmfc\include
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include
+D:\Windows Kits\10\Include\10.0.19041.0\ucrt
+D:\Windows Kits\10\Include\10.0.19041.0\um
+D:\Windows Kits\10\Include\10.0.19041.0\shared
+D:\Windows Kits\10\Include\10.0.19041.0\winrt
+D:\Windows Kits\10\Include\10.0.19041.0\cppwinrt
+C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\Include\um
