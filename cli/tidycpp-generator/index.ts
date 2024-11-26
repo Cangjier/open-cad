@@ -1373,6 +1373,12 @@ return result;
                 files.push(item);
             });
         }
+        files.push({
+            FileName: `${config.namespace}_String.h`,
+            Content: `#include "${config.namespace}_LocaleString.h"
+#include "${config.namespace}_UTF8String.h"
+#include "${config.namespace}_GBKString.h"`
+        });
         return files;
     };
 
@@ -1977,11 +1983,1665 @@ namespace ${namespace} {
         }];
     };
 
+    let generateBytesClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_BYTES_H__
+#define __${namespace.toUpperCase()}_BYTES_H__
+#include "${namespace}_GlobalUsings.h"
+namespace ${namespace}
+{
+  class ${exportDefine} Bytes
+  {
+  public:
+    Bytes(){
+        Target = SUPPORT_NULLPTR;
+        Length = 0;
+    }
+    
+    Bytes(unsigned char *target, size_t length){
+        Target = target;
+        Length = length;
+    }
+
+    static Bytes New(size_t length) {
+        return Bytes(new unsigned char[length], length);
+    }
+
+    unsigned char *Target;
+    
+    size_t Length;
+    
+    void Release(){
+        if(Target != SUPPORT_NULLPTR){
+            delete[] Target;
+            Target = SUPPORT_NULLPTR;
+        }
+    }
+    
+    bool IsNullOrEmpty(){
+        return Target == SUPPORT_NULLPTR || Length == 0;
+    }
+  };
+}
+#endif`;
+
+        return [{
+            FileName: `${namespace}_Bytes.h`,
+            Content: header
+        }];
+    };
+
+    let generateEncodingClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_ENCODING_H__
+#define __${namespace.toUpperCase()}_ENCODING_H__
+namespace ${namespace}
+{
+    class UTF8String;
+    class ${exportDefine} Encoding
+    {
+    public:
+        Encoding();
+
+        Encoding(unsigned int Target);
+
+        unsigned int Target;
+
+    public:
+        UTF8String Name();
+        
+        bool operator==(const Encoding &other) const
+        {
+            return Target == other.Target;
+        }
+
+        operator unsigned int() const
+        {
+            return Target;
+        }
+
+    public:
+    
+        static Encoding UTF8;
+        
+        static Encoding Locale;
+        
+        static Encoding GBK;
+    };
+}
+#endif`;
+
+        let source = `
+#include "${namespace}_Encoding.h"
+#include "${namespace}_UTF8String.h"
+using namespace ${namespace};
+
+Encoding Encoding::UTF8 = 65001;
+Encoding Encoding::Locale = 0;
+Encoding Encoding::GBK = 936;
+
+Encoding::Encoding()
+{
+	this->Target = 65001;
+}
+
+Encoding::Encoding(unsigned int Target)
+{
+	this->Target = Target;
+}
+
+UTF8String Encoding::Name()
+{
+	switch (Target)
+	{
+	case 0:
+		return "Locale";
+	case 65001:
+		return "UTF8";
+	case 936:
+		return "GBK";
+	default:
+		return "Unknown";
+	}
+}
+
+`;
+
+        return [{
+            FileName: `${namespace}_Encoding.h`,
+            Content: header
+        }, {
+            FileName: `${namespace}_Encoding.cpp`,
+            Content: source
+        }];
+    };
+
+    let generateFileClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_IO_FILE_H__
+#define __${namespace.toUpperCase()}_IO_FILE_H__
+#include <vector>
+#include <map>
+#include "${namespace}_LocaleString.h"
+#include "${namespace}_UTF8String.h"
+#include "${namespace}_GBKString.h"
+#include "${namespace}_Bytes.h"
+#include "${namespace}_IO_FileInfo.h"
+#include "${namespace}_Encoding.h"
+
+namespace ${namespace}
+{
+    namespace IO
+    {
+        class Path;
+        class Directory;
+
+        class ${exportDefine} File
+        {
+        public:
+            static bool Exists(LocaleString path);
+            
+            static void Copy(LocaleString sourcePath, LocaleString destPath);
+            
+            static void Copy(LocaleString sourcePath, LocaleString destPath, bool overwrite);
+
+            static void Delete(LocaleString path);
+            
+            static void CreateEmptyFile(LocaleString path);
+            
+            static std::string ReadAllText(LocaleString path);
+            
+            static UTF8String ReadAllText(LocaleString path, const Encoding& encoding);
+            
+            static Bytes ReadAllBytes(LocaleString path);
+            
+            static bool WriteAllText(LocaleString path, const std::string& contents);
+            
+            static bool WriteAllText(LocaleString path, const UTF8String& contents, const Encoding& encoding);
+            
+            static std::vector<std::string> ReadAllLines(LocaleString path);
+            
+            static std::vector<UTF8String> ReadAllLines(LocaleString path, const Encoding& encoding);
+            
+            static void WriteAllLines(LocaleString path, const std::vector<std::string>& lines);
+            
+            static void WriteAllLines(LocaleString path, const std::vector<UTF8String>& lines, const Encoding& encoding);
+            
+            static bool AppendAllText(LocaleString path, const std::string& contents);
+            
+            static bool AppendAllText(LocaleString path, const UTF8String& contents, const Encoding& encoding);
+        };
+    }
+}
+#endif`;
+        let source = `#include <fstream>
+#include <iostream>
+#include <fstream>
+#include "${namespace}_IO_Path.h"
+#include "${namespace}_IO_Directory.h"
+
+using namespace ${namespace};
+using namespace IO;
+
+bool File::Exists(LocaleString path)
+{
+#ifdef _MSC_VER
+#if _MSC_VER <= 1800
+	WIN32_FIND_DATA findFileData;
+	HANDLE hFind = FindFirstFile(path.ToWString().c_str(), &findFileData);
+
+	if (hFind != INVALID_HANDLE_VALUE) {
+		FindClose(hFind);
+		return true;
+	}
+	return false;
+#else
+	struct stat Buffer;
+	return (stat(path.ToChars(), &Buffer) == 0);
+#endif
+
+#else
+	return false;
+#endif //_MSC_VER
+}
+
+void IO::File::Copy(LocaleString sourcePath, LocaleString destPath)
+{
+	std::ifstream source(sourcePath.Target, std::ios::binary);
+	std::ofstream dest(destPath.Target, std::ios::binary);
+
+	if (source && dest)
+	{
+		dest << source.rdbuf();
+	}
+}
+
+void IO::File::Copy(LocaleString sourcePath, LocaleString destPath, bool overwrite)
+{
+	if (!overwrite && std::ifstream(destPath.Target))
+	{
+		return;
+	}
+	Copy(sourcePath, destPath);
+}
+
+void IO::File::Delete(LocaleString path)
+{
+	if (std::remove(path.Target.c_str()) == 0)
+	{
+		std::cout << "File deleted successfully." << std::endl;
+	}
+	else
+	{
+		std::cerr << "Failed to delete file." << std::endl;
+	}
+}
+
+void IO::File::CreateEmptyFile(LocaleString path)
+{
+	std::ofstream file(path.Target);
+	if (!file)
+	{
+		std::cerr << "Failed to create file." << std::endl;
+	}
+	file.close();
+}
+
+std::string IO::File::ReadAllText(LocaleString path)
+{
+	std::ifstream file(path.Target);
+	if (file)
+	{
+		std::string contents((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		return contents;
+	}
+	else
+	{
+		std::cerr << "Failed to read file." << std::endl;
+		return "";
+	}
+}
+
+UTF8String IO::File::ReadAllText(LocaleString path, const Encoding& encoding)
+{
+	if (encoding != Encoding::UTF8) {
+		return StringUtil::To(ReadAllText(path), encoding, Encoding::UTF8);
+	}
+	else {
+		return ReadAllText(path);
+	}
+}
+
+Bytes IO::File::ReadAllBytes(LocaleString path)
+{
+	std::ifstream file(path.Target, std::ios::binary);
+	if (!file.is_open()) {
+		return Bytes();
+	}
+	file.seekg(0, std::ios::end);
+	std::streampos fileSize = file.tellg();
+	file.seekg(0, std::ios::beg);
+	unsigned char* data= new unsigned char[fileSize];
+	file.read(reinterpret_cast<char*>(data), fileSize);
+	Tidy::Bytes bytes(data, static_cast<std::size_t>(fileSize));
+	file.close();
+	return bytes;
+}
+
+bool IO::File::WriteAllText(LocaleString path, const std::string& contents)
+{
+	std::ofstream file(path.Target);
+	if (file)
+	{
+		file << contents;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IO::File::WriteAllText(LocaleString path, const UTF8String& contents, const Encoding& encoding)
+{
+	if (encoding != Encoding::UTF8) {
+		return WriteAllText(path, StringUtil::To(contents.Target, Encoding::UTF8, encoding));
+	}
+	else {
+		return WriteAllText(path, contents.Target);
+	}
+}
+
+std::vector<std::string> IO::File::ReadAllLines(LocaleString path)
+{
+	std::vector<std::string> lines;
+	std::ifstream file(path.Target);
+	if (file)
+	{
+		std::string line;
+		while (std::getline(file, line))
+		{
+			lines.push_back(line);
+		}
+	}
+	else
+	{
+		std::cerr << "Failed to read file." << std::endl;
+	}
+	return lines;
+}
+
+std::vector<UTF8String> IO::File::ReadAllLines(LocaleString path, const Encoding& encoding)
+{
+	std::vector<UTF8String> lines;
+	std::ifstream file(path.Target);
+	if (file)
+	{
+		std::string line;
+		while (std::getline(file, line))
+		{
+			if (encoding != Encoding::UTF8) {
+				lines.push_back(StringUtil::To(line, encoding.Target, Encoding::UTF8.Target));
+			}
+			else
+			{
+				lines.push_back(line);
+			}
+		}
+	}
+	else
+	{
+		std::cerr << "Failed to read file." << std::endl;
+	}
+	return lines;
+}
+
+void IO::File::WriteAllLines(LocaleString path, const std::vector<std::string>& lines)
+{
+	std::ofstream file(path.Target);
+	if (file)
+	{
+		for (const auto& line : lines)
+		{
+			file << line << std::endl;
+		}
+	}
+	else
+	{
+		std::cerr << "Failed to write file." << std::endl;
+	}
+}
+
+void IO::File::WriteAllLines(LocaleString path, const std::vector<UTF8String>& lines, const Encoding& encoding)
+{
+	std::ofstream file(path.Target);
+	if (file)
+	{
+		for (const auto& line : lines)
+		{
+			if (encoding != Encoding::UTF8) {
+				file << StringUtil::To(line.Target, Encoding::UTF8.Target, encoding.Target) << std::endl;
+			}
+			else {
+				file << line.Target << std::endl;
+			}
+		}
+	}
+	else
+	{
+		std::cerr << "Failed to write file." << std::endl;
+	}
+}
+
+bool IO::File::AppendAllText(LocaleString path, const std::string& contents)
+{
+	std::ofstream file(path.Target, std::ios::app);
+	if (file)
+	{
+		file << contents;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IO::File::AppendAllText(LocaleString path, const UTF8String& contents, const Encoding& encoding)
+{
+	std::ofstream file(path.Target, std::ios::app);
+	if (file)
+	{
+		if (encoding != Encoding::UTF8) {
+			file << StringUtil::To(contents.Target, Encoding::UTF8, encoding);
+		}
+		else {
+			file << contents.Target;
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+`;
+
+        return [{
+            FileName: `${namespace}_IO_File.h`,
+            Content: header
+        }, {
+            FileName: `${namespace}_IO_File.cpp`,
+            Content: source
+        }];
+    };
+
+    let generateFileInfoClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_IO_FILEINFO_H__
+#define __${namespace.toUpperCase()}_IO_FILEINFO_H__
+#include "${namespace}_LocaleString.h"
+#include "${namespace}_DateTime.h"
+namespace ${namespace}
+{
+	namespace IO
+	{
+		class DirectoryInfo;
+		class ${exportDefine} FileAttributes
+		{
+		public:
+#ifndef ${namespace}_IO_File_RegisterAttribute
+#define ${namespace}_IO_File_RegisterAttribute(Name, NameStr) \
+	LocaleString Get##Name() { return ReadAttribute(NameStr); }
+#endif // !${namespace}_IO_File_RegisterAttribute
+
+			FileAttributes(LocaleString Target)
+			{
+				this->Target = Target;
+			}
+
+			LocaleString Target;
+
+			LocaleString ReadAttribute(LocaleString Name);
+			${namespace}_IO_File_RegisterAttribute(CompanyName, "CompanyName");
+			${namespace}_IO_File_RegisterAttribute(FileDescription, "FileDescription");
+			${namespace}_IO_File_RegisterAttribute(FileVersion, "FileVersion");
+			${namespace}_IO_File_RegisterAttribute(InternalName, "InternalName");
+			${namespace}_IO_File_RegisterAttribute(LegalCopyright, "LegalCopyright");
+			${namespace}_IO_File_RegisterAttribute(OriginalFilename, "OriginalFilename");
+			${namespace}_IO_File_RegisterAttribute(ProductName, "ProductName");
+			${namespace}_IO_File_RegisterAttribute(ProductVersion, "ProductVersion");
+			${namespace}_IO_File_RegisterAttribute(Comments, "Comments");
+			${namespace}_IO_File_RegisterAttribute(LegalTrademarks, "LegalTrademarks");
+		};
+		class ${exportDefine} FileInfo
+		{
+		public:
+			FileInfo();
+			FileInfo(LocaleString target);
+
+			LocaleString Target;
+
+		public:
+			DirectoryInfo Parent();
+
+			LocaleString Name();
+
+			LocaleString Extension();
+
+			LocaleString NameWithoutExtension();
+            
+			int Size();
+
+			FileAttributes Attributes()
+			{
+				return FileAttributes(Target);
+			}
+
+			void ReName(LocaleString name);
+
+			void MoveTo(LocaleString destPath);
+
+			void Delete();
+
+			void CopyTo(LocaleString destPath);
+
+			DateTime GetLastModifiedTime();
+		};
+	}
+}
+#endif`;
+        let source = `
+#include "${namespace}_IO_FileInfo.h"
+#ifdef _MSC_VER
+#include <windows.h>
+#endif //_MSC_VER
+#include <fstream>
+#include <iostream>
+#include <fstream>
+#include "${namespace}_IO_Path.h"
+#include "${namespace}_IO_DirectoryInfo.h"
+
+using namespace ${namespace};
+using namespace IO;
+
+#ifdef _MSC_VER
+time_t FileTimeToTimeT(const FILETIME& ft)
+{  
+	const ULONGLONG secondsBetween1601And1970 = 11644473600ULL;
+	const ULONGLONG hundredNanosInSecond = 10000000ULL;
+
+	ULARGE_INTEGER fileTimeInteger;
+	fileTimeInteger.LowPart = ft.dwLowDateTime;
+	fileTimeInteger.HighPart = ft.dwHighDateTime;
+     
+	ULARGE_INTEGER timeTInteger;
+	timeTInteger.QuadPart = (fileTimeInteger.QuadPart / hundredNanosInSecond) - secondsBetween1601And1970;
+
+	return static_cast<time_t>(timeTInteger.QuadPart);
+}
+#endif
+
+FileInfo::FileInfo()
+{
+	Target = "";
+}
+
+FileInfo::FileInfo(LocaleString target)
+{
+	Target = target;
+}
+
+LocaleString FileAttributes::ReadAttribute(LocaleString name)
+{
+	LocaleString result;
+#ifdef _MSC_VER
+	DWORD Handle;
+	DWORD Size = GetFileVersionInfoSizeA((LPCSTR)Target.ToChars(), &Handle);
+	if (Size == 0)return "";
+	BYTE* VersionData = new BYTE[Size];
+	GetFileVersionInfoA((LPCSTR)Target.ToChars(), Handle, Size, (void*)VersionData);
+	UINT QuerySize;
+	DWORD* TransTable;
+	if (!VerQueryValueA(VersionData, "\\VarFileInfo\\Translation", (void**)&TransTable, &QuerySize))
+	{
+		return "";
+	}
+	DWORD CharSet = MAKELONG(HIWORD(TransTable[0]), LOWORD(TransTable[0]));
+	char Tmp[256];
+	sprintf_s(Tmp, 256, "\\StringFileInfo\\%08lx\\%s", CharSet, name.ToChars());
+	LPVOID Data;
+	if (!VerQueryValueA((void*)VersionData, Tmp, &Data, &QuerySize))
+	{
+		result = (char*)Data;
+	}
+	delete[] VersionData;
+#endif //_MSC_VER
+
+	return result;
+}
+
+DirectoryInfo FileInfo::Parent()
+{
+	return DirectoryInfo(Path::GetDirectoryName(Target));
+}
+
+LocaleString FileInfo::Name()
+{
+	return Path::GetFileName(Target);
+}
+
+LocaleString FileInfo::Extension()
+{
+	return Path::GetFileExtension(Target);
+}
+
+LocaleString FileInfo::NameWithoutExtension()
+{
+	return Path::GetFileNameWithoutExtension(Target);
+}
+
+int FileInfo::Size()
+{
+#ifdef _MSC_VER
+#if _MSC_VER<=TIDY_VS2013
+	HANDLE hFile = CreateFileA(Target.ToChars(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (hFile == INVALID_HANDLE_VALUE) {
+		return 0;
+	}
+
+	LARGE_INTEGER fileSize;
+	GetFileSizeEx(hFile, &fileSize);
+	auto result = fileSize.QuadPart;
+	CloseHandle(hFile);
+	return result;
+#else
+	struct stat result;
+	if (stat(Target.ToChars(), &result) == 0)
+	{
+		return  result.st_size;
+	}
+	else
+	{
+		return 0;
+	}
+#endif
+	
+	
+#else
+	return 0;
+#endif //_MSC_VER
+
+}
+
+void FileInfo::ReName(LocaleString name)
+{
+	MoveTo(Path::ReFileName(Target,name));
+}
+
+void FileInfo::MoveTo(LocaleString destPath)
+{
+#ifdef _MSC_VER
+	if (rename(Target.ToChars(), destPath.ToChars()) != 0)
+	{
+		//error
+	}
+#endif //_MSC_VER
+}
+
+void FileInfo::Delete()
+{
+#ifdef _MSC_VER
+	if (remove(Target.ToChars()) != 0)
+	{
+		//error
+	}
+#endif //_MSC_VER
+}
+
+void FileInfo::CopyTo(LocaleString DestPath)
+{
+#ifdef _MSC_VER
+	CopyFileA(Target.ToChars(), DestPath.ToChars(), false);
+#endif //_MSC_VER
+}
+
+DateTime IO::FileInfo::GetLastModifiedTime()
+{
+#ifdef _MSC_VER
+#if _MSC_VER <= 1800
+	HANDLE hFile = CreateFileA(Target.ToChars(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (hFile == INVALID_HANDLE_VALUE) {
+		return 0;
+	}
+
+	FILETIME lastWriteTime;
+	GetFileTime(hFile, NULL, NULL, &lastWriteTime);
+	CloseHandle(hFile);
+	return DateTime(lastWriteTime);
+#else
+	struct stat result;
+	if (stat(Target.ToChars(), &result) == 0)
+	{
+		return DateTime(result.st_mtime);
+	}
+	else
+	{
+		return 0;
+	}
+#endif
+#else
+	return 0;
+#endif //_MSC_VER
+}
+`;
+        return [{
+            FileName: `${namespace}_IO_FileInfo.h`,
+            Content: header
+        }, {
+            FileName: `${namespace}_IO_FileInfo.cpp`,
+            Content: source
+        }];
+    };
+
+    let generateDirectoryClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_IO_DIRECTORY_H__
+#define __${namespace.toUpperCase()}_IO_DIRECTORY_H__
+#include <vector>
+#include "${namespace}_String.h"
+#include "${namespace}_IO_DirectoryInfo.h"
+
+namespace ${namespace}
+{
+    class DateTime;
+    namespace IO
+    {
+        class DirectoryInfo;
+        class ${exportDefine} Directory
+        {
+        public:
+            static DirectoryInfo GetParent(LocaleString path);
+#undef CreateDirectory
+            static DirectoryInfo CreateDirectory(LocaleString path);
+
+            static LocaleString TryCreateDirectory(LocaleString path);
+            
+            static bool Exists(LocaleString path);
+            
+            static void SetCreationTime(LocaleString path, DateTime creationTime);
+            
+            static DateTime GetCreationTime(LocaleString path);
+            
+            static std::vector<LocaleString> GetFiles(LocaleString path);
+            
+            static std::vector<LocaleString> GetDirectories(LocaleString path);
+            
+            static void Move(LocaleString sourceDirName, LocaleString destDirName);
+            
+            static void Move(LocaleString sourceDirName, LocaleString destDirName, bool recursive);
+            
+            static void Delete(LocaleString path, bool recursive);
+            
+            static LocaleString GetDocumentDirectory();
+            
+            static LocaleString GetUserProfileDirectory();
+            
+            static LocaleString GetProgramFilesDirectory(int platform);
+            
+            static LocaleString GetProgramDataDirectory();
+            
+            static LocaleString GetTemporaryDirectory();
+            
+            static LocaleString GenerateTemporaryDirectory();
+            
+            static LocaleString GetModuleDirectory();
+        };
+
+    }
+}
+#endif`;
+        let source = `
+#include "${namespace}_IO_Directory.h"
+#ifdef _MSC_VER
+#include "windows.h"
+#include <shlobj.h>
+#include <direct.h>
+#include <io.h>
+#endif
+
+#include <stdio.h>
+#include "${namespace}_IO_File.h"
+#include "${namespace}_IO_Path.h"
+#include "${namespace}_IO_DirectoryInfo.h"
+#include "${namespace}_DateTime.h"
+#include "${namespace}_ID.h"
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <chrono>
+#include <ctime>
+
+using namespace ${namespace};
+using namespace IO;
+
+DirectoryInfo Directory::GetParent(LocaleString path)
+{
+	size_t found = path.Target.find_last_of('/');
+	if (found != std::string::npos)
+	{
+		std::string parentPath = path.Target.substr(0, found);
+		return DirectoryInfo(parentPath);
+	}
+	return DirectoryInfo("");
+}
+#undef CreateDirectory
+DirectoryInfo Directory::CreateDirectory(LocaleString path)
+{
+	if (CreateDirectoryA(path.Target.c_str(), NULL) != 0)
+	{
+		return DirectoryInfo(path.Target);
+	}
+	return DirectoryInfo("");
+}
+
+LocaleString IO::Directory::TryCreateDirectory(LocaleString path)
+{
+	auto parent = Path::GetDirectoryName(path);
+	if (!Exists(parent)) {
+		TryCreateDirectory(parent);
+	}
+	if (!Exists(path)) {
+		CreateDirectory(path);
+	}
+	return path;
+}
+
+bool Directory::Exists(LocaleString path)
+{
+	DWORD attributes = GetFileAttributesA(path.Target.c_str());
+	return (attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+FILETIME _DateTimeToFileTime(DateTime value)
+{
+	ULARGE_INTEGER uli;
+	uli.QuadPart = static_cast<ULONGLONG>(value.Target.time_since_epoch().count()) + 116444736000000000ULL; // 100 ns intervals from 1/1/1601 to 1/1/1970
+	FILETIME ft;
+	ft.dwLowDateTime = uli.LowPart;
+	ft.dwHighDateTime = uli.HighPart;
+	return ft;
+}
+
+void Directory::SetCreationTime(LocaleString path, DateTime creationTime)
+{
+	HANDLE hFile = CreateFileA(path.Target.c_str(), FILE_WRITE_ATTRIBUTES, 0, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		FILETIME ftCreationTime = _DateTimeToFileTime(creationTime);
+		SetFileTime(hFile, &ftCreationTime, NULL, NULL);
+		CloseHandle(hFile);
+	}
+}
+
+DateTime Directory::GetCreationTime(LocaleString path)
+{
+	HANDLE hFile = CreateFileA(path.Target.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	DateTime creationTime;
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		FILETIME ftCreationTime;
+		GetFileTime(hFile, &ftCreationTime, NULL, NULL);
+		ULARGE_INTEGER uli;
+		uli.LowPart = ftCreationTime.dwLowDateTime;
+		uli.HighPart = ftCreationTime.dwHighDateTime;
+		creationTime.Target = std::chrono::system_clock::time_point(std::chrono::duration<long long, std::ratio<1, 10000000>>(uli.QuadPart - 116444736000000000ULL)); // 100 ns intervals from 1/1/1601 to 1/1/1970
+		CloseHandle(hFile);
+	}
+	return creationTime;
+}
+
+std::vector<LocaleString> Directory::GetFiles(LocaleString path)
+{
+	std::vector<LocaleString> files;
+	WIN32_FIND_DATAA fd;
+	HANDLE hFind = FindFirstFileA((path.Target + "\\*").c_str(), &fd);
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
+		do
+		{
+			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+			{
+				files.push_back(path.Target + "\\" + fd.cFileName);
+			}
+		} while (FindNextFileA(hFind, &fd));
+		FindClose(hFind);
+	}
+	return files;
+}
+
+std::vector<LocaleString> Directory::GetDirectories(LocaleString path)
+{
+	std::vector<LocaleString> directories;
+	WIN32_FIND_DATAA fd;
+	HANDLE hFind = FindFirstFileA((path.Target + "\\*").c_str(), &fd);
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
+		do
+		{
+			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && (strcmp(fd.cFileName, ".") != 0) && (strcmp(fd.cFileName, "..") != 0))
+			{
+				directories.push_back(path.Target + "\\" + fd.cFileName);
+			}
+		} while (FindNextFileA(hFind, &fd));
+		FindClose(hFind);
+	}
+	return directories;
+}
+
+void Directory::Move(LocaleString sourceDirName, LocaleString destDirName)
+{
+	MoveFileExA(sourceDirName.Target.c_str(), destDirName.Target.c_str(), MOVEFILE_REPLACE_EXISTING);
+}
+
+void Directory::Move(LocaleString sourceDirName, LocaleString destDirName, bool recursive)
+{
+	MoveFileExA(sourceDirName.Target.c_str(), destDirName.Target.c_str(), MOVEFILE_REPLACE_EXISTING);
+
+	if (recursive)
+	{
+		std::vector<LocaleString> files = GetFiles(sourceDirName);
+		for (const auto& file : files)
+		{
+			LocaleString destFilePath = destDirName;
+			destFilePath.Target += "\\" + file.Target.substr(sourceDirName.Target.size() + 1);
+			MoveFileExA(file.Target.c_str(), destFilePath.Target.c_str(), MOVEFILE_REPLACE_EXISTING);
+		}
+
+		std::vector<LocaleString> directories = GetDirectories(sourceDirName);
+		for (const auto& directory : directories)
+		{
+			LocaleString destSubDirPath = destDirName;
+			destSubDirPath.Target += "\\" + directory.Target.substr(sourceDirName.Target.size() + 1);
+			CreateDirectory(destSubDirPath);
+			Move(directory, destSubDirPath, true);
+		}
+	}
+
+	
+}
+
+void Directory::Delete(LocaleString path, bool recursive)
+{
+	if (recursive)
+	{
+		std::vector<LocaleString> files = GetFiles(path);
+		for (const auto& file : files)
+		{
+			DeleteFileA(file.Target.c_str());
+		}
+
+		std::vector<LocaleString> directories = GetDirectories(path);
+		for (const auto& directory : directories)
+		{
+			Delete(directory, recursive);
+		}
+	}
+
+	RemoveDirectoryA(path.Target.c_str());
+}
+
+LocaleString Directory::GetDocumentDirectory()
+{
+#ifdef _MSC_VER
+	PWSTR myDocsPath = nullptr;
+	if (SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &myDocsPath) == S_OK) {
+		std::wstring result(myDocsPath);
+		CoTaskMemFree(myDocsPath);
+		return result;
+	}
+	else {
+		return "";
+	}
+#endif
+	return "";
+}
+
+LocaleString Directory::GetUserProfileDirectory()
+{
+#ifdef _MSC_VER
+	char* documentPath = nullptr;
+	if (_dupenv_s(&documentPath, nullptr, "USERPROFILE") == 0 && documentPath != nullptr) {
+		std::string path = documentPath;
+		free(documentPath);
+		return path;
+	}
+#endif
+	return "";
+}
+
+LocaleString Directory::GetProgramFilesDirectory(int platform)
+{
+#ifdef _MSC_VER
+	char programFilesPath[MAX_PATH];
+	if (platform == 32 || platform == 86) {
+		if (SHGetFolderPathA(NULL, CSIDL_PROGRAM_FILESX86, NULL, 0, programFilesPath) == S_OK) {
+			return programFilesPath;
+		}
+		else {
+			return "";
+		}
+	}
+	else if (platform == 64) {
+		if (SHGetFolderPathA(NULL, CSIDL_PROGRAM_FILES, NULL, 0, programFilesPath) == S_OK) {
+			return programFilesPath;
+		}
+		else {
+			return "";
+		}
+	}
+	else{
+		return "";
+	}
+#else
+	return "";
+#endif
+}
+
+LocaleString Directory::GetProgramDataDirectory()
+{
+#ifdef _MSC_VER
+	char programDataPath[MAX_PATH];
+	if (SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA, NULL, 0, programDataPath) == S_OK) {
+		return programDataPath;
+	}
+	else {
+		return "";
+	}
+#else
+	return "";
+#endif
+}
+
+LocaleString Directory::GetTemporaryDirectory()
+{
+#ifdef _MSC_VER
+	char tempPath[MAX_PATH];
+	DWORD result = GetTempPathA(MAX_PATH, tempPath);
+	if (result > 0 && result < MAX_PATH) {
+		char longTempPath[MAX_PATH];
+		GetLongPathNameA(tempPath, longTempPath, MAX_PATH);
+		return longTempPath;
+	}
+	else {
+		return "";
+	}
+#endif // _MSC_VER
+	return "";
+
+}
+
+LocaleString Directory::GenerateTemporaryDirectory()
+{
+	auto result = GetTemporaryDirectory() + ID::GeneratePathName();
+	CreateDirectory(result);
+	return result;
+}
+
+LocaleString Directory::GetModuleDirectory()
+{
+	return Path::GetDirectoryName(Path::GetModulePath());
+}
+`;
+
+        return [{
+            FileName: `${namespace}_IO_Directory.h`,
+            Content: header
+        }, {
+            FileName: `${namespace}_IO_Directory.cpp`,
+            Content: source
+        }];
+    };
+
+    let generateDirectoryInfoClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_IO_DIRECTORYINFO_H__
+#define __${namespace.toUpperCase()}_IO_DIRECTORYINFO_H__
+#include "${namespace}_String.h"
+namespace ${namespace}
+{
+    namespace IO
+    {
+        class FileInfo;
+        
+        class ${exportDefine} DirectoryInfo
+        {
+        public:
+            DirectoryInfo(LocaleString target);
+
+            LocaleString Target;
+            
+            void Create();
+            
+            DirectoryInfo Parent();
+            
+            bool Exists();
+            
+            std::vector<FileInfo> GetFiles();
+            
+            std::vector<FileInfo> GetAllFiles();
+            
+            std::vector<DirectoryInfo> GetDirectories();
+            
+            void Delete();
+            
+            static DirectoryInfo MyDocument();
+
+            LocaleString operator+(LocaleString &right)
+            {
+                return Target + right;
+            }
+
+    private:
+            static void GetFiles(LocaleString directory, std::vector<FileInfo> &files);
+
+            static DirectoryInfo Create(LocaleString path);
+        };
+    }
+}
+
+#endif`;
+        let source = `
+#include "${namespace}_IO_DirectoryInfo.h"
+
+#ifdef _MSC_VER
+#include "windows.h"
+#include <shlobj.h>
+#include <direct.h>
+#include <io.h>
+#endif
+
+#include <stdio.h>
+#include <iostream>
+#include "${namespace}_IO_FileInfo.h"
+#include "${namespace}_IO_Path.h"
+
+using namespace ${namespace};
+using namespace IO;
+
+DirectoryInfo::DirectoryInfo(LocaleString target)
+{
+	Target = target;
+}
+
+DirectoryInfo DirectoryInfo::Create(LocaleString path)
+{
+	auto result = DirectoryInfo(path);
+#ifdef _MSC_VER
+	if (mkdir(path.ToChars()) == -1)
+	{
+		//error
+	}
+#endif // _MSC_VER
+	return result;
+}
+
+void DirectoryInfo::Create()
+{
+	if (!Parent().Exists())
+	{
+		Parent().Create();
+	}
+	if (!Exists())
+	{
+		Create(Target);
+	}
+}
+
+DirectoryInfo DirectoryInfo::Parent()
+{
+	return DirectoryInfo(Path::GetDirectoryName(Target));
+}
+
+bool DirectoryInfo::Exists()
+{
+#ifdef _MSC_VER
+	DWORD ftyp = GetFileAttributesA(Target.ToChars());
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
+		return false;  //something is wrong with your path!  
+
+	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+		return true;   // this is a directory!  
+#endif // _MSC_VER
+	return false;    // this is not a directory!  
+}
+
+std::vector<FileInfo> DirectoryInfo::GetFiles()
+{
+	std::vector<FileInfo> result;
+#ifdef _MSC_VER
+	intptr_t hFile = 0;
+	struct _finddata_t fileinfo;
+	std::string p;
+	if ((hFile = _findfirst((Target + "\\*").ToChars(), &fileinfo)) != -1)
+	{
+		while (true)
+		{
+			if (!(fileinfo.attrib & _A_SUBDIR))
+			{
+				result.push_back(Target + "\\" + fileinfo.name);
+			}
+			if (_findnext(hFile, &fileinfo) != 0)
+			{
+				break;
+			}
+		}
+		_findclose(hFile);
+	}
+#endif // _MSC_VER
+	return result;
+}
+
+std::vector<FileInfo> DirectoryInfo::GetAllFiles()
+{
+	std::vector<FileInfo> result;
+	GetFiles(Target, result);
+	return result;
+}
+
+std::vector<DirectoryInfo> DirectoryInfo::GetDirectories()
+{
+	std::vector<DirectoryInfo> result;
+#ifdef _MSC_VER
+	intptr_t hFile = 0;
+	struct _finddata_t fileinfo;
+	std::string p;
+	if ((hFile = _findfirst((Target + "\\*").ToChars(), &fileinfo)) != -1)
+	{
+		while (true)
+		{
+			if ((fileinfo.attrib & _A_SUBDIR) && strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
+			{
+				result.push_back(Target + "\\" + fileinfo.name);
+			}
+			if (_findnext(hFile, &fileinfo) != 0)
+			{
+				break;
+			}
+		}
+		_findclose(hFile);
+	}
+#endif // _MSC_VER
+	return result;
+}
+
+void DirectoryInfo::Delete()
+{
+#ifdef _MSC_VER
+	RemoveDirectoryA(Target.ToChars());
+#endif // _MSC_VER
+}
+
+DirectoryInfo DirectoryInfo::MyDocument()
+{
+#ifdef _MSC_VER
+	CHAR my_documents[MAX_PATH];
+	HRESULT result = SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, my_documents);
+	return DirectoryInfo(my_documents);
+#else
+	return path("");
+#endif // _MSC_VER
+
+}
+
+void DirectoryInfo::GetFiles(LocaleString path, std::vector<FileInfo>& result)
+{
+#ifdef _MSC_VER
+	intptr_t hFile = 0;
+	struct _finddata_t fileinfo;
+	std::string p;
+	if ((hFile = _findfirst((path + "\\*").ToChars(), &fileinfo)) != -1)
+	{
+		do
+		{
+			if ((fileinfo.attrib & _A_SUBDIR))
+			{
+				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
+				{
+					GetFiles(path + "\\" + fileinfo.name, result);
+				}
+			}
+			else
+			{
+				result.push_back(path + "\\" + fileinfo.name);
+			}
+		} while (_findnext(hFile, &fileinfo) == 0);
+		_findclose(hFile);
+	}
+	else
+	{
+		//error
+	}
+#endif // _MSC_VER
+}
+`;
+
+        return [{
+            FileName: `${namespace}_IO_DirectoryInfo.h`,
+            Content: header
+        }, {
+            FileName: `${namespace}_IO_DirectoryInfo.cpp`,
+            Content: source
+        }];
+    };
+
+    let generatePathClass = (namespace: string, exportDefine: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_IO_PATH_H__
+#define __${namespace.toUpperCase()}_IO_PATH_H__
+#include "${namespace}_String.h"
+namespace ${namespace}
+{
+    namespace IO
+    {
+        class ${exportDefine} Path
+        {
+        public:
+            static UTF8String GetDirectoryName(UTF8String value);
+            
+            static UTF8String GetFileName(UTF8String value);
+            
+            static UTF8String GetFileExtension(UTF8String value);
+            
+            static UTF8String GetFileNameWithoutExtension(UTF8String value);
+            
+            static UTF8String ReFileNameWithoutExtension(UTF8String value, UTF8String nameWithoutExtension);
+            
+            static UTF8String ReFileName(UTF8String value, UTF8String name);
+            
+            static UTF8String ReFileExtension(UTF8String value, UTF8String Extension);
+            
+            static UTF8String ReDirectoryName(UTF8String value, UTF8String directory);
+            
+            static UTF8String GetSplitChar(UTF8String value);
+            
+            static UTF8String GetSplitChar(std::vector<UTF8String> values);
+            
+            static LocaleString GenerateTemporaryPath();
+            
+            static LocaleString GenerateTemporaryDirectory();
+
+#ifdef GetTempFileName
+#undef GetTempFileName
+#endif
+
+            static LocaleString GetTempFileName();
+
+#ifdef GetTempPath
+#undef GetTempPath
+#endif
+
+            static LocaleString GetTempPath();
+            
+            static bool IsEqual(UTF8String first, UTF8String second);
+            
+            static LocaleString GetModulePath();
+            
+            static LocaleString GetModulePath(void *func);
+#ifdef _MSC_VER
+#if _MSC_VER <= 1800
+            static LocaleString Combine(LocaleString directory, LocaleString subPath);
+
+            static LocaleString Combine(LocaleString directory, LocaleString subPath1, LocaleString subPath2);
+
+            static LocaleString Combine(LocaleString directory, LocaleString subPath1, LocaleString subPath2, LocaleString subPath3);
+
+            static LocaleString Combine(LocaleString directory, LocaleString subPath1, LocaleString subPath2, LocaleString subPath3, LocaleString subPath4);
+#else
+            static LocaleString Combine(LocaleString arg)
+            {
+                return arg;
+            }
+
+            template <typename... Args>
+            static LocaleString Combine(const LocaleString &arg, Args... args)
+            {
+                auto splitChar = GetSplitChar(UTF8String::Vector(arg, args...));
+                return arg.TrimEnd("\\/") + splitChar + Combine(args...);
+            }
+#endif
+#else
+            static LocaleString Combine(LocaleString arg)
+            {
+                return arg;
+            }
+
+            template <typename... Args>
+            static LocaleString Combine(const LocaleString &arg, Args... args)
+            {
+                auto splitChar = GetSplitChar(UTF8String::Vector(arg, args...));
+                return arg.TrimEnd("\\/") + splitChar + Combine(args...);
+            }
+#endif
+        };
+    }
+}
+#endif`;
+        let source = `
+#include "${namespace}_IO_Path.h"
+#include "${namespace}_ID.h"
+#include "${namespace}_IO_Directory.h"
+#ifdef _MSC_VER
+#include "windows.h"
+#include <shlobj.h>
+#include <direct.h>
+#include <io.h>
+#endif
+
+using namespace ${namespace};
+using namespace IO;
+
+UTF8String Path::GetDirectoryName(UTF8String value)
+{
+	std::vector<UTF8String> splits;
+	splits.push_back("/");
+	splits.push_back("\\\\");
+	int Index = value.LastIndexOf(splits);
+	if (Index == -1)return UTF8String("");
+	else
+	{
+		return value.SubString(0, Index);
+	}
+}
+
+UTF8String Path::GetFileName(UTF8String value)
+{
+	std::vector<UTF8String> splits;
+	splits.push_back("/");
+	splits.push_back("\\\\");
+	int Index = value.LastIndexOf(splits);
+	if (Index == -1)return value;
+	else return value.SubString(Index + 1);
+}
+
+UTF8String Path::GetFileExtension(UTF8String value)
+{
+	auto name = GetFileName(value);
+	int Index = name.LastIndexOf(".");
+	if (Index == -1)return "";
+	else return name.SubString(Index);
+}
+
+UTF8String Path::GetFileNameWithoutExtension(UTF8String value)
+{
+	auto name = GetFileName(value);
+	int Index = name.LastIndexOf(".");
+	if (Index == -1)return name;
+	else return name.SubString(0, Index);
+}
+
+UTF8String Path::ReFileNameWithoutExtension(UTF8String value,UTF8String nameWithoutExtension)
+{
+	return GetDirectoryName(value) + GetSplitChar(value) + nameWithoutExtension + GetFileExtension(value);
+}
+
+UTF8String Path::ReFileName(UTF8String value,UTF8String name)
+{
+	return GetDirectoryName(value) + GetSplitChar(value) + name;
+}
+
+UTF8String Path::ReFileExtension(UTF8String value,UTF8String extension)
+{
+	if (!extension.StartsWith("."))
+	{
+		extension = "." + extension;
+	}
+	return GetDirectoryName(value) + GetSplitChar(value) + GetFileNameWithoutExtension(value) + extension;
+}
+
+UTF8String Path::ReDirectoryName(UTF8String value,UTF8String directory)
+{
+	return directory + GetSplitChar(value) + GetFileName(value);
+}
+
+UTF8String Path::GetSplitChar(UTF8String value)
+{
+	if (value.Contains("/"))return "/";
+	else return "\\\\";
+}
+
+UTF8String IO::Path::GetSplitChar(std::vector<UTF8String> values)
+{
+	for (auto item : values) {
+		if (item.Contains("/"))return "/";
+		else if (item.Contains("\\\\"))return "\\\\";
+	}
+	return "\\\\";
+}
+
+LocaleString IO::Path::GenerateTemporaryPath()
+{
+#ifdef _MSC_VER
+	char tempPath[MAX_PATH];
+	DWORD result = GetTempPathA(MAX_PATH, tempPath);
+	if (result > 0 && result < MAX_PATH) {
+		char tempFileName[MAX_PATH];
+		UINT uniqueNum = GetTempFileNameA(tempPath, "temp", 0, tempFileName);
+
+		if (uniqueNum != 0) {
+			return tempFileName;
+		}
+		else {
+			return "";
+		}
+	}
+	else {
+		return "";
+	}
+#endif // _MSC_VER
+	return "";
+}
+
+#ifdef GetTempPath
+#undef GetTempPath
+#endif
+
+#ifdef CreateDirectory
+#undef CreateDirectory
+#endif
+
+LocaleString IO::Path::GenerateTemporaryDirectory()
+{
+	auto tempDirectory = Combine(GetTempPath(),ID::GenerateGUID());
+	Directory::CreateDirectory(tempDirectory);
+	return tempDirectory;
+}
+
+
+#ifdef GetTempFileName
+#undef GetTempFileName
+#endif
+LocaleString IO::Path::GetTempFileName()
+{
+	return GenerateTemporaryPath();
+}
+
+LocaleString IO::Path::GetTempPath()
+{
+	#ifdef _MSC_VER
+	char tempPath[MAX_PATH];
+	DWORD result = GetTempPathA(MAX_PATH, tempPath);
+	if (result > 0 && result < MAX_PATH) {
+		return tempPath;
+	}
+	else {
+		return "";
+	}
+	#else
+	return "";
+	#endif // _MSC_VER
+	
+}
+
+bool IO::Path::IsEqual(UTF8String first, UTF8String second)
+{
+	UTF8String firstPath = "";
+	for (int i = 0; i < first.Length(); i++)
+	{
+		if (first[i] == '\\\\')firstPath.Append("/");
+		else firstPath.Append(first[i]);
+	}
+	firstPath = firstPath.Trim();
+	UTF8String secondPath = "";
+	for (int i = 0; i < second.Length(); i++)
+	{
+		if (second[i] == '\\\\')secondPath.Append("/");
+		else secondPath.Append(second[i]);
+	}
+	secondPath = secondPath.Trim();
+	return firstPath == secondPath;
+}
+
+HMODULE TidyIO_Path_GetModuleHandleByFunction(void* func) {
+	HMODULE hModule = NULL;
+	GetModuleHandleExW(
+		GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+		(LPCWSTR)func,
+		&hModule
+	);
+	return hModule;
+}
+
+LocaleString IO::Path::GetModulePath()
+{
+	return GetModulePath(TidyIO_Path_GetModuleHandleByFunction);
+}
+
+LocaleString IO::Path::GetModulePath(void* func)
+{
+	HMODULE hModule = TidyIO_Path_GetModuleHandleByFunction(func);
+	if (hModule != nullptr) {
+		char modulePath[MAX_PATH];
+		DWORD result = GetModuleFileNameA(hModule, modulePath, MAX_PATH);
+		if (result > 0 && result < MAX_PATH) {
+			return modulePath;
+		}
+		else {
+			return "";
+		}
+	}
+	else {
+		return "";
+	}
+}
+
+#ifdef _MSC_VER
+#if _MSC_VER <= 1800
+LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath)
+{
+	auto splitChar = GetSplitChar(UTF8String::Vector(directory, subPath));
+	return directory.TrimEnd("\\\\/") + splitChar + subPath.TrimStart("\\\\/");
+}
+
+LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, LocaleString subPath2)
+{
+	auto splitChar = GetSplitChar(UTF8String::Vector(directory, subPath1, subPath2));
+	return directory.TrimEnd("\\\\/") + splitChar + subPath1.Trim("\\\\/") + splitChar + subPath2.TrimStart("\\\\/");
+}
+
+LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, LocaleString subPath2, LocaleString subPath3)
+{
+	auto splitChar = GetSplitChar(UTF8String::Vector(directory, subPath1, subPath2, subPath3));
+	return directory.TrimEnd("\\\\/") + splitChar + subPath1.Trim("\\\\/") + splitChar + subPath2.Trim("\\\\/") + splitChar + subPath3.TrimStart("\\\\/");
+}
+
+LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, LocaleString subPath2, LocaleString subPath3, LocaleString subPath4)
+{
+	auto splitChar = GetSplitChar(UTF8String::Vector(directory, subPath1, subPath2, subPath3, subPath4));
+	return directory.TrimEnd("\\\\/") + splitChar + subPath1.Trim("\\\\/") + splitChar + subPath2.Trim("\\\\/") + splitChar + subPath3.Trim("\\\\/") + splitChar + subPath4.TrimStart("\\\\/");
+}
+#endif
+#endif`;
+        return [{
+            FileName: `${namespace}_IO_Path.h`,
+            Content: header
+        }, {
+            FileName: `${namespace}_IO_Path.cpp`,
+            Content: source
+        }];
+    };
+
     let generate = () => {
         let classes = [] as {
             FileName: string,
             Content: string
         }[];
+        generateEncodingClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
         generateStringClasses().forEach((item) => {
             classes.push(item);
         });
@@ -1992,6 +3652,24 @@ namespace ${namespace} {
             classes.push(item);
         });
         generateIDClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        generateBytesClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        generateFileInfoClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        generateFileClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        generateDirectoryClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        generateDirectoryInfoClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        generatePathClass(config.namespace, config.exportDefine).forEach((item) => {
             classes.push(item);
         });
         return classes;
