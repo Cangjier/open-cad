@@ -112,6 +112,20 @@ let TidyCppGenerator = (config: {
     #include <functional>
 #endif`;
     };
+    let generateMacro = ()=>{
+        let header = `
+#ifndef __${config.namespace.toUpperCase()}_MACRO_H__
+#define __${config.namespace.toUpperCase()}_MACRO_H__
+
+#endif
+        `;
+        return [
+            {
+                FileName: `${config.namespace}_Macro.h`,
+                Content: header
+            }
+        ]
+    };
     let generateStringCommonClass = (namespace: string) => {
         let header = `
 
@@ -255,10 +269,12 @@ namespace std {
 using namespace ${namespace};`);
         headerLines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
         headerLines.push(`#define __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
+        headerLines.push(`#include "${namespace}_Macro.h"`);
         headerLines.push(`#include <string>`);
         headerLines.push(`#include <vector>`);
         headerLines.push(`#include "${namespace}_StringUtil.h"`);
         headerLines.push(`#include "${namespace}_StringCommon.h"`);
+        
 
         headerLines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
@@ -1201,6 +1217,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         // SUPPORT_WSTRING
         lines.push(generate_SUPPORT_STD_WSTRING());
         lines.push(`
+#include "${namespace}_Macro.h"
 #include <string>
 #include <vector>
 namespace ${namespace} {
@@ -1386,6 +1403,7 @@ return result;
         let header = `
 #ifndef __${namespace.toUpperCase()}_TIMESPAN_H__
 #define __${namespace.toUpperCase()}_TIMESPAN_H__
+#include "${namespace}_Macro.h"
 #include "${namespace}_UTF8String.h"
 
 #ifndef NOTSUPPORT_CHRONO
@@ -1567,6 +1585,7 @@ void TimeSpan::Join(UTF8String& result, double& total, long long limit, UTF8Stri
         let header = `
 #ifndef __${namespace.toUpperCase()}_DATETIME_H__
 #define __${namespace.toUpperCase()}_DATETIME_H__
+#include "${namespace}_Macro.h"
 #include <ctime>
 #include "${namespace}_UTF8String.h"
 #ifndef NOTSUPPORT_CHRONO
@@ -1873,6 +1892,7 @@ DateTime DateTime::operator+(const TimeSpan& right)
         let header = `
 #ifndef __${namespace.toUpperCase()}_ID_H__
 #define __${namespace.toUpperCase()}_ID_H__
+#include "${namespace}_Macro.h"
 #include "${namespace}_UTF8String.h"
 namespace ${namespace} {
 class ${exportDefine} ID
@@ -1987,7 +2007,7 @@ namespace ${namespace} {
         let header = `
 #ifndef __${namespace.toUpperCase()}_BYTES_H__
 #define __${namespace.toUpperCase()}_BYTES_H__
-#include "${namespace}_GlobalUsings.h"
+#include "${namespace}_Macro.h"
 namespace ${namespace}
 {
   class ${exportDefine} Bytes
@@ -2035,6 +2055,7 @@ namespace ${namespace}
         let header = `
 #ifndef __${namespace.toUpperCase()}_ENCODING_H__
 #define __${namespace.toUpperCase()}_ENCODING_H__
+#include "${namespace}_Macro.h"
 namespace ${namespace}
 {
     class UTF8String;
@@ -2120,6 +2141,7 @@ UTF8String Encoding::Name()
         let header = `
 #ifndef __${namespace.toUpperCase()}_IO_FILE_H__
 #define __${namespace.toUpperCase()}_IO_FILE_H__
+#include "${namespace}_Macro.h"
 #include <vector>
 #include <map>
 #include "${namespace}_LocaleString.h"
@@ -2440,6 +2462,7 @@ bool IO::File::AppendAllText(LocaleString path, const UTF8String& contents, cons
         let header = `
 #ifndef __${namespace.toUpperCase()}_IO_FILEINFO_H__
 #define __${namespace.toUpperCase()}_IO_FILEINFO_H__
+#include "${namespace}_Macro.h"
 #include "${namespace}_LocaleString.h"
 #include "${namespace}_DateTime.h"
 namespace ${namespace}
@@ -2710,6 +2733,7 @@ DateTime IO::FileInfo::GetLastModifiedTime()
         let header = `
 #ifndef __${namespace.toUpperCase()}_IO_DIRECTORY_H__
 #define __${namespace.toUpperCase()}_IO_DIRECTORY_H__
+#include "${namespace}_Macro.h"
 #include <vector>
 #include "${namespace}_String.h"
 #include "${namespace}_IO_DirectoryInfo.h"
@@ -3070,6 +3094,7 @@ LocaleString Directory::GetModuleDirectory()
         let header = `
 #ifndef __${namespace.toUpperCase()}_IO_DIRECTORYINFO_H__
 #define __${namespace.toUpperCase()}_IO_DIRECTORYINFO_H__
+#include "${namespace}_Macro.h"
 #include "${namespace}_String.h"
 namespace ${namespace}
 {
@@ -3302,6 +3327,7 @@ void DirectoryInfo::GetFiles(LocaleString path, std::vector<FileInfo>& result)
         let header = `
 #ifndef __${namespace.toUpperCase()}_IO_PATH_H__
 #define __${namespace.toUpperCase()}_IO_PATH_H__
+#include "${namespace}_Macro.h"
 #include "${namespace}_String.h"
 namespace ${namespace}
 {
@@ -3639,6 +3665,9 @@ LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, Lo
             FileName: string,
             Content: string
         }[];
+        generateMacro().forEach((item) => {
+            classes.push(item);
+        });
         generateEncodingClass(config.namespace, config.exportDefine).forEach((item) => {
             classes.push(item);
         });
