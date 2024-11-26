@@ -2987,7 +2987,10 @@ void Directory::Delete(LocaleString path, bool recursive)
 LocaleString Directory::GetDocumentDirectory()
 {
 #ifdef _MSC_VER
-	PWSTR myDocsPath = SUPPORT_NULLPTR;
+#if _MSC_VER <= 1800
+    return Path::Combine(GetUserProfileDirectory(), "Documents");
+#else
+    PWSTR myDocsPath = SUPPORT_NULLPTR;
 	if (SHGetKnownFolderPath(FOLDERID_Documents, 0, SUPPORT_NULLPTR, &myDocsPath) == S_OK) {
 		std::wstring result(myDocsPath);
 		CoTaskMemFree(myDocsPath);
@@ -2996,6 +2999,8 @@ LocaleString Directory::GetDocumentDirectory()
 	else {
 		return "";
 	}
+#endif
+	
 #endif
 	return "";
 }
