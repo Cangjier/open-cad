@@ -69,7 +69,7 @@ let main = async () => {
     if (vsName == "2005" || vsName == "vs2005") {
         let vs2005 = vsManager.getVS2005();
         let outputDirectory = args.length > 1 ? args[1] : ".";
-        if (outputDirectory == ".") {
+        if (outputDirectory == "." || outputDirectory.startsWith("-")) {
             outputDirectory = Environment.CurrentDirectory;
         }
         vs2005.default.Package(outputDirectory);
