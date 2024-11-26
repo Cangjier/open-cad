@@ -2890,7 +2890,12 @@ DateTime Directory::GetCreationTime(LocaleString path)
 		ULARGE_INTEGER uli;
 		uli.LowPart = ftCreationTime.dwLowDateTime;
 		uli.HighPart = ftCreationTime.dwHighDateTime;
-		creationTime.Target = std::chrono::system_clock::time_point(std::chrono::duration<long long, std::ratio<1, 10000000>>(uli.QuadPart - 116444736000000000ULL)); // 100 ns intervals from 1/1/1601 to 1/1/1970
+        #if NOTSUPPORT_CHRONO
+            creationTime.Target = (long long)((uli.QuadPart - 116444736000000000ULL)/10000000); // 100 ns intervals from 1/1/1601 to 1/1/1970
+        #else
+            creationTime.Target = std::chrono::system_clock::time_point(std::chrono::duration<long long, std::ratio<1, 10000000>>(uli.QuadPart - 116444736000000000ULL)); // 100 ns intervals from 1/1/1601 to 1/1/1970
+        #endif
+		
 		CloseHandle(hFile);
 	}
 	return creationTime;
@@ -2982,8 +2987,8 @@ void Directory::Delete(LocaleString path, bool recursive)
 LocaleString Directory::GetDocumentDirectory()
 {
 #ifdef _MSC_VER
-	PWSTR myDocsPath = nullptr;
-	if (SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &myDocsPath) == S_OK) {
+	PWSTR myDocsPath = SUPPORT_NULLPTR;
+	if (SHGetKnownFolderPath(FOLDERID_Documents, 0, SUPPORT_NULLPTR, &myDocsPath) == S_OK) {
 		std::wstring result(myDocsPath);
 		CoTaskMemFree(myDocsPath);
 		return result;
@@ -2998,8 +3003,8 @@ LocaleString Directory::GetDocumentDirectory()
 LocaleString Directory::GetUserProfileDirectory()
 {
 #ifdef _MSC_VER
-	char* documentPath = nullptr;
-	if (_dupenv_s(&documentPath, nullptr, "USERPROFILE") == 0 && documentPath != nullptr) {
+	char* documentPath = SUPPORT_NULLPTR;
+	if (_dupenv_s(&documentPath, SUPPORT_NULLPTR, "USERPROFILE") == 0 && documentPath != SUPPORT_NULLPTR) {
 		std::string path = documentPath;
 		free(documentPath);
 		return path;
@@ -3611,7 +3616,7 @@ LocaleString IO::Path::GetModulePath()
 LocaleString IO::Path::GetModulePath(void* func)
 {
 	HMODULE hModule = TidyIO_Path_GetModuleHandleByFunction(func);
-	if (hModule != nullptr) {
+	if (hModule != SUPPORT_NULLPTR) {
 		char modulePath[MAX_PATH];
 		DWORD result = GetModuleFileNameA(hModule, modulePath, MAX_PATH);
 		if (result > 0 && result < MAX_PATH) {
