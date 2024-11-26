@@ -18,13 +18,7 @@ let utf8 = new UTF8Encoding(false);
 let gb2312 = Encoding.GetEncoding("gb2312");
 
 let script_directory = Path.GetDirectoryName(script_path);
-let OPEN_CAD_DIR = "";
-if (OperatingSystem.IsWindows()) {
-    OPEN_CAD_DIR = "C:\\OPEN_CAD";
-}
-else if (OperatingSystem.IsLinux()) {
-    OPEN_CAD_DIR = "/OPEN_CAD";
-}
+let OPEN_CAD_DIR = Path.Combine(env("userprofile"), "OPEN_CAD");
 let repositoryDirectory = Path.Combine(OPEN_CAD_DIR, "repository");
 if (Directory.Exists(repositoryDirectory) == false) {
     Directory.CreateDirectory(repositoryDirectory);
