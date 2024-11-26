@@ -2632,7 +2632,7 @@ LocaleString FileInfo::NameWithoutExtension()
 int FileInfo::Size()
 {
 #ifdef _MSC_VER
-#if _MSC_VER<=TIDY_VS2013
+#if _MSC_VER<=1800
 	HANDLE hFile = CreateFileA(Target.ToChars(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (hFile == INVALID_HANDLE_VALUE) {
@@ -2956,7 +2956,7 @@ void Directory::Move(LocaleString sourceDirName, LocaleString destDirName, bool 
             MoveFileExA(files[i].Target.c_str(), (destDirName + "\\\\" + Path::GetFileName(files[i])).Target.c_str(), MOVEFILE_REPLACE_EXISTING);
         }
 		std::vector<LocaleString> directories = GetDirectories(sourceDirName);
-        for(szize_t i = 0; i < directories.size(); i++){
+        for(size_t i = 0; i < directories.size(); i++){
             Move(directories[i], destDirName + "\\\\" + Path::GetFileName(directories[i]), true);
         }
 	}
