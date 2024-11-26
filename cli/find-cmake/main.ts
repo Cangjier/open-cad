@@ -21,24 +21,35 @@ let main = async () => {
         }
     }
     let projectName = Path.GetFileName(projectDirectory);
-    let cmakeLines = [] as string[];
-    cmakeLines.push(`add_library(${projectName} INTERFACE)`);
-    cmakeLines.push(`target_sources(${projectName} INTERFACE)`);
-    cmakeLines.push(`set(${projectName}_DIR \"\${CMAKE_CURRENT_LIST_DIR}\")`);
-    cmakeLines.push(`file(GLOB_RECURSE ${projectName}_LIBRARIES "\${${projectName}_DIR}/*.lib")`);
-    if(Directory.Exists(Path.Combine(projectDirectory,"include"))){
-        cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}/include")`);
+    let includeDirectory = Path.Combine(projectDirectory, "include");
+    let incDirectory = Path.Combine(projectDirectory, "inc");
+    if (Directory.Exists(includeDirectory) || Directory.Exists(incDirectory) || Directory.GetFiles("*.h").length > 0) {
+        let cmakeLines = [] as string[];
+        cmakeLines.push(`add_library(${projectName} INTERFACE)`);
+        cmakeLines.push(`target_sources(${projectName} INTERFACE)`);
+        cmakeLines.push(`set(${projectName}_DIR \"\${CMAKE_CURRENT_LIST_DIR}\")`);
+        cmakeLines.push(`file(GLOB_RECURSE ${projectName}_LIBRARIES "\${${projectName}_DIR}/*.lib")`);
+        if (Directory.Exists(Path.Combine(projectDirectory, "include"))) {
+            cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}/include")`);
+        }
+        else if (Directory.Exists(Path.Combine(projectDirectory, "inc"))) {
+            cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}/inc")`);
+        }
+        else {
+            cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}")`);
+        }
+        cmakeLines.push(`target_include_directories(${projectName} INTERFACE "\${${projectName}_INCLUDE_DIR}")`);
+        cmakeLines.push(`target_link_libraries(${projectName} INTERFACE "\${${projectName}_LIBRARIES}")`);
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, `Find${projectName}.cmake`), cmakeLines.join("\n"), utf8);
     }
-    else if(Directory.Exists(Path.Combine(projectDirectory,"inc"))){
-        cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}/inc")`);
+    else {
+        let templatePath = Path.Combine(script_directory, "Template", "Find.cmake");
+        let template = await File.ReadAllTextAsync(templatePath, utf8);
+        template = template.replace("__PROJECT_NAME___", projectName);
+        await File.WriteAllTextAsync(Path.Combine(projectDirectory, `Find${projectName}.cmake`), template, utf8);
     }
-    else{
-        cmakeLines.push(`set(${projectName}_INCLUDE_DIR "\${${projectName}_DIR}")`);
-    }
-    cmakeLines.push(`target_include_directories(${projectName} INTERFACE "\${${projectName}_INCLUDE_DIR}")`);
-    cmakeLines.push(`target_link_libraries(${projectName} INTERFACE "\${${projectName}_LIBRARIES}")`);
-    await File.WriteAllTextAsync(Path.Combine(projectDirectory,`Find${projectName}.cmake`),cmakeLines.join("\n"),utf8);
-    
+
+
 };
 
 
