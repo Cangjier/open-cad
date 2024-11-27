@@ -306,7 +306,7 @@ let SDKManager = () => {
         if (name != lowerName) {
             let baseRelativeDirectory = Path.GetRelativePath(baseDirectory, directory);
             let lowerDirectory = Path.Combine(baseDirectory, baseRelativeDirectory.toLowerCase());
-            cmds.push(`ln -s ${directory} ${lowerDirectory}`);
+            cmds.push(`ln -s "${directory}" "${lowerDirectory}"`);
         }
         let files = Directory.GetFiles(directory);
         for (let file of files) {
@@ -315,7 +315,7 @@ let SDKManager = () => {
             let baseRelativeFileName = Path.GetRelativePath(baseDirectory, file);
             if (fileName != lowerFileName) {
                 let lowerFile = Path.Combine(baseDirectory, baseRelativeFileName.toLowerCase());
-                cmds.push(`ln -s ${file} ${lowerFile}`);
+                cmds.push(`ln -s "${file}" "${lowerFile}"`);
             }
         }
         let directories = Directory.GetDirectories(directory);
