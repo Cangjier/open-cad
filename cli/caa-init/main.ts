@@ -1161,6 +1161,7 @@ let cmd_package_sdk = async () => {
 };
 
 let cmd_init = async () => {
+    console.log("Initializing CAA project");
     if (args.length < 2) {
         console.log("Usage: caa init <sdk_name>");
         return;
