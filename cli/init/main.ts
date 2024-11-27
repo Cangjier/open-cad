@@ -353,6 +353,7 @@ ${cmdScope}
             name: string,
             version: string,
             download_url: string,
+            needLinkLowerCase?: boolean,
             dependency?: {
                 sdkName: string,
                 version: string
@@ -380,7 +381,7 @@ ${cmdScope}
             }
             await zip.extract(download_path, cadSdkDirectory);
             File.Delete(download_path);
-            if (OperatingSystem.IsLinux()) {
+            if (OperatingSystem.IsLinux() && sdk.needLinkLowerCase) {
                 await createLowerCaseLink(cadSdkDirectory);
             }
         }
