@@ -351,8 +351,6 @@ let SDKManager = () => {
     };
     let _createPascalCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => { };
     _createPascalCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => {
-        // 创建PascalCase的符号链接
-        // ln -s /home/user/myname /home/user/MyName
         let files = Directory.GetFiles(directory);
         for (let file of files) {
             let fileName = Path.GetFileName(file);
@@ -456,7 +454,8 @@ let SDKManager = () => {
     };
     return {
         install,
-        createLowerCaseLink
+        createLowerCaseLink,
+        pascalCase
     };
 };
 
@@ -509,3 +508,4 @@ let main = async () => {
 };
 
 await main();
+
