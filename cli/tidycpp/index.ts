@@ -2,6 +2,7 @@ import { File } from "../.tsc/System/IO/File";
 import { Directory } from "../.tsc/System/IO/Directory";
 import { Console } from "../.tsc/System/Console";
 import { Path } from "../.tsc/System/IO/Path";
+import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
 let TidyCppGenerator = (config: {
     namespace: string,
     exportDefine: string,
@@ -3719,16 +3720,70 @@ let generator = TidyCppGenerator({
     exportDefine: ""
 });
 
+let DirectoryFinder = () => {
+    let isSourceDirectory = (path: string) => {
+        return Directory.GetFiles(path, "*.cpp").length > 0;
+    };
+    let isHeaderDirectory = (path: string) => {
+        return Directory.GetFiles(path, "*.h").length > 0;
+    };
+    let findHeaderDirectory = (path: string) => {
+        if (isHeaderDirectory(path)) {
+            return path;
+        }
+        let subDirectories = Directory.GetDirectories(path);
+        for (let subDirectory of subDirectories) {
+            if (isHeaderDirectory(subDirectory)) {
+                return subDirectory;
+            }
+        }
+        let parentPath = Path.GetDirectoryName(path);
+        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
+            return "";
+        }
+        return findHeaderDirectory(parentPath);
+    };
+    let findSourceDirectory = (path: string) => {
+        if (isSourceDirectory(path)) {
+            return path;
+        }
+        let subDirectories = Directory.GetDirectories(path);
+        for (let subDirectory of subDirectories) {
+            if (isSourceDirectory(subDirectory)) {
+                return subDirectory;
+            }
+        }
+        let parentPath = Path.GetDirectoryName(path);
+        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
+            return "";
+        }
+        return findSourceDirectory(parentPath);
+    };
+    return {
+        findHeaderDirectory,
+        findSourceDirectory
+    };
+};
+
+let directoryFinder = DirectoryFinder();
+
 
 let main = async () => {
-    console.log("Please input header file path:");
+    let adviseHeaderPath = directoryFinder.findHeaderDirectory(Directory.GetCurrentDirectory());
+    console.log(`Please input header file path: (${adviseHeaderPath})`);
     var headerPath = Console.ReadLine();
+    if (headerPath == "") {
+        headerPath = adviseHeaderPath
+    }
     if (Directory.Exists(headerPath) == false) {
         console.log("The header file path is not exist.");
         return;
     }
-    console.log("Please input source file path:");
+    console.log(`Please input source file path: (${adviseHeaderPath})`);
     var sourcePath = Console.ReadLine();
+    if (sourcePath == "") {
+        sourcePath = adviseHeaderPath
+    }
     if (Directory.Exists(sourcePath) == false) {
         console.log("The source file path is not exist.");
         return;
