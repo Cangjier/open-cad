@@ -119,7 +119,14 @@ let TidyCppGenerator = (config: {
         let header = `
 #ifndef __${config.namespace.toUpperCase()}_MACRO_H__
 #define __${config.namespace.toUpperCase()}_MACRO_H__
-
+headerLines.push(generate_SUPPORT_NULLPTR());
+${generate_SUPPORT_STD_STRINGSTREAM()}
+${generate_SUPPORT_EXPLICIT()}
+${generate_SUPPORT_INT64()}
+${generate_SUPPORT_STD_OSTRINGSTREAM()}
+${generate_SUPPORT_STD_WSTRING()}
+${generate_SUPPORT_RVALUE_REFERENCES()}
+${generate_SUPPORT_STD_FUNCTION()}
 #endif
         `;
         return [
@@ -277,23 +284,6 @@ using namespace ${namespace};`);
         headerLines.push(`#include <vector>`);
         headerLines.push(`#include "${namespace}_StringUtil.h"`);
         headerLines.push(`#include "${namespace}_StringCommon.h"`);
-
-
-        headerLines.push(generate_SUPPORT_NULLPTR());
-        // SUPPORT_STD_STRINGSTREAM宏定义
-        headerLines.push(generate_SUPPORT_STD_STRINGSTREAM());
-        // SUPPORT_EXPLICIT宏定义
-        headerLines.push(generate_SUPPORT_EXPLICIT());
-        // SUPPORT_INT64宏定义，64位
-        headerLines.push(generate_SUPPORT_INT64());
-        // SUPPORT_STD_OSTRINGSTREAM宏定义
-        headerLines.push(generate_SUPPORT_STD_OSTRINGSTREAM());
-        // SUPPORT_STD_WSTRING宏定义
-        headerLines.push(generate_SUPPORT_STD_WSTRING());
-        // SUPPORT_RVALUE_REFERENCES宏定义
-        headerLines.push(generate_SUPPORT_RVALUE_REFERENCES());
-        // SUPPORT_STD_FUNCTION宏定义
-        headerLines.push(generate_SUPPORT_STD_FUNCTION());
 
         for (let i = 0; i < allStringClassNames.length; i++) {
             if (allStringClassNames[i] == className) {
@@ -1215,10 +1205,6 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         let lines = [] as string[];
         lines.push(`#ifndef __${namespace.toUpperCase()}_STRING_UTIL_H__`);
         lines.push(`#define __${namespace.toUpperCase()}_STRING_UTIL_H__`);
-        // SUPPORT_NULLPTR
-        lines.push(generate_SUPPORT_NULLPTR());
-        // SUPPORT_WSTRING
-        lines.push(generate_SUPPORT_STD_WSTRING());
         lines.push(`
 #include "${namespace}_Macro.h"
 #include <string>
