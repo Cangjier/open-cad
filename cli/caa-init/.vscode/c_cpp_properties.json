@@ -1,3 +1,18 @@
 {
-    
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/codespace/OPEN_CAD/sdk/WindowsInclude/VS2005/**",
+                "/home/codespace/OPEN_CAD/sdk/CAA/CAA21/**"
+            ],
+            "defines": ["_WINDOWS_SOURCE"],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64"
+        }
+    ],
+    "version": 4
 }
