@@ -296,6 +296,42 @@ let VcpkgManager = () => {
 let vcpkgManager = VcpkgManager();
 
 let SDKManager = () => {
+    let _createLowerCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => { };
+    _createLowerCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => {
+        // 创建小写的符号链接
+        // ln -s /home/user/Project /home/user/project
+        let name = Path.GetFileName(directory);
+        let lowerName = name.toLowerCase();
+
+        if (name != lowerName) {
+            let baseRelativeDirectory = Path.GetRelativePath(baseDirectory, directory);
+            let lowerDirectory = Path.Combine(baseDirectory, baseRelativeDirectory.toLowerCase());
+            cmds.push(`ln -s ${directory} ${lowerDirectory}`);
+        }
+        let files = Directory.GetFiles(directory);
+        for (let file of files) {
+            let fileName = Path.GetFileName(file);
+            let lowerFileName = fileName.toLowerCase();
+            let baseRelativeFileName = Path.GetRelativePath(baseDirectory, file);
+            if (fileName != lowerFileName) {
+                let lowerFile = Path.Combine(baseDirectory, baseRelativeFileName.toLowerCase());
+                cmds.push(`ln -s ${file} ${lowerFile}`);
+            }
+        }
+        let directories = Directory.GetDirectories(directory);
+        for (let subDirectory of directories) {
+            _createLowerCaseLink(baseDirectory, subDirectory, cmds);
+        }
+    };
+    let createLowerCaseLink = async (directory: string) => {
+        let cmds = [] as string[];
+        _createLowerCaseLink(directory, directory, cmds);
+        let cmdScope = cmds.join("\n");
+        console.log(cmdScope);
+        await cmdAsync(Environment.CurrentDirectory, `{
+${cmdScope}
+}`);
+    };
     let installSDK = async (sdkName: string, cadVersion: string) => {
         // 安装cad的sdk
         let indexJson = await gitManager.getIndexJson();
@@ -344,6 +380,9 @@ let SDKManager = () => {
             }
             await zip.extract(download_path, cadSdkDirectory);
             File.Delete(download_path);
+            if (OperatingSystem.IsLinux()) {
+                await createLowerCaseLink(cadSdkDirectory);
+            }
         }
         if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetFileName(cadSdkDirectory)}.cmake`)) == false) {
             console.log(`generating Find${Path.GetFileName(cadSdkDirectory)}.cmake`);
@@ -362,7 +401,8 @@ let SDKManager = () => {
         return sdk;
     };
     return {
-        install
+        install,
+        createLowerCaseLink
     };
 };
 
