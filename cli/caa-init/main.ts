@@ -282,8 +282,8 @@ let MingWManager = () => {
     let install = async () => {
         console.log("sudo apt update");
         await cmdAsync(Environment.CurrentDirectory, "sudo apt update");
-        console.log("sudo apt-get install mingw-w64");
-        await cmdAsync(Environment.CurrentDirectory, "sudo apt-get install mingw-w64");
+        console.log("sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mingw-w64");
+        await cmdAsync(Environment.CurrentDirectory, "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mingw-w64");
     };
     return {
         isInstalled,

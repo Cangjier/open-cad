@@ -9,6 +9,7 @@ import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
 import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
 import { OperatingSystem } from "../.tsc/System/OperatingSystem";
+import { shell } from "../.tsc/Cangjie/TypeSharp/System/shell";
 let utf8 = new UTF8Encoding(false);
 let parameters = {} as { [key: string]: string };
 for (let i = 0; i < args.length; i++) {
@@ -504,7 +505,6 @@ let main = async () => {
         // 检查visual studio环境变量
         await visualStudioManager.resgiterEnvironment();
     }
-    console.log(`opencad ${cadName}-init init ${cadSDK.name}`);
     await cmdAsync(Environment.CurrentDirectory, `opencad ${cadName}-init init ${cadSDK.name}`);
 
 };
