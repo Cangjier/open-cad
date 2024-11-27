@@ -504,6 +504,7 @@ let main = async () => {
         // 检查visual studio环境变量
         await visualStudioManager.resgiterEnvironment();
     }
+    console.log(`opencad ${cadName}-init init ${cadSDK.name}`);
     await cmdAsync(Environment.CurrentDirectory, `opencad ${cadName}-init init ${cadSDK.name}`);
 
 };
