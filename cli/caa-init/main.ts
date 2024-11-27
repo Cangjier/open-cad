@@ -1154,7 +1154,7 @@ let cmd_init = async () => {
     let cmakePath = Path.Combine(sdkDirectory, cadName, sdkName, `Find${sdkName}.cmake`);
     let vs2005CMakePath = Path.Combine(sdkDirectory, "WindowsInclude", "VS2005", `FindVS2005.cmake`);
     // 自动创建CMakeLists.txt
-    let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt");
+    let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt.bak");
     let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "Project", "CMakeLists.txt"), utf8);
     cmakeListsText = cmakeListsText.replace("__PROJECT_NAME__", projectName);
     await File.WriteAllTextAsync(cmakeListsPath, cmakeListsText, utf8);
