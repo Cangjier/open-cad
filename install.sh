@@ -50,5 +50,6 @@ if ! grep -q 'export PATH=$PATH:${HOME}/OPEN_CAD/bin' ~/.bashrc; then
     echo "Added ${HOME}/OPEN_CAD/bin to PATH in .bashrc"
 fi
 
+source ~/.bashrc
 # 退出
 exit
