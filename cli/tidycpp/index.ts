@@ -12,6 +12,9 @@ let TidyCppGenerator = (config: {
     #if defined(_MSC_VER) && _MSC_VER >= 1600
         #define SUPPORT_NULLPTR nullptr
     #else
+        #ifndef NULL
+            #define NULL 0
+        #endif
         #define SUPPORT_NULLPTR NULL
     #endif
 #endif`;
