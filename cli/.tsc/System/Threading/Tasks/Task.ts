@@ -70,7 +70,7 @@ export class Task {
     public static FromCanceled(cancellationToken?: CancellationToken): Promise<void> | null {
         return {} as any;
     }
-    public static Run(action_or_function?: ()=>void | null | ()=>Promise<void>, cancellationToken?: CancellationToken): Promise<void> | null {
+    public static Run(action_or_function?: ()=>void | null | (()=>Promise<void>), cancellationToken?: CancellationToken): Promise<void> | null {
         return {} as any;
     }
     public static Delay(delay_or_millisecondsDelay?: TimeSpan | number, timeProvider_or_cancellationToken?: TimeProvider | CancellationToken, cancellationToken?: CancellationToken): Promise<void> {

@@ -11,10 +11,10 @@ export class shell {
     public readLines(): string[] {
         return {} as any;
     }
-    public readLinesWhen(predicate?: (arg0?:string)=>boolean): Promise<string[]> {
+    public readLinesWhen(predicate?: ((arg0?:string)=>boolean)): Promise<string[]> {
         return {} as any;
     }
-    public when(predicate?: (arg0?:string)=>boolean): Promise<void> {
+    public when(predicate?: ((arg0?:string)=>boolean)): Promise<void> {
         return {} as any;
     }
     public writeLine(value?: string): void {

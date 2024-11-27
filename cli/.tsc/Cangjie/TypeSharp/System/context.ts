@@ -27,10 +27,10 @@ export class context {
     public static kill(pid?: number): void {
         return {} as any;
     }
-    public static cmd(workingDirectory?: string, commandLine?: string): processResult {
+    public static cmd(workingDirectory?: string, commandLine?: string, config?: processConfig): processResult {
         return {} as any;
     }
-    public static cmdAsync(workingDirectory?: string, commandLine?: string): Promise<processResult> {
+    public static cmdAsync(workingDirectory?: string, commandLine?: string, config?: processConfig): Promise<processResult> {
         return {} as any;
     }
     public static startCmd(workingDirectory?: string, commandLine?: string): void {

@@ -7,4 +7,7 @@ export class axiosConfig {
     public headers?: { [key: string]: string };
     public params?: { [key: string]: string };
     public responseType?: string;
+    public debug?: boolean;
+    public useDefaultProxy?: boolean;
+    public proxy?: string;
 }

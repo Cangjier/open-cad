@@ -1,4 +1,4 @@
-import { args, cmdAsync, copyDirectory, script_path } from "../.tsc/context";
+import { args, cmd, cmdAsync, copyDirectory, script_path } from "../.tsc/context";
 import { Environment } from "../.tsc/System/Environment";
 import { Path } from "../.tsc/System/IO/Path";
 import { File } from "../.tsc/System/IO/File";
@@ -14,6 +14,8 @@ import { code } from '../.tsc/Cangjie/TypeSharp/System/code';
 import { env } from "../.tsc/context";
 import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 import { OperatingSystem } from "../.tsc/System/OperatingSystem";
+import { Console } from "../.tsc/System/Console";
+import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
 let utf8 = new UTF8Encoding(false);
 let gb2312 = Encoding.GetEncoding("gb2312");
 
@@ -247,53 +249,92 @@ let imakefileRegex = (/^(?!#)(\w+)\s*=\s*(.*?)(?:\s*\\\s*\n\s*(.*?))*\s*(?=\n|$)
 let macDeclareHeaderRegex = (/MacDeclareHeader\((\w+)\);/) as any as Regex;
 let catCommandRegex = (/.*:.*CATCommand.*\(.*\).*/) as any as Regex;
 
-let CATIA = () => {
-    let findCatiaDirectories = () => {
-        let optionalDirectories = [
-            "C:/Program Files/Dassault Systemes"
-        ];
-        let result = [] as string[];
-        for (let directory of optionalDirectories) {
-            if (Directory.Exists(directory)) {
-                let catiaDirectories = Directory.GetDirectories(directory);
-                // such as "C:/Program Files/Dassault Systemes/B28"
-                for (let catiaDirectory of catiaDirectories) {
-                    if (File.Exists(Path.Combine(catiaDirectory, "OSNT"))) {
-                        result.push(catiaDirectory);
-                    }
-                }
+let DirectoryFinder = () => {
+    let isSourceDirectory = (path: string) => {
+        return Directory.GetFiles(path, "*.cpp").length > 0;
+    };
+    let isHeaderDirectory = (path: string) => {
+        return Directory.GetFiles(path, "*.h").length > 0;
+    };
+    let findHeaderDirectory = (path: string) => "";
+    findHeaderDirectory = (path: string) => {
+        if (isHeaderDirectory(path)) {
+            return path;
+        }
+        let subDirectories = Directory.GetDirectories(path);
+        for (let subDirectory of subDirectories) {
+            if (isHeaderDirectory(subDirectory)) {
+                return subDirectory;
             }
         }
-        let desktopShortcuts = Directory.GetFiles(env("desktop"), "*.lnk");
-
-        return result;
+        let parentPath = Path.GetDirectoryName(path);
+        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
+            return "";
+        }
+        return findHeaderDirectory(parentPath);
+    };
+    let findSourceDirectory = (path: string) => "";
+    findSourceDirectory = (path: string) => {
+        if (isSourceDirectory(path)) {
+            return path;
+        }
+        let subDirectories = Directory.GetDirectories(path);
+        for (let subDirectory of subDirectories) {
+            if (isSourceDirectory(subDirectory)) {
+                return subDirectory;
+            }
+        }
+        let parentPath = Path.GetDirectoryName(path);
+        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
+            return "";
+        }
+        return findSourceDirectory(parentPath);
+    };
+    let askHeaderSourceDirectory = (path: string) => {
+        let adviseHeaderPath = findHeaderDirectory(path);
+        if (adviseHeaderPath == "") {
+            adviseHeaderPath = path;
+        }
+        console.log(`Please input header file path: (${adviseHeaderPath})`);
+        var headerPath = Console.ReadLine();
+        if (headerPath == "") {
+            headerPath = adviseHeaderPath
+        }
+        if (Directory.Exists(headerPath) == false) {
+            console.log("The header file path is not exist.");
+            return {
+                success: false
+            };
+        }
+        let adviseSourcePath = directoryFinder.findSourceDirectory(path);
+        if (adviseSourcePath == "") {
+            adviseSourcePath = path;
+        }
+        console.log(`Please input source file path: (${adviseSourcePath})`);
+        var sourcePath = Console.ReadLine();
+        if (sourcePath == "") {
+            sourcePath = adviseSourcePath
+        }
+        if (Directory.Exists(sourcePath) == false) {
+            console.log("The source file path is not exist.");
+            return {
+                success: false
+            };
+        }
+        return {
+            success: true,
+            headerPath,
+            sourcePath
+        };
     };
     return {
-        findCatiaDirectories
-    }
-};
-
-let catia = CATIA();
-
-let MingWManager = () => {
-    let isInstalled = () => {
-        return File.Exists("/usr/bin/x86_64-w64-mingw32-g++");
-    };
-    let install = async () => {
-        console.log("sudo apt update");
-        await cmdAsync(Environment.CurrentDirectory, "sudo apt update");
-        console.log("sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mingw-w64");
-        await cmdAsync(Environment.CurrentDirectory, "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mingw-w64");
-    };
-    return {
-        isInstalled,
-        install
+        findHeaderDirectory,
+        findSourceDirectory,
+        askHeaderSourceDirectory
     };
 };
 
-let mingwManager = MingWManager();
-
-
+let directoryFinder = DirectoryFinder();
 
 let ProjectV1 = (projectDirectory: string) => {
     let Dictionary = (dicoPath: string) => {
@@ -891,8 +932,8 @@ let ProjectV1 = (projectDirectory: string) => {
             }
             var templateHeader = File.ReadAllText(templateHeaderPath, utf8);
             var templateSrc = File.ReadAllText(templateSrcPath, utf8);
-            templateHeader = templateHeader.replace("__COMMAND_CLASS_NAME__", name);
-            templateSrc = templateSrc.replace("__COMMAND_CLASS_NAME__", name);
+            templateHeader = templateHeader.replace("__CLASS_NAME__", name);
+            templateSrc = templateSrc.replace("__CLASS_NAME__", name);
             File.WriteAllText(headerPath, templateHeader, utf8);
             File.WriteAllText(srcPath, templateSrc, utf8);
         };
@@ -1117,141 +1158,83 @@ let ProjectV1 = (projectDirectory: string) => {
     };
 };
 
-let cmd_package_sdk = async () => {
-    if (args.length < 3) {
-        console.log("Usage: caa-init package-sdk <CatiaDirectory> <OutputDirectory>");
-        return;
-    }
-    let catiaDirectory = args[1];
-    let outputDirectory = args[2];
-    if (Directory.Exists(catiaDirectory) == false) {
-        console.log(`Catia directory does not exist: ${catiaDirectory}`);
-        return;
-    }
-    if (Directory.Exists(outputDirectory) == false) {
-        Directory.CreateDirectory(outputDirectory);
-    }
-    let directories = Directory.GetDirectories(catiaDirectory);
-    let frameworkDirectories = [] as string[];
-    for (let directory of directories) {
-        let identityCard = Path.Combine(directory, "IdentityCard");
-        if (Directory.Exists(identityCard)) {
-            frameworkDirectories.push(directory);
-        }
-        else {
-            let subDirectories = Directory.GetDirectories(directory);
-            if (subDirectories.findIndex(item => item.endsWith(".m")) != -1) {
-                frameworkDirectories.push(directory);
+let help = () => {
+    console.log(File.ReadAllText(Path.Combine(script_directory, "Readme.md"), utf8));
+};
+let main = async () => {
+    if (args.length == 0) {
+        if (OperatingSystem.IsLinux()) {
+            // 确认是否需要注册caa方法到.bashrc
+            let bashrcPath = Path.Combine(env("userprofile"), ".bashrc");
+            let bashrc = File.ReadAllText(bashrcPath, utf8);
+            if (bashrc.includes("caa()") == false) {
+                console.log("是否需要注册caa方法到.bashrc？(y/n)");
+                var answer = Console.ReadLine();
+                if (answer == "y") {
+                    let bashrcScript = `\ncaa() {\nopencad caa "$@"\n}`;
+                    File.AppendAllText(bashrcPath, bashrcScript, utf8);
+                    cmd(Environment.CurrentDirectory, "source ~/.bashrc", {
+                        redirect: false,
+                        useShellExecute: false
+                    });
+                }
             }
         }
     }
-    let index = 0;
-    for (let directory of frameworkDirectories) {
-        console.log(`${index++}/${frameworkDirectories.length}: ${directory}`);
-        copyDirectory(directory, Path.Combine(outputDirectory, Path.GetFileName(directory)));
-    }
-    let catiaVersion = Path.GetFileName(catiaDirectory);
-    if (catiaVersion.startsWith("B")) {
-        catiaVersion = catiaVersion.substring(1);
-    }
-    let projectName = `CAA${catiaVersion}`;
-    let templateContent = await File.ReadAllTextAsync(Path.Combine(Path.GetDirectoryName(script_path), "SDK", "CMakeLists.txt"), utf8);
-    templateContent = templateContent.replace("__PROJECT_NAME__", projectName);
-    await File.WriteAllTextAsync(Path.Combine(outputDirectory, "CMakeLists.txt"), templateContent, utf8);
-};
-
-let cmd_init = async () => {
-    console.log("Initializing CAA project");
-    if (args.length < 2) {
-        console.log("Usage: caa init <sdk_name>");
-        return;
-    }
-    console.log(`args: ${args}`);
-    let cadName = "CAA";
-    let sdkName = args[1];
-    if (OperatingSystem.IsLinux()) {
-        console.log("Checking Mingw");
-        if (mingwManager.isInstalled() == false) {
-            console.log("Installing Mingw");
-            await mingwManager.install();
+    if (args.length == 0) {
+        let project = ProjectV1(Environment.CurrentDirectory);
+        let frameworks = project.getFrameworks();
+        let index = 1;
+        for (let framework of frameworks) {
+            console.log(`${index++}/${frameworks.length} ${framework}`);
         }
-        else{
-            console.log("Mingw is installed");
-        }
-    }
-    let projectDirectory = Environment.CurrentDirectory;
-    let projectName = Path.GetFileName(projectDirectory);
-    projectName = projectName.replace("-", "_");
-    let cmakePath = Path.Combine(sdkDirectory, cadName, sdkName, `Find${sdkName}.cmake`);
-    // 自动创建CMakeLists.txt
-    let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt.bak");
-    let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "Project", "CMakeLists.txt"), utf8);
-    cmakeListsText = cmakeListsText.replace("__PROJECT_NAME__", projectName);
-    await File.WriteAllTextAsync(cmakeListsPath, cmakeListsText, utf8);
-    await cmdAsync(Environment.CurrentDirectory, `opencad cmake add_find_package ${cmakeListsPath} ${cmakePath}`);
-    await cmdAsync(Environment.CurrentDirectory, `opencad cmake set_toolchain ${cmakeListsPath} ${Path.Combine(OPEN_CAD_DIR, "vcpkg\\scripts\\buildsystems\\vcpkg.cmake").replace("\\", "/")}`);
-    // 自动创建.vscode/settings.json
-    let vscodeDirectory = Path.Combine(projectDirectory, ".vscode");
-    if (Directory.Exists(vscodeDirectory) == false) {
-        Directory.CreateDirectory(vscodeDirectory);
-    }
-    let vscodeSettingsPath = Path.Combine(vscodeDirectory, "settings.json");
-    let vscodeSettingsText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "settings.json"), utf8);
-    await File.WriteAllTextAsync(vscodeSettingsPath, vscodeSettingsText, utf8);
-    // 自动创建.vscode/c_cpp_properties.json
-    if (OperatingSystem.IsLinux()) {
-        let vscodeCppPropertiesPath = Path.Combine(vscodeDirectory, "c_cpp_properties.json");
-        let vscodeCppPropertiesText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "c_cpp_properties.json"), utf8);
-        await File.WriteAllTextAsync(vscodeCppPropertiesPath, vscodeCppPropertiesText, utf8);
-    }
-    // 自动创建.vscode/tasks.json
-    // let vscodeTasksPath = Path.Combine(vscodeDirectory, "tasks.json");
-    // let vscodeTasksText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "tasks.json"), utf8);
-    // await File.WriteAllTextAsync(vscodeTasksPath, vscodeTasksText, utf8);
-    // 自动创建.vscode/launch.json
-    // let vscodeLaunchPath = Path.Combine(vscodeDirectory, "launch.json");
-    // let vscodeLaunchText = await File.ReadAllTextAsync(Path.Combine(script_directory, ".vscode", "launch.json"), utf8);
-    // await File.WriteAllTextAsync(vscodeLaunchPath, vscodeLaunchText, utf8);
-    // 自动创建 .gitignore
-    let gitignorePath = Path.Combine(projectDirectory, ".gitignore");
-    let gitignoreTemplatePath = Path.Combine(script_directory, "Project/Template/.gitignore");
-    File.Copy(gitignoreTemplatePath, gitignorePath, true);
-    // 自动创建 manifest.json
-    let manifestPath = Path.Combine(projectDirectory, "manifest.json");
-    let manifestTemplatePath = Path.Combine(script_directory, "Project/Template/manifest.json");
-    File.Copy(manifestTemplatePath, manifestPath, true);
-    // 自动创建 main.cpp
-    let project = ProjectV1(projectDirectory);
-    project.initialize();
-    project.createFramework(projectName);
-    let framework = project.getFramework(projectName);
-    framework.createModule(projectName);
-    let module = framework.getModule(projectName);
-    module.createAddin("Addin");
-    let addin = module.getAddin("Addin");
-    addin.addCommandToFirstToolbar("HelloWorld", "HelloWorldCmd");
-    module.createCommandClass("HelloWorldCmd");
-    addin.setCommandTitle("HelloWorld", "Hello-World", "English");
-    addin.setCommandShortHelp("HelloWorld", "Hello-World", "English");
-    addin.setCommandLongHelp("HelloWorld", "Hello-World", "English");
-};
-
-
-let main = async () => {
-    if (args.length < 2) {
-        console.log("Usage: caa-init <command>");
-        return;
-    }
-    axios.setDefaultProxy();
-    let command = args[0].toLowerCase();
-    if (command == "package-sdk") {
-        await cmd_package_sdk();
-    }
-    else if (command == "init") {
-        await cmd_init();
     }
     else {
-        console.log("Unknown command");
+        let command = args[0];
+        if (command == "add-class") {
+            let paths = directoryFinder.askHeaderSourceDirectory(Environment.CurrentDirectory);
+            if (paths.success == false) {
+                console.log("Exit.");
+                return;
+            }
+            console.log("Please input class name:");
+            var className = Console.ReadLine();
+            if (className == "") {
+                console.log("Invalid class name.");
+                console.log("Exit.");
+                return;
+            }
+            console.log("1. General Class");
+            console.log("2. Command Class");
+            console.log("Please input class type:(default 1)");
+            var classType = Console.ReadLine();
+            if (classType == "") {
+                classType = "1";
+            }
+            let headerContent = "";
+            let sourceContent = "";
+            if (classType == "1") {
+                headerContent = File.ReadAllText(Path.Combine(script_directory, "Project/Template", "GeneralClass.h"), utf8);
+                sourceContent = File.ReadAllText(Path.Combine(script_directory, "Project/Template", "GeneralClass.cpp"), utf8);
+            }
+            else if (classType == "2") {
+                headerContent = File.ReadAllText(Path.Combine(script_directory, "Project/Template", "CommandClass.h"), utf8);
+                sourceContent = File.ReadAllText(Path.Combine(script_directory, "Project/Template", "CommandClass.cpp"), utf8);
+            }
+            else {
+                console.log("Invalid Class type.");
+                console.log("Exit.");
+                return;
+            }
+            headerContent = headerContent.replace("__CLASS_NAME__", className);
+            sourceContent = sourceContent.replace("__CLASS_NAME__", className);
+            File.WriteAllText(Path.Combine(paths.headerPath, `${className}.h`), headerContent, utf8);
+            File.WriteAllText(Path.Combine(paths.sourcePath, `${className}.cpp`), sourceContent, utf8);
+            console.log("Class created.");
+        }
+        else{
+            help();
+        }
     }
 };
 

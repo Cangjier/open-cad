@@ -15,8 +15,8 @@ export const exec:(config?: processConfig) => processResult = 0 as any
 export const execAsync:(config?: processConfig) => Promise<processResult> = 0 as any
 export const start:(config?: processConfig) => number = 0 as any
 export const kill:(pid?: number) => void = 0 as any
-export const cmd:(workingDirectory?: string, commandLine?: string) => processResult = 0 as any
-export const cmdAsync:(workingDirectory?: string, commandLine?: string) => Promise<processResult> = 0 as any
+export const cmd:(workingDirectory?: string, commandLine?: string, config?: processConfig) => processResult = 0 as any
+export const cmdAsync:(workingDirectory?: string, commandLine?: string, config?: processConfig) => Promise<processResult> = 0 as any
 export const startCmd:(workingDirectory?: string, commandLine?: string) => void = 0 as any
 export const parseFloat:(value?: string) => number = 0 as any
 export const parseInt:(value?: string) => number = 0 as any

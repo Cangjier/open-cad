@@ -16,7 +16,7 @@ export class UrlRouterRecord {
     public GetType(): Type {
         return {} as any;
     }
-    public constructor(Pattern?: string, Regex?: Regex, Handler?: (arg0?:Session)=>Promise<void>) {
+    public constructor(Pattern?: string, Regex?: Regex, Handler?: ((arg0?:Session)=>Promise<void>)) {
     }
     public static op_Inequality(left?: UrlRouterRecord, right?: UrlRouterRecord): boolean {
         return {} as any;
@@ -34,9 +34,9 @@ export class UrlRouterRecord {
     }
     public set Regex(value: Regex) {
     }
-    public get Handler(): (arg0?:Session)=>Promise<void> {
+    public get Handler(): ((arg0?:Session)=>Promise<void>) {
         return {} as any;
     }
-    public set Handler(value: (arg0?:Session)=>Promise<void>) {
+    public set Handler(value: ((arg0?:Session)=>Promise<void>)) {
     }
 }

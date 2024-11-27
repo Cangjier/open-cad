@@ -184,7 +184,7 @@ export class Type {
     public GetCustomAttributes(inherit_or_attributeType?: boolean | Type, inherit?: boolean): any[] {
         return {} as any;
     }
-    public static GetType(typeName?: string, throwOnError_or_assemblyResolver?: boolean | (arg0?:AssemblyName)=>Assembly, ignoreCase_or_typeResolver?: boolean | (arg0?:Assembly, arg1?:string, arg2?:boolean)=>Type, throwOnError?: boolean, ignoreCase?: boolean): Type {
+    public static GetType(typeName?: string, throwOnError_or_assemblyResolver?: boolean | ((arg0?:AssemblyName)=>Assembly), ignoreCase_or_typeResolver?: boolean | ((arg0?:Assembly, arg1?:string, arg2?:boolean)=>Type), throwOnError?: boolean, ignoreCase?: boolean): Type {
         return {} as any;
     }
     public static GetTypeFromHandle(handle?: RuntimeTypeHandle): Type {

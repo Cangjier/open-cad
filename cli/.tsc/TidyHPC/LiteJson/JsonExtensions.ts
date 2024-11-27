@@ -20,7 +20,7 @@ export class JsonExtensions {
     public static IsArray(node?: JsonNode): boolean {
         return {} as any;
     }
-    public static EachAll(self?: any, onValue_or_selfPath?: (arg0?:any)=>any | JsonPath | (arg0?:JsonPath, arg1?:any)=>any | (arg0?:any)=>Promise<void> | (arg0?:any)=>Promise<any>, onValue?: (arg0?:JsonPath, arg1?:any)=>any): any | Promise<void> | Promise<any> {
+    public static EachAll(self?: any, onValue_or_selfPath?: ((arg0?:any)=>any) | JsonPath | ((arg0?:JsonPath, arg1?:any)=>any) | ((arg0?:any)=>Promise<void>) | ((arg0?:any)=>Promise<any>), onValue?: ((arg0?:JsonPath, arg1?:any)=>any)): any | Promise<void> | Promise<any> {
         return {} as any;
     }
 }

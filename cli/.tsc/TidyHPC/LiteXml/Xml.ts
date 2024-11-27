@@ -16,7 +16,7 @@ import { XmlWhitespace } from "../../System/Xml/XmlWhitespace";
 import { XmlSignificantWhitespace } from "../../System/Xml/XmlSignificantWhitespace";
 import { Type } from "../../System/Type";
 export class Xml {
-    public IsElementPredicate(onPredicate?: (arg0?:Xml)=>boolean): boolean {
+    public IsElementPredicate(onPredicate?: ((arg0?:Xml)=>boolean)): boolean {
         return {} as any;
     }
     public ContainsAttribute(name?: string): boolean {
@@ -34,7 +34,7 @@ export class Xml {
     public GetOrCreateAttribute(name?: string, defaultValue?: string): string {
         return {} as any;
     }
-    public FirstElement(predicate?: (arg0?:Xml)=>boolean): Xml {
+    public FirstElement(predicate?: ((arg0?:Xml)=>boolean)): Xml {
         return {} as any;
     }
     public GetElementByName(name?: string): Xml {
@@ -84,13 +84,13 @@ export class Xml {
     public static Load(path?: string): Xml {
         return {} as any;
     }
-    public static TryLoad(path?: string, onDefaultValue?: ()=>Xml): Xml {
+    public static TryLoad(path?: string, onDefaultValue?: (()=>Xml)): Xml {
         return {} as any;
     }
     public static Parse(xml?: string): Xml {
         return {} as any;
     }
-    public static TryParse(xml?: string, onDefaultValue?: ()=>Xml): Xml {
+    public static TryParse(xml?: string, onDefaultValue?: (()=>Xml)): Xml {
         return {} as any;
     }
     public static New(): Xml {
