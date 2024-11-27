@@ -1,4 +1,7 @@
 import { File } from "../.tsc/System/IO/File";
+import { Directory } from "../.tsc/System/IO/Directory";
+import { Console } from "../.tsc/System/Console";
+import { Path } from "../.tsc/System/IO/Path";
 let TidyCppGenerator = (config: {
     namespace: string,
     exportDefine: string,
@@ -112,7 +115,7 @@ let TidyCppGenerator = (config: {
     #include <functional>
 #endif`;
     };
-    let generateMacro = ()=>{
+    let generateMacro = () => {
         let header = `
 #ifndef __${config.namespace.toUpperCase()}_MACRO_H__
 #define __${config.namespace.toUpperCase()}_MACRO_H__
@@ -274,7 +277,7 @@ using namespace ${namespace};`);
         headerLines.push(`#include <vector>`);
         headerLines.push(`#include "${namespace}_StringUtil.h"`);
         headerLines.push(`#include "${namespace}_StringCommon.h"`);
-        
+
 
         headerLines.push(generate_SUPPORT_NULLPTR());
         // SUPPORT_STD_STRINGSTREAM宏定义
@@ -2008,6 +2011,7 @@ namespace ${namespace} {
 #ifndef __${namespace.toUpperCase()}_BYTES_H__
 #define __${namespace.toUpperCase()}_BYTES_H__
 #include "${namespace}_Macro.h"
+${generate_SUPPORT_NULLPTR()}
 namespace ${namespace}
 {
   class ${exportDefine} Bytes
@@ -3725,7 +3729,33 @@ let generator = TidyCppGenerator({
     namespace: "Tidy",
     exportDefine: ""
 });
-let classes = generator.generate();
-for (let classFile of classes) {
-    File.WriteAllText(classFile.FileName, classFile.Content);
-}
+
+
+let main = async () => {
+    console.log("Please input header file path:");
+    var headerPath = Console.ReadLine();
+    if (Directory.Exists(headerPath) == false) {
+        console.log("The header file path is not exist.");
+        return;
+    }
+    console.log("Please input source file path:");
+    var sourcePath = Console.ReadLine();
+    if (Directory.Exists(sourcePath) == false) {
+        console.log("The source file path is not exist.");
+        return;
+    }
+
+    let classes = generator.generate();
+    for (let classFile of classes) {
+        if (classFile.FileName.endsWith(".h")) {
+            let headerFile = Path.Combine(headerPath, classFile.FileName);
+            File.WriteAllText(headerFile, classFile.Content);
+        }
+        else {
+            let sourceFile = Path.Combine(sourcePath, classFile.FileName);
+            File.WriteAllText(sourceFile, classFile.Content);
+        }
+    }
+};
+
+await main();
