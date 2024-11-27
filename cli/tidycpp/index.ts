@@ -155,6 +155,9 @@ ${generate_SUPPORT_STD_FUNCTION()}
 #include <exception>
 #include "${namespace}_String.h"
 namespace ${namespace} {
+        class LocaleString;
+        class UTF8String;
+        class GBKString;
         class Exception : public std::exception {
         public:
             LocalString Message;
@@ -314,11 +317,12 @@ namespace std {
 using namespace ${namespace};`);
         headerLines.push(`#ifndef __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
         headerLines.push(`#define __${namespace.toUpperCase()}_${className.toUpperCase()}_H__`);
-        headerLines.push(`#include "${namespace}_Macro.h"`);
-        headerLines.push(`#include <string>`);
-        headerLines.push(`#include <vector>`);
-        headerLines.push(`#include "${namespace}_StringUtil.h"`);
-        headerLines.push(`#include "${namespace}_StringCommon.h"`);
+        headerLines.push(`#include "${namespace}_Macro.h"
+#include <string>
+#include <vector>
+#include "${namespace}_StringUtil.h"
+#include "${namespace}_StringCommon.h"
+#include "${namespace}_Exception.h"`);
 
         for (let i = 0; i < allStringClassNames.length; i++) {
             if (allStringClassNames[i] == className) {
@@ -330,8 +334,9 @@ class ${allStringClassNames[i]};
 }`);
         }
 
-        headerLines.push(`namespace ${namespace} {`);
-        headerLines.push(`class ${exportDefine} ${className} {`);
+        headerLines.push(`namespace ${namespace} {
+class Exception;
+class ${exportDefine} ${className} {`);
         headerLines.push(`public:`);
         headerLines.push(`    std::string Target;
     int TargetEncoding;
@@ -917,7 +922,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         try {
             return std::stoi(Target);
         } catch (...) {
-            throw new std::exception("String is not a number.");
+            throw new Exception("String is not a number.");
         }
     }`);
 
@@ -927,7 +932,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         try {
             return std::stof(Target);
         } catch (...) {
-            throw new std::exception("String is not a number.");
+            throw new Exception("String is not a number.");
         }
     }`);
 
@@ -937,7 +942,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         try {
             return std::stod(Target);
         } catch (...) {
-            throw new std::exception("String is not a number.");
+            throw new Exception("String is not a number.");
         }
     }`);
 
@@ -947,7 +952,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         try {
             return std::stoll(Target);
         } catch (...) {
-            throw new std::exception("String is not a number.");
+            throw new Exception("String is not a number.");
         }
     }`);
 
@@ -968,7 +973,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`        } else if (ToLower() == "false") {`);
         headerLines.push(`            return false;`);
         headerLines.push(`        } else {`);
-        headerLines.push(`            throw new std::exception("String is not a boolean.");`);
+        headerLines.push(`            throw new Exception("String is not a boolean.");`);
         headerLines.push(`        }`);
         headerLines.push(`    }`);
 
