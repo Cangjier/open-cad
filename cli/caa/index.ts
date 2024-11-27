@@ -1162,8 +1162,9 @@ let help = () => {
     console.log(File.ReadAllText(Path.Combine(script_directory, "Readme.md"), utf8));
 };
 let main = async () => {
-    console.log(args);
-    if (args.length == 0) {
+    // console.log(args);
+    let noArgs = args.length == 0 || (args[0] == "--application-name");
+    if (noArgs) {
         if (OperatingSystem.IsLinux()) {
             // 确认是否需要注册caa方法到.bashrc
             let bashrcPath = Path.Combine(env("userprofile"), ".bashrc");
@@ -1182,7 +1183,7 @@ let main = async () => {
             }
         }
     }
-    if (args.length == 0) {
+    if (noArgs) {
         let project = ProjectV1(Environment.CurrentDirectory);
         let frameworks = project.getFrameworks();
         let index = 1;
@@ -1233,7 +1234,7 @@ let main = async () => {
             File.WriteAllText(Path.Combine(paths.sourcePath, `${className}.cpp`), sourceContent, utf8);
             console.log("Class created.");
         }
-        else{
+        else {
             help();
         }
     }
