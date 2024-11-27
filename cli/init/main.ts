@@ -327,10 +327,11 @@ let SDKManager = () => {
         let cmds = [] as string[];
         _createLowerCaseLink(directory, directory, cmds);
         let cmdScope = cmds.join("\n");
-        console.log(cmdScope);
-        await cmdAsync(Environment.CurrentDirectory, `{
-${cmdScope}
-}`);
+        let shPath = Path.Combine(directory, "createLowerCaseLink.sh");
+        console.log(shPath);
+        await File.WriteAllTextAsync(shPath, cmdScope, utf8);
+        await cmdAsync(directory, `chmod +x createLowerCaseLink.sh`);
+        await cmdAsync(directory, `./createLowerCaseLink.sh`);
     };
     let installSDK = async (sdkName: string, cadVersion: string) => {
         // 安装cad的sdk
