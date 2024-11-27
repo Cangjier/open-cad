@@ -1169,8 +1169,13 @@ let cmd_init = async () => {
     let cadName = "CAA";
     let sdkName = args[1];
     if (OperatingSystem.IsLinux()) {
+        console.log("Checking Mingw");
         if (mingwManager.isInstalled() == false) {
+            console.log("Installing Mingw");
             await mingwManager.install();
+        }
+        else{
+            console.log("Mingw is installed");
         }
     }
     let projectDirectory = Environment.CurrentDirectory;
