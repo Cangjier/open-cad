@@ -23,7 +23,7 @@ let TidyCppGenerator = (config: {
     let generate_SUPPORT_ASSERT_NULLPTR = () => {
         return `
 #ifndef SUPPORT_ASSERT_NULLPTR
-    #define SUPPORT_ASSERT_NULLPTR(POINTER) if(POINTER == SUPPORT_NULLPTR) { throw std::exception((std::string("Null pointer exception. File ")+std::string(__FILE__)+", Line "+std::to_string(__LINE__)).c_str()); }
+    #define SUPPORT_ASSERT_NULLPTR(POINTER) if(POINTER == SUPPORT_NULLPTR) { throw ${config.namespace}::Exception(${config.namespace}::LocaleString("Null pointer exception. File ")+${config.namespace}::LocaleString(__FILE__)+", Line "+${config.namespace}::LocaleString(__LINE__)); }
 #endif`;
     };
     let generate_SUPPORT_STD_STRINGSTREAM = () => {
@@ -147,18 +147,18 @@ ${generate_SUPPORT_STD_FUNCTION()}
             }
         ]
     };
-    let generate_STANDARD_EXCEPTION = (namespace: string) => {
+    let generateEXCEPTION = (namespace: string) => {
         let header = `
-#ifndef __${namespace.toUpperCase()}_STANDARD_EXCEPTION_H__
-#define __${namespace.toUpperCase()}_STANDARD_EXCEPTION_H__
+#ifndef __${namespace.toUpperCase()}_EXCEPTION_H__
+#define __${namespace.toUpperCase()}_EXCEPTION_H__
 #include "${namespace}_Macro.h"
 #include <exception>
 #include "${namespace}_String.h"
 namespace ${namespace} {
-        class StandardException : public std::exception {
+        class Exception : public std::exception {
         public:
             LocalString Message;
-            StandardException(LocaleString message) : std::exception() {
+            Exception(LocaleString message) : std::exception() {
                 this->Message = message;
             }
         };
@@ -166,7 +166,7 @@ namespace ${namespace} {
 #endif`;
         return [
             {
-                FileName: `${namespace}_StandardException.h`,
+                FileName: `${namespace}_Exception.h`,
                 Content: header
             }
         ]
@@ -3737,7 +3737,7 @@ LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, Lo
         generatePathClass(config.namespace, config.exportDefine).forEach((item) => {
             classes.push(item);
         });
-        generate_STANDARD_EXCEPTION(config.namespace).forEach((item) => {
+        generateEXCEPTION(config.namespace).forEach((item) => {
             classes.push(item);
         });
         return classes;
