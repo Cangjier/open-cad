@@ -441,7 +441,7 @@ let SDKManager = () => {
             console.log(`generating Find${Path.GetFileName(cadSdkDirectory)}.cmake`);
             await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
         }
-
+        console.log(`Installed ${sdk.name}`);
         return sdk;
     };
     let install = async (cadName: string, cadVersion: string) => {
