@@ -1175,10 +1175,6 @@ let main = async () => {
                 if (answer == "y") {
                     let bashrcScript = `\ncaa() {\nopencad caa "$@"\n}`;
                     File.AppendAllText(bashrcPath, bashrcScript, utf8);
-                    cmd(Environment.CurrentDirectory, "source ~/.bashrc", {
-                        redirect: false,
-                        useShellExecute: false
-                    });
                 }
             }
         }

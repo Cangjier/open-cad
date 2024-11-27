@@ -20,6 +20,12 @@ let TidyCppGenerator = (config: {
     #endif
 #endif`;
     };
+    let generate_SUPPORT_ASSERT_NULLPTR = () => {
+        return `
+#ifndef SUPPORT_ASSERT_NULLPTR
+    #define SUPPORT_ASSERT_NULLPTR(POINTER) if(POINTER == SUPPORT_NULLPTR) { throw std::exception((std::string("Null pointer exception. File ")+std::string(__FILE__)+", Line "+std::to_string(__LINE__)).c_str()); }
+#endif`;
+    };
     let generate_SUPPORT_STD_STRINGSTREAM = () => {
         return `
 #ifndef SUPPORT_STD_STRINGSTREAM
@@ -140,13 +146,37 @@ ${generate_SUPPORT_STD_FUNCTION()}
             }
         ]
     };
+    let generate_STANDARD_EXCEPTION = (namespace: string) => {
+        let header = `
+#ifndef __${namespace.toUpperCase()}_STANDARD_EXCEPTION_H__
+#define __${namespace.toUpperCase()}_STANDARD_EXCEPTION_H__
+#include "${namespace}_Macro.h"
+#include <exception>
+#include "${namespace}_String.h"
+namespace ${namespace} {
+        class StandardException : public std::exception {
+        public:
+            LocalString Message;
+            StandardException(LocaleString message) : std::exception() {
+                this->Message = message;
+            }
+        };
+}
+#endif`;
+        return [
+            {
+                FileName: `${namespace}_StandardException.h`,
+                Content: header
+            }
+        ]
+    };
     let generateStringCommonClass = (namespace: string) => {
         let header = `
 
 #ifndef SUPPORT_STD_TOSTRING
 #define SUPPORT_STD_TOSTRING
 #include <string>
-#if defined(_MSC_VER) && _MSC_VER < 1600
+#if defined(_MSC_VER) && _MSC_VER < 1600 && __cplusplus == 199711L
 namespace std {
     std::string to_string(int value);
     
@@ -3704,6 +3734,9 @@ LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, Lo
             classes.push(item);
         });
         generatePathClass(config.namespace, config.exportDefine).forEach((item) => {
+            classes.push(item);
+        });
+        generate_STANDARD_EXCEPTION(config.namespace).forEach((item) => {
             classes.push(item);
         });
         return classes;
