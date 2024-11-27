@@ -305,8 +305,11 @@ let SDKManager = () => {
 
         if (name != lowerName) {
             let baseRelativeDirectory = Path.GetRelativePath(baseDirectory, directory);
-            let lowerDirectory = Path.Combine(baseDirectory, baseRelativeDirectory.toLowerCase());
-            cmds.push(`ln -s "${directory}" "${lowerDirectory}"`);
+            if (baseRelativeDirectory != ".") {
+                let lowerDirectory = Path.Combine(baseDirectory, baseRelativeDirectory.toLowerCase());
+                cmds.push(`ln -s "${directory}" "${lowerDirectory}"`);
+            }
+
         }
         let files = Directory.GetFiles(directory);
         for (let file of files) {
@@ -333,6 +336,49 @@ let SDKManager = () => {
         await cmdAsync(directory, `chmod +x createLowerCaseLink.sh`);
         await cmdAsync(directory, `./createLowerCaseLink.sh`);
     };
+    let words = [
+        "string",
+        "spec"
+    ];
+    let pascalCase = (name: string) => {
+        for (let word of words) {
+            if (name.includes(word) == false) {
+                continue;
+            }
+            name = name.replace(word, word[0].toUpperCase() + word.substring(1));
+        }
+        return name;
+    };
+    let _createPascalCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => { };
+    _createPascalCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => {
+        // 创建PascalCase的符号链接
+        // ln -s /home/user/myname /home/user/MyName
+        let files = Directory.GetFiles(directory);
+        for (let file of files) {
+            let fileName = Path.GetFileName(file);
+            let formatFileName = pascalCase(Path.GetFileNameWithoutExtension(file)) + Path.GetExtension(file);
+            if (fileName != formatFileName) {
+                let formatFile = Path.Combine(Path.GetDirectoryName(file), formatFileName);
+                if (File.Exists(formatFile) == false) {
+                    cmds.push(`ln -s "${file}" "${formatFile}"`);
+                }
+            }
+        }
+        let directories = Directory.GetDirectories(directory);
+        for (let subDirectory of directories) {
+            _createPascalCaseLink(baseDirectory, subDirectory, cmds);
+        }
+    };
+    let createPascalCaseLink = async (directory: string) => {
+        let cmds = [] as string[];
+        _createPascalCaseLink(directory, directory, cmds);
+        let cmdScope = cmds.join("\n");
+        let shPath = Path.Combine(directory, "createPascalCaseLink.sh");
+        console.log(shPath);
+        await File.WriteAllTextAsync(shPath, cmdScope, utf8);
+        await cmdAsync(directory, `chmod +x createPascalCaseLink.sh`);
+        await cmdAsync(directory, `./createPascalCaseLink.sh`);
+    };
     let installSDK = async (sdkName: string, cadVersion: string) => {
         // 安装cad的sdk
         let indexJson = await gitManager.getIndexJson();
@@ -354,7 +400,10 @@ let SDKManager = () => {
             name: string,
             version: string,
             download_url: string,
-            needLinkLowerCase?: boolean,
+            linkCase?: {
+                lowerCase?: boolean,
+                pascalCase?: boolean
+            },
             dependency?: {
                 sdkName: string,
                 version: string
@@ -382,8 +431,13 @@ let SDKManager = () => {
             }
             await zip.extract(download_path, cadSdkDirectory);
             File.Delete(download_path);
-            if (OperatingSystem.IsLinux() && sdk.needLinkLowerCase) {
-                await createLowerCaseLink(cadSdkDirectory);
+            if (OperatingSystem.IsLinux()) {
+                if (sdk.linkCase?.lowerCase) {
+                    await createLowerCaseLink(cadSdkDirectory);
+                }
+                if (sdk.linkCase?.pascalCase) {
+                    await createPascalCaseLink(cadSdkDirectory);
+                }
             }
         }
         if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetFileName(cadSdkDirectory)}.cmake`)) == false) {
