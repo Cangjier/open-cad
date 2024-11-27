@@ -275,6 +275,26 @@ let CATIA = () => {
 
 let catia = CATIA();
 
+let MingWManager = () => {
+    let isInstalled = () => {
+        return File.Exists("/usr/bin/x86_64-w64-mingw32-g++");
+    };
+    let install = async () => {
+        console.log("sudo apt update");
+        await cmdAsync(Environment.CurrentDirectory, "sudo apt update");
+        console.log("sudo apt-get install mingw-w64");
+        await cmdAsync(Environment.CurrentDirectory, "sudo apt-get install mingw-w64");
+    };
+    return {
+        isInstalled,
+        install
+    };
+};
+
+let mingwManager = MingWManager();
+
+
+
 let ProjectV1 = (projectDirectory: string) => {
     let Dictionary = (dicoPath: string) => {
         let getAddins = () => {
@@ -1148,18 +1168,21 @@ let cmd_init = async () => {
     console.log(`args: ${args}`);
     let cadName = "CAA";
     let sdkName = args[1];
+    if (OperatingSystem.IsLinux()) {
+        if (mingwManager.isInstalled() == false) {
+            await mingwManager.install();
+        }
+    }
     let projectDirectory = Environment.CurrentDirectory;
     let projectName = Path.GetFileName(projectDirectory);
     projectName = projectName.replace("_", "");
     let cmakePath = Path.Combine(sdkDirectory, cadName, sdkName, `Find${sdkName}.cmake`);
-    let vs2005CMakePath = Path.Combine(sdkDirectory, "WindowsInclude", "VS2005", `FindVS2005.cmake`);
     // 自动创建CMakeLists.txt
     let cmakeListsPath = Path.Combine(projectDirectory, "CMakeLists.txt.bak");
     let cmakeListsText = await File.ReadAllTextAsync(Path.Combine(script_directory, "Project", "CMakeLists.txt"), utf8);
     cmakeListsText = cmakeListsText.replace("__PROJECT_NAME__", projectName);
     await File.WriteAllTextAsync(cmakeListsPath, cmakeListsText, utf8);
     await cmdAsync(Environment.CurrentDirectory, `opencad cmake add_find_package ${cmakeListsPath} ${cmakePath}`);
-    await cmdAsync(Environment.CurrentDirectory, `opencad cmake add_find_package ${cmakeListsPath} ${vs2005CMakePath}`);
     await cmdAsync(Environment.CurrentDirectory, `opencad cmake set_toolchain ${cmakeListsPath} ${Path.Combine(OPEN_CAD_DIR, "vcpkg\\scripts\\buildsystems\\vcpkg.cmake").replace("\\", "/")}`);
     // 自动创建.vscode/settings.json
     let vscodeDirectory = Path.Combine(projectDirectory, ".vscode");
