@@ -1162,6 +1162,7 @@ let help = () => {
     console.log(File.ReadAllText(Path.Combine(script_directory, "Readme.md"), utf8));
 };
 let main = async () => {
+    console.log(args);
     if (args.length == 0) {
         if (OperatingSystem.IsLinux()) {
             // 确认是否需要注册caa方法到.bashrc
