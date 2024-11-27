@@ -376,6 +376,7 @@ let SDKManager = () => {
         await cmdAsync(directory, `./createPascalCaseLink.sh`);
     };
     let installSDK = async (sdkName: string, cadVersion: string) => {
+        console.log(`InstallSDK ${sdkName} ${cadVersion}`);
         // 安装cad的sdk
         let indexJson = await gitManager.getIndexJson();
         let sdkKeys = Object.keys(indexJson.SDK);
