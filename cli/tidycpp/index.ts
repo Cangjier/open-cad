@@ -123,6 +123,7 @@ let TidyCppGenerator = (config: {
 #ifndef __${config.namespace.toUpperCase()}_MACRO_H__
 #define __${config.namespace.toUpperCase()}_MACRO_H__
 headerLines.push(generate_SUPPORT_NULLPTR());
+${generate_SUPPORT_NULLPTR()}
 ${generate_SUPPORT_STD_STRINGSTREAM()}
 ${generate_SUPPORT_EXPLICIT()}
 ${generate_SUPPORT_INT64()}
@@ -2000,7 +2001,6 @@ namespace ${namespace} {
 #ifndef __${namespace.toUpperCase()}_BYTES_H__
 #define __${namespace.toUpperCase()}_BYTES_H__
 #include "${namespace}_Macro.h"
-${generate_SUPPORT_NULLPTR()}
 namespace ${namespace}
 {
   class ${exportDefine} Bytes
