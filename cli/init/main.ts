@@ -346,6 +346,7 @@ let SDKManager = () => {
             File.Delete(download_path);
         }
         if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetFileName(cadSdkDirectory)}.cmake`)) == false) {
+            console.log(`generating Find${Path.GetFileName(cadSdkDirectory)}.cmake`);
             await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
         }
 
