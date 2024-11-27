@@ -359,9 +359,7 @@ let SDKManager = () => {
             let formatFileName = pascalCase(Path.GetFileNameWithoutExtension(file)) + Path.GetExtension(file);
             if (fileName != formatFileName) {
                 let formatFile = Path.Combine(Path.GetDirectoryName(file), formatFileName);
-                if (File.Exists(formatFile) == false) {
-                    cmds.push(`ln -s "${file}" "${formatFile}"`);
-                }
+                cmds.push(`ln -s "${file}" "${formatFile}"`);
             }
         }
         let directories = Directory.GetDirectories(directory);
