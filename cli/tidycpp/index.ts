@@ -3770,6 +3770,9 @@ let directoryFinder = DirectoryFinder();
 
 let main = async () => {
     let adviseHeaderPath = directoryFinder.findHeaderDirectory(Directory.GetCurrentDirectory());
+    if (adviseHeaderPath == "") {
+        adviseHeaderPath = Directory.GetCurrentDirectory();
+    }
     console.log(`Please input header file path: (${adviseHeaderPath})`);
     var headerPath = Console.ReadLine();
     if (headerPath == "") {
@@ -3779,10 +3782,14 @@ let main = async () => {
         console.log("The header file path is not exist.");
         return;
     }
-    console.log(`Please input source file path: (${adviseHeaderPath})`);
+    let adviseSourcePath = directoryFinder.findSourceDirectory(Directory.GetCurrentDirectory());
+    if (adviseSourcePath == "") {
+        adviseSourcePath = Directory.GetCurrentDirectory();
+    }
+    console.log(`Please input source file path: (${adviseSourcePath})`);
     var sourcePath = Console.ReadLine();
     if (sourcePath == "") {
-        sourcePath = adviseHeaderPath
+        sourcePath = adviseSourcePath
     }
     if (Directory.Exists(sourcePath) == false) {
         console.log("The source file path is not exist.");
