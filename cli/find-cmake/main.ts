@@ -23,7 +23,7 @@ let main = async () => {
     let projectName = Path.GetFileName(projectDirectory);
     let includeDirectory = Path.Combine(projectDirectory, "include");
     let incDirectory = Path.Combine(projectDirectory, "inc");
-    if (Directory.Exists(includeDirectory) || Directory.Exists(incDirectory) || Directory.GetFiles("*.h").length > 0) {
+    if (Directory.Exists(includeDirectory) || Directory.Exists(incDirectory) || Directory.GetFiles(projectDirectory, "*.h").length > 0) {
         let cmakeLines = [] as string[];
         cmakeLines.push(`add_library(${projectName} INTERFACE)`);
         cmakeLines.push(`target_sources(${projectName} INTERFACE)`);
