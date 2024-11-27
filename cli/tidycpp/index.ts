@@ -3727,7 +3727,8 @@ let DirectoryFinder = () => {
     let isHeaderDirectory = (path: string) => {
         return Directory.GetFiles(path, "*.h").length > 0;
     };
-    let findHeaderDirectory = (path: string) => {
+    let findHeaderDirectory = (path: string) => "";
+    findHeaderDirectory = (path: string) => {
         if (isHeaderDirectory(path)) {
             return path;
         }
@@ -3743,7 +3744,8 @@ let DirectoryFinder = () => {
         }
         return findHeaderDirectory(parentPath);
     };
-    let findSourceDirectory = (path: string) => {
+    let findSourceDirectory = (path: string) => "";
+    findSourceDirectory = (path: string) => {
         if (isSourceDirectory(path)) {
             return path;
         }
