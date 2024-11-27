@@ -306,7 +306,7 @@ let DirectoryFinder = () => {
                 success: false
             };
         }
-        let adviseSourcePath = directoryFinder.findSourceDirectory(path);
+        let adviseSourcePath = findSourceDirectory(path);
         if (adviseSourcePath == "") {
             adviseSourcePath = path;
         }
