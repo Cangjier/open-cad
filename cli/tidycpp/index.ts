@@ -165,22 +165,33 @@ namespace ${namespace} {
         class Exception : public std::exception {
         public:
             UTF8String Message;
-            Exception(UTF8String message) : std::exception() {
-                this->Message = message;
-            }
-            Exception(const char* message) : std::exception() {
-                this->Message = message;
-            }
-            Exception(const std::string& message) : std::exception() {
-                this->Message = message;
-            }
+            Exception(UTF8String message);
+            Exception(const char* message);
+            Exception(const std::string& message);
         };
 }
 #endif`;
+        let source = `
+#include "${namespace}_Exception.h"
+#include "${namespace}_String.h"
+using namespace ${namespace};
+Exception::Exception(const char* message) : std::exception() {
+    this->Message = message;
+}
+Exception::Exception(const std::string& message) : std::exception() {
+    this->Message = message;
+}
+Exception::Exception(UTF8String message) : std::exception() {
+    this->Message = message;
+}`;
         return [
             {
                 FileName: `${namespace}_Exception.h`,
                 Content: header
+            },
+            {
+                FileName: `${namespace}_Exception.cpp`,
+                Content: source
             }
         ]
     };
