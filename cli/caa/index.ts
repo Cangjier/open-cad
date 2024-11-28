@@ -16,6 +16,9 @@ import { axios } from "../.tsc/Cangjie/TypeSharp/System/axios";
 import { OperatingSystem } from "../.tsc/System/OperatingSystem";
 import { Console } from "../.tsc/System/Console";
 import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
+import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
+import { SearchOption } from "../.tsc/System/IO/SearchOption";
+import { htmlUtils } from "../.tsc/Cangjie/TypeSharp/System/htmlUtils";
 let utf8 = new UTF8Encoding(false);
 let gb2312 = Encoding.GetEncoding("gb2312");
 
@@ -27,11 +30,15 @@ if (Directory.Exists(repositoryDirectory) == false) {
 }
 let downloadDirectory = Path.Combine(OPEN_CAD_DIR, "download");
 let sdkDirectory = Path.Combine(OPEN_CAD_DIR, "sdk");
+let caadocDirectory = Path.Combine(OPEN_CAD_DIR, "caddoc");
 if (Directory.Exists(downloadDirectory) == false) {
     Directory.CreateDirectory(downloadDirectory);
 }
 if (Directory.Exists(sdkDirectory) == false) {
     Directory.CreateDirectory(sdkDirectory);
+}
+if (Directory.Exists(caadocDirectory) == false) {
+    Directory.CreateDirectory(caadocDirectory);
 }
 
 let cppAnalyser = () => {
@@ -1158,11 +1165,115 @@ let ProjectV1 = (projectDirectory: string) => {
     };
 };
 
+let Searcher = () => {
+    let cache = {};
+    let cloneSelf = async () => {
+        let gitDirectory = Path.Combine(repositoryDirectory, ".git");
+        if (Directory.Exists(gitDirectory)) {
+            let cmd = `git pull origin master`;
+            console.log(cmd);
+            if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
+                console.log("pull failed");
+                return false;
+            }
+        }
+        else {
+            let cmd = `git clone https://github.com/Cangjier/open-cad.git .`;
+            console.log(cmd);
+            if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
+                console.log("clone failed");
+                return false;
+            }
+        }
+        return true;
+    };
+    let getIndexJson = async () => {
+        let indexJsonPath = Path.Combine(repositoryDirectory, "caadoc", "index.json");
+        if (cache["indexJson"] == undefined) {
+            cache["indexJson"] = await Json.LoadAsync(indexJsonPath);
+        }
+        return cache["indexJson"];
+    };
+    let installCAADoc = async (version: string) => {
+        let indexJson = await getIndexJson();
+        let caadocs = indexJson["CAADoc"];
+        let caadoc = caadocs.find(item => item["version"] == version);
+        if (caadoc) {
+            let downloadUrl = caadoc["download_url"];
+            let downloadPath = Path.Combine(downloadDirectory, Path.GetFileName(downloadUrl));
+            await axios.download(downloadUrl, downloadPath);
+            let unzipDirectory = Path.Combine(caadocDirectory, Path.GetFileNameWithoutExtension(downloadUrl));
+            zip.extract(downloadPath, unzipDirectory);
+            return unzipDirectory;
+        }
+        else {
+            console.log(`CAADoc ${version} not found.`);
+            return "";
+        }
+    };
+    let listInstalled = async () => {
+        return Directory.GetDirectories(caadocDirectory);
+    };
+    let getConfig = () => {
+        let configPath = Path.Combine(caadocDirectory, "config.json");
+        if (File.Exists(configPath) == false) {
+            return {};
+        }
+        return Json.Load(configPath);
+    };
+    let setConfig = (config: any) => {
+        let configPath = Path.Combine(caadocDirectory, "config.json");
+        File.WriteAllText(configPath, JSON.stringify(config), utf8);
+    };
+    let search = (searchDirectory: string, keyword: string) => {
+        let files = Directory.GetFiles(searchDirectory, "*", SearchOption.AllDirectories);
+        let result = [] as string[];
+        for (let file of files) {
+            let fileName = Path.GetFileName(file);
+            if (fileName.includes(keyword)) {
+                result.push(file);
+            }
+            else {
+                let content = htmlUtils.getText(File.ReadAllText(file, utf8));
+                if (content.includes(keyword)) {
+                    result.push(file);
+                }
+            }
+        }
+        return result;
+    };
+    let searchLastDirectory = (keyword: string) => {
+        let config = getConfig();
+        if (config.lastSearchDirectory) {
+            return search(config.lastSearchDirectory, keyword);
+        }
+        return [];
+    };
+    let guide = async () => {
+        let config = getConfig();
+        if (config.guide) {
+            return;
+        }
+        console.log("Welcome to CAADoc.");
+        console.log("Please input the version you want to install:");
+        let version = Console.ReadLine();
+        let installDirectory = await installCAADoc(version);
+        config.guide = true;
+        config.lastSearchDirectory = installDirectory;
+        setConfig(config);
+    };
+    return {
+        searchLastDirectory,
+        guide
+    }
+};
+
+let searcher = Searcher();
+
 let help = () => {
     console.log(File.ReadAllText(Path.Combine(script_directory, "Readme.md"), utf8));
 };
 let main = async () => {
-    // console.log(args);
     let noArgs = args.length == 0 || (args[0] == "--application-name");
     if (noArgs) {
         if (OperatingSystem.IsLinux()) {
@@ -1229,6 +1340,20 @@ let main = async () => {
             File.WriteAllText(Path.Combine(paths.headerPath, `${className}.h`), headerContent, utf8);
             File.WriteAllText(Path.Combine(paths.sourcePath, `${className}.cpp`), sourceContent, utf8);
             console.log("Class created.");
+        }
+        else if (command == "search") {
+            // 查询CADDoc信息
+            let keyword = args[1];
+            if (keyword.startsWith("--")) {
+                console.log("Please input keyword.");
+                return;
+            }
+            searcher.guide();
+            let files = searcher.searchLastDirectory(keyword);
+            let index = 0;
+            for (let file of files) {
+                console.log(`${++index}/${files.length} ${file}`);
+            }
         }
         else {
             help();
