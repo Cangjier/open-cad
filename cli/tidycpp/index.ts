@@ -323,6 +323,7 @@ using namespace ${namespace};`);
         headerLines.push(`#include "${namespace}_Macro.h"
 #include <string>
 #include <vector>
+#include <cstring>
 #if SUPPORT_STD_STRINGSTREAM
 #include <sstream>
 #endif
@@ -785,7 +786,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`        ${className} result;
         for(size_t i = 0; i < Target.size(); i++) {
             if(Target[i] >= '0' && Target[i] <= '9') {
-                result.Append(Target[i]);
+                result.Append(${className}(Target[i]));
             }
         }
         return result;`);
@@ -796,8 +797,8 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
     ${className} RemoveChars(const ${className}& chars) const {
         ${className} result;
         for(size_t i = 0; i < Target.size(); i++) {
-            if(chars.IndexOf(Target[i]) == -1) {
-                result.Append(Target[i]);
+            if(chars.IndexOf(${className}(Target[i])) == -1) {
+                result.Append(${className}(Target[i]));
             }
         }
         return result;
