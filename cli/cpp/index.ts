@@ -89,6 +89,7 @@ let Installer = () => {
             let generator = sdk["generator"];
             if (generator) {
                 generator = generator.replace("{output}", outputDirectory);
+                console.log(generator);
                 await cmdAsync(outputDirectory, generator);
             }
         }

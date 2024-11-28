@@ -3888,10 +3888,12 @@ let main = async () => {
     for (let classFile of classes) {
         if (classFile.FileName.endsWith(".h")) {
             let headerFile = Path.Combine(inputHeaderPath, classFile.FileName);
+            console.log(`Generate ${headerFile}`);
             File.WriteAllText(headerFile, classFile.Content);
         }
         else {
             let sourceFile = Path.Combine(inputSourcePath, classFile.FileName);
+            console.log(`Generate ${sourceFile}`);
             File.WriteAllText(sourceFile, classFile.Content);
         }
     }
