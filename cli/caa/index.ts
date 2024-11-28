@@ -1199,6 +1199,7 @@ let Searcher = () => {
         let indexJson = await getIndexJson();
         let caadocs = indexJson["CAADoc"];
         let caadoc = caadocs.find(item => item["version"] == version);
+        console.log(`CAADoc ${caadoc}`);
         if (caadoc) {
             let downloadUrl = caadoc["download_url"];
             console.log(`Downloading CAADoc ${version}...`);
