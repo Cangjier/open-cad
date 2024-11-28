@@ -1171,7 +1171,9 @@ let Searcher = () => {
         try {
             let gitDirectory = Path.Combine(repositoryDirectory, ".git");
             if (Directory.Exists(gitDirectory)) {
-                if ((await cmdAsync(repositoryDirectory, `git pull`)).exitCode != 0) {
+                debugger;
+                let cmdResult = await cmdAsync(repositoryDirectory, `git pull`);
+                if (cmdResult.exitCode != 0) {
                     console.log("pull failed");
                     return false;
                 }
