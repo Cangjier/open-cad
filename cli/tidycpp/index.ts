@@ -3,6 +3,7 @@ import { Directory } from "../.tsc/System/IO/Directory";
 import { Console } from "../.tsc/System/Console";
 import { Path } from "../.tsc/System/IO/Path";
 import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
+import { args } from "../.tsc/context";
 let TidyCppGenerator = (config: {
     namespace: string,
     exportDefine: string,
@@ -3823,43 +3824,73 @@ let DirectoryFinder = () => {
 
 let directoryFinder = DirectoryFinder();
 
+let parameters = {} as { [key: string]: string };
+for (let i = 0; i < args.length; i++) {
+    let arg = args[i];
+    if (arg.startsWith("--")) {
+        let key = arg.substring(2);
+        if (i + 1 < args.length) {
+            let value = args[i + 1];
+            parameters[key] = value;
+            i++;
+        }
+        else {
+            parameters[key] = "true";
+        }
+    }
+    else if (arg.startsWith("-")) {
+        let key = arg.substring(1);
+        let value = args[i + 1];
+        parameters[key] = value;
+        i++;
+    }
+}
 
 let main = async () => {
-    let adviseHeaderPath = directoryFinder.findHeaderDirectory(Directory.GetCurrentDirectory());
-    if (adviseHeaderPath == "") {
-        adviseHeaderPath = Directory.GetCurrentDirectory();
+    let inputHeaderPath = parameters["header"];
+    if (inputHeaderPath == undefined) {
+        let adviseHeaderPath = directoryFinder.findHeaderDirectory(Directory.GetCurrentDirectory());
+        if (adviseHeaderPath == "") {
+            adviseHeaderPath = Directory.GetCurrentDirectory();
+        }
+        console.log(`Please input header file path: (${adviseHeaderPath})`);
+        var headerPath = Console.ReadLine();
+        if (headerPath == "") {
+            headerPath = adviseHeaderPath
+        }
+
+        inputHeaderPath = headerPath;
     }
-    console.log(`Please input header file path: (${adviseHeaderPath})`);
-    var headerPath = Console.ReadLine();
-    if (headerPath == "") {
-        headerPath = adviseHeaderPath
+    let inputSourcePath = parameters["source"];
+    if (inputSourcePath == undefined) {
+        let adviseSourcePath = directoryFinder.findSourceDirectory(Directory.GetCurrentDirectory());
+        if (adviseSourcePath == "") {
+            adviseSourcePath = Directory.GetCurrentDirectory();
+        }
+        console.log(`Please input source file path: (${adviseSourcePath})`);
+        var sourcePath = Console.ReadLine();
+        if (sourcePath == "") {
+            sourcePath = adviseSourcePath
+        }
+
+        inputSourcePath = sourcePath;
     }
-    if (Directory.Exists(headerPath) == false) {
+    if (Directory.Exists(inputHeaderPath) == false) {
         console.log("The header file path is not exist.");
         return;
     }
-    let adviseSourcePath = directoryFinder.findSourceDirectory(Directory.GetCurrentDirectory());
-    if (adviseSourcePath == "") {
-        adviseSourcePath = Directory.GetCurrentDirectory();
-    }
-    console.log(`Please input source file path: (${adviseSourcePath})`);
-    var sourcePath = Console.ReadLine();
-    if (sourcePath == "") {
-        sourcePath = adviseSourcePath
-    }
-    if (Directory.Exists(sourcePath) == false) {
+    if (Directory.Exists(inputSourcePath) == false) {
         console.log("The source file path is not exist.");
         return;
     }
-
     let classes = generator.generate();
     for (let classFile of classes) {
         if (classFile.FileName.endsWith(".h")) {
-            let headerFile = Path.Combine(headerPath, classFile.FileName);
+            let headerFile = Path.Combine(inputHeaderPath, classFile.FileName);
             File.WriteAllText(headerFile, classFile.Content);
         }
         else {
-            let sourceFile = Path.Combine(sourcePath, classFile.FileName);
+            let sourceFile = Path.Combine(inputSourcePath, classFile.FileName);
             File.WriteAllText(sourceFile, classFile.Content);
         }
     }
