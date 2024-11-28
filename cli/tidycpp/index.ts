@@ -165,33 +165,22 @@ namespace ${namespace} {
         class Exception : public std::exception {
         public:
             UTF8String Message;
-            Exception(UTF8String message);
-            Exception(const char* message);
-            Exception(const std::string& message);
+            Exception(UTF8String message) : std::exception() {
+                this->Message = message;
+            }
+            Exception(const char* message) : std::exception() {
+                this->Message = message;
+            }
+            Exception(const std::string& message) : std::exception() {
+                this->Message = message;
+            }
         };
 }
 #endif`;
-        let source = `
-#include "${namespace}_Exception.h"
-#include "${namespace}_String.h"
-using namespace ${namespace};
-Exception::Exception(const char* message) : std::exception() {
-    this->Message = message;
-}
-Exception::Exception(const std::string& message) : std::exception() {
-    this->Message = message;
-}
-Exception::Exception(UTF8String message) : std::exception() {
-    this->Message = message;
-}`;
         return [
             {
                 FileName: `${namespace}_Exception.h`,
                 Content: header
-            },
-            {
-                FileName: `${namespace}_Exception.cpp`,
-                Content: source
             }
         ]
     };
@@ -349,8 +338,7 @@ using namespace ${namespace};`);
 #include <functional>
 #endif
 #include "${namespace}_StringUtil.h"
-#include "${namespace}_StringCommon.h"
-#include "${namespace}_Exception.h"`);
+#include "${namespace}_StringCommon.h"`);
 
         for (let i = 0; i < allStringClassNames.length; i++) {
             if (allStringClassNames[i] == className) {
@@ -363,7 +351,6 @@ class ${allStringClassNames[i]};
         }
 
         headerLines.push(`namespace ${namespace} {
-class Exception;
 class ${exportDefine} ${className} {`);
         headerLines.push(`public:`);
         headerLines.push(`    std::string Target;
@@ -953,41 +940,25 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         // ToInt
         headerLines.push(`
     int ToInt() const {
-        try {
-            return std::stoi(Target);
-        } catch (...) {
-            throw new Exception("String is not a number.");
-        }
+        return std::stoi(Target);
     }`);
 
         // ToFloat
         headerLines.push(`    
     float ToFloat() const {
-        try {
-            return std::stof(Target);
-        } catch (...) {
-            throw new Exception("String is not a number.");
-        }
+        return std::stof(Target);
     }`);
 
         // ToDouble
         headerLines.push(`
     double ToDouble() const {
-        try {
-            return std::stod(Target);
-        } catch (...) {
-            throw new Exception("String is not a number.");
-        }
+        return std::stod(Target);
     }`);
 
         // ToInt64
         headerLines.push(`
     SUPPORT_INT64 ToInt64() const {
-        try {
-            return std::stoll(Target);
-        } catch (...) {
-            throw new Exception("String is not a number.");
-        }
+        return std::stoll(Target);
     }`);
 
         // IsTrue
@@ -1001,15 +972,16 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         headerLines.push(`    }`);
 
         // ToBool
-        headerLines.push(`    bool ToBool() const {`);
-        headerLines.push(`        if (ToLower() == "true") {`);
-        headerLines.push(`            return true;`);
-        headerLines.push(`        } else if (ToLower() == "false") {`);
-        headerLines.push(`            return false;`);
-        headerLines.push(`        } else {`);
-        headerLines.push(`            throw new Exception("String is not a boolean.");`);
-        headerLines.push(`        }`);
-        headerLines.push(`    }`);
+        headerLines.push(`
+    bool ToBool() const {
+        if (ToLower() == "true") {
+            return true;
+        } else if (ToLower() == "false") {
+            return false;
+        } else {
+            return false;
+        }
+    }`);
 
         // To StdString
         headerLines.push(`    std::string ToStdString(unsigned int encodingPage) const {`);
