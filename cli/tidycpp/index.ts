@@ -455,6 +455,12 @@ class ${exportDefine} ${className} {`);
         headerLines.push(`        this->Target = std::to_string(target);`);
         headerLines.push(`    }`);
 
+        // 从unsigned long转换的构造函数
+        headerLines.push(`    SUPPORT_EXPLICIT ${className}(unsigned long target) {`);
+        headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
+        headerLines.push(`        this->Target = std::to_string(target);`);
+        headerLines.push(`    }`);
+
         // 从unsigned long long转换的构造函数
         headerLines.push(`    SUPPORT_EXPLICIT ${className}(unsigned long long target) {`);
         headerLines.push(`        this->TargetEncoding = ${targetEncoding};`);
