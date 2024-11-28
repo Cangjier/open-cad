@@ -1058,7 +1058,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
 
         // Index
         headerLines.push(`    ${className} operator[](int index) const {`);
-        headerLines.push(`        return Target[index];`);
+        headerLines.push(`        return ${className}(Target[index]);`);
         headerLines.push(`    }`);
 
         // =
