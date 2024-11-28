@@ -1188,11 +1188,17 @@ let Searcher = () => {
         return true;
     };
     let getIndexJson = async () => {
-        let indexJsonPath = Path.Combine(repositoryDirectory, "caadoc", "index.json");
-        if (cache["indexJson"] == undefined) {
-            cache["indexJson"] = await Json.LoadAsync(indexJsonPath);
+        try {
+            let indexJsonPath = Path.Combine(repositoryDirectory, "caadoc", "index.json");
+            if (cache["indexJson"] == undefined) {
+                cache["indexJson"] = await Json.LoadAsync(indexJsonPath);
+            }
+            return cache["indexJson"];
         }
-        return cache["indexJson"];
+        catch {
+            console.log("index.json not found.");
+            return {};
+        }
     };
     let installCAADoc = async (version: string) => {
         await cloneSelf();
