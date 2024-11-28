@@ -327,6 +327,9 @@ using namespace ${namespace};`);
 #if SUPPORT_STD_STRINGSTREAM
 #include <sstream>
 #endif
+#if SUPPORT_STD_FUNCTION
+#include <functional>
+#endif
 #include "${namespace}_StringUtil.h"
 #include "${namespace}_StringCommon.h"
 #include "${namespace}_Exception.h"`);
@@ -1034,7 +1037,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
     ${className} Intersect(const ${className}& value) const {
         std::string result;
         for(size_t i = 0; i < Target.size(); i++) {
-            if(value.Contains(Target[i])) {
+            if(value.Contains(${className}(Target[i]))) {
                 result.append(1, Target[i]);
             }
         }
