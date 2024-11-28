@@ -323,6 +323,9 @@ using namespace ${namespace};`);
         headerLines.push(`#include "${namespace}_Macro.h"
 #include <string>
 #include <vector>
+#if SUPPORT_STD_STRINGSTREAM
+#include <sstream>
+#endif
 #include "${namespace}_StringUtil.h"
 #include "${namespace}_StringCommon.h"
 #include "${namespace}_Exception.h"`);
