@@ -1168,28 +1168,22 @@ let ProjectV1 = (projectDirectory: string) => {
 let Searcher = () => {
     let cache = {};
     let cloneSelf = async () => {
-        try {
-            let gitDirectory = Path.Combine(repositoryDirectory, ".git");
-            if (Directory.Exists(gitDirectory)) {
-                // debugger;
-                let cmdResult = await cmdAsync(repositoryDirectory, `git pull`);
-                if (cmdResult.exitCode != 0) {
-                    console.log("pull failed");
-                    return false;
-                }
+        let gitDirectory = Path.Combine(repositoryDirectory, ".git");
+        if (Directory.Exists(gitDirectory)) {
+            debugger;
+            let cmdResult = await cmdAsync(repositoryDirectory, `git pull`);
+            if (cmdResult.exitCode != 0) {
+                console.log("pull failed");
+                return false;
             }
-            else {
-                if ((await cmdAsync(repositoryDirectory, `git clone https://github.com/Cangjier/open-cad.git .`)).exitCode != 0) {
-                    console.log("clone failed");
-                    return false;
-                }
+        }
+        else {
+            if ((await cmdAsync(repositoryDirectory, `git clone https://github.com/Cangjier/open-cad.git .`)).exitCode != 0) {
+                console.log("clone failed");
+                return false;
             }
-            return true;
         }
-        catch (e) {
-            console.log(`cloneSelf error: ${e.ToString()}`);
-            return false;
-        }
+        return true;
     };
     let getIndexJson = async () => {
         try {
