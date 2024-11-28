@@ -1169,10 +1169,9 @@ let Searcher = () => {
     let cache = {};
     let cloneSelf = async () => {
         let gitDirectory = Path.Combine(repositoryDirectory, ".git");
-        console.log(`RepositoryDirectory: ${gitDirectory}, ${Directory.Exists(gitDirectory)}`);
         if (Directory.Exists(gitDirectory)) {
-            console.log(`123`);
             let cmd = `git pull origin master`;
+            console.log(`cmd`);
             console.log(cmd);
             if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
                 console.log("pull failed");
