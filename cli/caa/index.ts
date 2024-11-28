@@ -1187,7 +1187,7 @@ let Searcher = () => {
             return true;
         }
         catch (e) {
-            console.log(`cloneSelf error: ${e}`);
+            console.log(`cloneSelf error: ${e.ToString()}`);
             return false;
         }
     };
