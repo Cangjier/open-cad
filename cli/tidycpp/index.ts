@@ -23,7 +23,7 @@ let TidyCppGenerator = (config: {
     let generate_SUPPORT_ASSERT_NULLPTR = () => {
         return `
 #ifndef SUPPORT_ASSERT_NULLPTR
-    #define SUPPORT_ASSERT_NULLPTR(POINTER) if(POINTER == SUPPORT_NULLPTR) { throw ${config.namespace}::Exception(${config.namespace}::LocaleString("Null pointer exception. File ")+${config.namespace}::LocaleString(__FILE__)+", Line "+${config.namespace}::LocaleString(__LINE__)); }
+    #define SUPPORT_ASSERT_NULLPTR(POINTER) if(POINTER == SUPPORT_NULLPTR) { throw ${config.namespace}::Exception(${config.namespace}::UTF8String("Null pointer exception. File ")+${config.namespace}::UTF8String(__FILE__)+", Line "+${config.namespace}::UTF8String(__LINE__)); }
 #endif`;
     };
     let generate_SUPPORT_STD_STRINGSTREAM = () => {
