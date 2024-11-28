@@ -1202,8 +1202,11 @@ let Searcher = () => {
     };
     let installCAADoc = async (version: string) => {
         await cloneSelf();
+        console.log(`Installing CAADoc ${version}...`);
         let indexJson = await getIndexJson();
+        console.log(`IndexJson ${indexJson}`);
         let caadocs = indexJson["CAADoc"];
+        console.log(`CAADocs ${caadocs}`);
         let caadoc = caadocs.find(item => item["version"] == version);
         console.log(`CAADoc ${caadoc}`);
         if (caadoc) {
