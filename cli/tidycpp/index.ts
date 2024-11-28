@@ -38,10 +38,6 @@ let TidyCppGenerator = (config: {
     #else
         #define SUPPORT_STD_STRINGSTREAM 1
     #endif
-
-    #if SUPPORT_STD_STRINGSTREAM
-        #include <sstream>
-    #endif
 #endif`;
     };
     let generate_SUPPORT_STD_WSTRING = () => {
@@ -56,9 +52,6 @@ let TidyCppGenerator = (config: {
     #else
         #define SUPPORT_STD_WSTRING 1
     #endif
-    #if SUPPORT_STD_WSTRING
-        // #include <wstring>
-    #endif
 #endif`;
     };
     let generate_SUPPORT_EXPLICIT = () => {
@@ -70,6 +63,8 @@ let TidyCppGenerator = (config: {
     #else
         #define SUPPORT_EXPLICIT
     #endif
+#else
+    #define SUPPORT_EXPLICIT explicit
 #endif
 #endif`;
     };
@@ -90,10 +85,14 @@ let TidyCppGenerator = (config: {
     let generate_SUPPORT_STD_OSTRINGSTREAM = () => {
         return `
 #ifndef SUPPORT_STD_OSTRINGSTREAM
-    #if _MSC_VER >= 1400
-        #define SUPPORT_STD_OSTRINGSTREAM 1
+    #ifdef _MSC_VER
+        #if _MSC_VER >= 1400
+            #define SUPPORT_STD_OSTRINGSTREAM 1
+        #else
+            #define SUPPORT_STD_OSTRINGSTREAM 0
+        #endif
     #else
-        #define SUPPORT_STD_OSTRINGSTREAM 0
+        #define SUPPORT_STD_OSTRINGSTREAM 1
     #endif
 #endif`;
     };
@@ -106,6 +105,8 @@ let TidyCppGenerator = (config: {
         #else
             #define SUPPORT_RVALUE_REFERENCES 0
         #endif
+    #else
+        #define SUPPORT_RVALUE_REFERENCES 1
     #endif
 #endif`;
     };
@@ -118,6 +119,8 @@ let TidyCppGenerator = (config: {
         #else
             #define SUPPORT_STD_FUNCTION 0
         #endif
+    #else
+        #define SUPPORT_STD_FUNCTION 1
     #endif
 #endif
 
