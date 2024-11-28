@@ -1169,7 +1169,7 @@ let Searcher = () => {
     let cache = {};
     let cloneSelf = async () => {
         let gitDirectory = Path.Combine(repositoryDirectory, ".git");
-        console.log(`RepositoryDirectory: ${repositoryDirectory}`);
+        console.log(`RepositoryDirectory: ${repositoryDirectory}, ${Directory.Exists(gitDirectory)}`);
         if (Directory.Exists(gitDirectory)) {
             let cmd = `git pull origin master`;
             console.log(cmd);
