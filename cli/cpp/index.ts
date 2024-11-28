@@ -31,6 +31,26 @@ if (Directory.Exists(sdkDirectory) == false) {
 let Installer = () => {
     let cache = {};
     let validExtensions = [".h", ".cpp"];
+    let cloneSelf = async () => {
+        let gitDirectory = Path.Combine(repositoryDirectory, ".git");
+        if (Directory.Exists(gitDirectory)) {
+            let cmd = `git pull origin master`;
+            console.log(cmd);
+            if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
+                console.log("pull failed");
+                return false;
+            }
+        }
+        else {
+            let cmd = `git clone https://github.com/Cangjier/open-cad.git .`;
+            console.log(cmd);
+            if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
+                console.log("clone failed");
+                return false;
+            }
+        }
+        return true;
+    };
     let getIndexJson = async () => {
         let indexJsonPath = Path.Combine(repositoryDirectory, "cpp", "index.json");
         if (cache["indexJson"] == undefined) {
@@ -44,6 +64,7 @@ let Installer = () => {
         return tempDirectory;
     };
     let install = async (name: string, outputDirectory: string) => {
+        await cloneSelf();
         let indexJson = await getIndexJson();
         let sdks = indexJson["SDK"];
         let sdk = sdks.find(x => x["name"] == name);
