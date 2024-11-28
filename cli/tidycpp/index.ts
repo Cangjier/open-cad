@@ -151,7 +151,7 @@ ${generate_SUPPORT_STD_FUNCTION()}
             }
         ]
     };
-    let generateEXCEPTION = (namespace: string) => {
+    let generateException = (namespace: string) => {
         let header = `
 #ifndef __${namespace.toUpperCase()}_EXCEPTION_H__
 #define __${namespace.toUpperCase()}_EXCEPTION_H__
@@ -164,8 +164,14 @@ namespace ${namespace} {
         class GBKString;
         class Exception : public std::exception {
         public:
-            LocalString Message;
-            Exception(LocaleString message) : std::exception() {
+            UTF8String Message;
+            Exception(UTF8String message) : std::exception() {
+                this->Message = message;
+            }
+            Exception(const char* message) : std::exception() {
+                this->Message = message;
+            }
+            Exception(const std::string& message) : std::exception() {
                 this->Message = message;
             }
         };
@@ -3732,7 +3738,7 @@ LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, Lo
         generateStringClasses().forEach((item) => {
             classes.push(item);
         });
-        generateEXCEPTION(config.namespace).forEach((item) => {
+        generateException(config.namespace).forEach((item) => {
             classes.push(item);
         });
         // generateTimeSpanClass(config.namespace, config.exportDefine).forEach((item) => {
