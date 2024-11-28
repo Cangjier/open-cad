@@ -1245,6 +1245,9 @@ let Searcher = () => {
     let searchLastDirectory = (keyword: string) => {
         let config = getConfig();
         if (config.lastSearchDirectory) {
+            if(Directory.Exists(config.lastSearchDirectory) == false) {
+                return [];
+            }
             return search(config.lastSearchDirectory, keyword);
         }
         return [];
