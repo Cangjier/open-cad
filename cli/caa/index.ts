@@ -1195,15 +1195,20 @@ let Searcher = () => {
         return cache["indexJson"];
     };
     let installCAADoc = async (version: string) => {
+        await cloneSelf();
         let indexJson = await getIndexJson();
         let caadocs = indexJson["CAADoc"];
         let caadoc = caadocs.find(item => item["version"] == version);
         if (caadoc) {
             let downloadUrl = caadoc["download_url"];
+            console.log(`Downloading CAADoc ${version}...`);
+            console.log(`DownloadUrl: ${downloadUrl}`);
             let downloadPath = Path.Combine(downloadDirectory, Path.GetFileName(downloadUrl));
+            console.log(`DownloadPath: ${downloadPath}`);
             await axios.download(downloadUrl, downloadPath);
             let unzipDirectory = Path.Combine(caadocDirectory, Path.GetFileNameWithoutExtension(downloadUrl));
             zip.extract(downloadPath, unzipDirectory);
+            console.log(`CAADoc Directory: ${unzipDirectory}`);
             return unzipDirectory;
         }
         else {
@@ -1245,7 +1250,7 @@ let Searcher = () => {
     let searchLastDirectory = (keyword: string) => {
         let config = getConfig();
         if (config.lastSearchDirectory) {
-            if(Directory.Exists(config.lastSearchDirectory) == false) {
+            if (Directory.Exists(config.lastSearchDirectory) == false) {
                 return [];
             }
             return search(config.lastSearchDirectory, keyword);
@@ -1261,6 +1266,9 @@ let Searcher = () => {
         console.log("Please input the version you want to install:");
         let version = Console.ReadLine();
         let installDirectory = await installCAADoc(version);
+        if (installDirectory == "") {
+            return;
+        }
         config.guide = true;
         config.lastSearchDirectory = installDirectory;
         setConfig(config);
