@@ -1170,18 +1170,13 @@ let Searcher = () => {
     let cloneSelf = async () => {
         let gitDirectory = Path.Combine(repositoryDirectory, ".git");
         if (Directory.Exists(gitDirectory)) {
-            let cmd = `git pull`;
-            let cmdResult = await cmdAsync(repositoryDirectory, cmd);
-            console.log(`cmdResult: ${cmdResult}`);
-            if (cmdResult.exitCode != 0) {
+            if ((await cmdAsync(repositoryDirectory, `git pull`)).exitCode != 0) {
                 console.log("pull failed");
                 return false;
             }
         }
         else {
-            let cmd = `git clone https://github.com/Cangjier/open-cad.git .`;
-            console.log(cmd);
-            if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
+            if ((await cmdAsync(repositoryDirectory, `git clone https://github.com/Cangjier/open-cad.git .`)).exitCode != 0) {
                 console.log("clone failed");
                 return false;
             }
