@@ -3,7 +3,7 @@
         {
             "name": "tidycpp",
             "url": "https://github.com/opencads/tidycpp.git",
-            "generator": "opencad tidycpp --header {output} --source {output}"
+            "generator": "opencad tidycpp --header {header} --source {source}"
         }
     ]
 }

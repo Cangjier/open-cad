@@ -13,6 +13,7 @@ import { shell } from "../.tsc/Cangjie/TypeSharp/System/shell";
 import { Guid } from "../.tsc/System/Guid";
 import { SearchOption } from "../.tsc/System/IO/SearchOption";
 import { Console } from "../.tsc/System/Console";
+import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
 let OPEN_CAD_DIR = Path.Combine(env("userprofile"), "OPEN_CAD");
 let utf8 = new UTF8Encoding(false);
 let repositoryDirectory = Path.Combine(OPEN_CAD_DIR, "repository");
@@ -28,9 +29,37 @@ if (Directory.Exists(sdkDirectory) == false) {
     Directory.CreateDirectory(sdkDirectory);
 }
 
+let parameters = {} as { [key: string]: string };
+for (let i = 0; i < args.length; i++) {
+    let arg = args[i];
+    if (arg.startsWith("--")) {
+        let key = arg.substring(2);
+        if (i + 1 < args.length) {
+            let value = args[i + 1];
+            parameters[key] = value;
+            i++;
+        }
+        else {
+            parameters[key] = "true";
+        }
+    }
+    else if (arg.startsWith("-")) {
+        let key = arg.substring(1);
+        let value = args[i + 1];
+        parameters[key] = value;
+        i++;
+    }
+}
+
 let Installer = () => {
     let cache = {};
     let validExtensions = [".h", ".cpp"];
+    let isHeader = (file: string) => {
+        return file.endsWith(".h");
+    };
+    let isSource = (file: string) => {
+        return file.endsWith(".cpp");
+    };
     let cloneSelf = async () => {
         let gitDirectory = Path.Combine(repositoryDirectory, ".git");
         if (Directory.Exists(gitDirectory)) {
@@ -64,7 +93,7 @@ let Installer = () => {
         await cmdAsync(tempDirectory, `git clone ${url} .`);
         return tempDirectory;
     };
-    let install = async (name: string, outputDirectory: string) => {
+    let install = async (name: string, headerDirectory: string, sourceDirectory: string) => {
         await cloneSelf();
         let indexJson = await getIndexJson();
         let sdks = indexJson["SDK"];
@@ -77,7 +106,13 @@ let Installer = () => {
                 let extension = Path.GetExtension(file);
                 if (validExtensions.includes(extension)) {
                     let relativePath = Path.GetRelativePath(tempDirectory, file);
-                    let targetPath = Path.Combine(outputDirectory, relativePath);
+                    let targetPath = "";
+                    if (isHeader(file)) {
+                        targetPath = Path.Combine(headerDirectory, relativePath);
+                    }
+                    else if (isSource(file)) {
+                        targetPath = Path.Combine(sourceDirectory, relativePath);
+                    }
                     let targetDirectory = Path.GetDirectoryName(targetPath);
                     if (Directory.Exists(targetDirectory) == false) {
                         Directory.CreateDirectory(targetDirectory);
@@ -88,9 +123,10 @@ let Installer = () => {
             deleteDirectory(tempDirectory);
             let generator = sdk["generator"];
             if (generator) {
-                generator = generator.replace("{output}", outputDirectory);
+                generator = generator.replace("{header}", headerDirectory);
+                generator = generator.replace("{source}", sourceDirectory);
                 console.log(generator);
-                await cmdAsync(outputDirectory, generator);
+                await cmdAsync(Environment.CurrentDirectory, generator);
             }
         }
         else {
@@ -104,6 +140,55 @@ let Installer = () => {
 };
 
 let installer = Installer();
+
+let DirectoryFinder = () => {
+    let isSourceDirectory = (path: string) => {
+        return Directory.GetFiles(path, "*.cpp").length > 0;
+    };
+    let isHeaderDirectory = (path: string) => {
+        return Directory.GetFiles(path, "*.h").length > 0;
+    };
+    let findHeaderDirectory = (path: string) => "";
+    findHeaderDirectory = (path: string) => {
+        if (isHeaderDirectory(path)) {
+            return path;
+        }
+        let subDirectories = Directory.GetDirectories(path);
+        for (let subDirectory of subDirectories) {
+            if (isHeaderDirectory(subDirectory)) {
+                return subDirectory;
+            }
+        }
+        let parentPath = Path.GetDirectoryName(path);
+        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
+            return "";
+        }
+        return findHeaderDirectory(parentPath);
+    };
+    let findSourceDirectory = (path: string) => "";
+    findSourceDirectory = (path: string) => {
+        if (isSourceDirectory(path)) {
+            return path;
+        }
+        let subDirectories = Directory.GetDirectories(path);
+        for (let subDirectory of subDirectories) {
+            if (isSourceDirectory(subDirectory)) {
+                return subDirectory;
+            }
+        }
+        let parentPath = Path.GetDirectoryName(path);
+        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
+            return "";
+        }
+        return findSourceDirectory(parentPath);
+    };
+    return {
+        findHeaderDirectory,
+        findSourceDirectory
+    };
+};
+
+let directoryFinder = DirectoryFinder();
 
 let main = async () => {
     let noArgs = args.length == 0 || (args[0] == "--application-name");
@@ -133,7 +218,43 @@ let main = async () => {
             return;
         }
         let name = args[1];
-        await installer.install(name, Environment.CurrentDirectory);
+        let inputHeaderPath = parameters["header"];
+        if (inputHeaderPath == undefined) {
+            let adviseHeaderPath = directoryFinder.findHeaderDirectory(Directory.GetCurrentDirectory());
+            if (adviseHeaderPath == "") {
+                adviseHeaderPath = Directory.GetCurrentDirectory();
+            }
+            console.log(`Please input header file path: (${adviseHeaderPath})`);
+            var headerPath = Console.ReadLine();
+            if (headerPath == "") {
+                headerPath = adviseHeaderPath
+            }
+
+            inputHeaderPath = headerPath;
+        }
+        let inputSourcePath = parameters["source"];
+        if (inputSourcePath == undefined) {
+            let adviseSourcePath = directoryFinder.findSourceDirectory(Directory.GetCurrentDirectory());
+            if (adviseSourcePath == "") {
+                adviseSourcePath = Directory.GetCurrentDirectory();
+            }
+            console.log(`Please input source file path: (${adviseSourcePath})`);
+            var sourcePath = Console.ReadLine();
+            if (sourcePath == "") {
+                sourcePath = adviseSourcePath
+            }
+
+            inputSourcePath = sourcePath;
+        }
+        if (Directory.Exists(inputHeaderPath) == false) {
+            console.log("The header file path is not exist.");
+            return;
+        }
+        if (Directory.Exists(inputSourcePath) == false) {
+            console.log("The source file path is not exist.");
+            return;
+        }
+        await installer.install(name, inputHeaderPath, inputSourcePath);
     }
     else {
         console.log(`Unknown command: ${command}`);
