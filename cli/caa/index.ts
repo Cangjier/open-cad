@@ -1170,7 +1170,6 @@ let Searcher = () => {
     let cloneSelf = async () => {
         let gitDirectory = Path.Combine(repositoryDirectory, ".git");
         if (Directory.Exists(gitDirectory)) {
-            debugger;
             let cmdResult = await cmdAsync(repositoryDirectory, `git pull`);
             if (cmdResult.exitCode != 0) {
                 console.log("pull failed");
@@ -1367,7 +1366,7 @@ let main = async () => {
                 console.log("Please input keyword.");
                 return;
             }
-            searcher.guide();
+            await searcher.guide();
             let files = searcher.searchLastDirectory(keyword);
             let index = 0;
             for (let file of files) {
