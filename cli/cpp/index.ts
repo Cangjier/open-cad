@@ -91,7 +91,7 @@ let Installer = () => {
                 await cmdAsync(outputDirectory, generator);
             }
         }
-        else{
+        else {
             console.log(`SDK ${name} not found`);
         }
     };
@@ -105,20 +105,18 @@ let installer = Installer();
 
 let main = async () => {
     let noArgs = args.length == 0 || (args[0] == "--application-name");
-    if (noArgs) {
-        if (OperatingSystem.IsLinux()) {
-            // 确认是否需要注册cpp方法到.bashrc
-            let bashrcPath = Path.Combine(env("userprofile"), ".bashrc");
-            let bashrc = File.ReadAllText(bashrcPath, utf8);
-            if (bashrc.includes("cpp()") == false) {
-                console.log("是否需要注册cpp方法到.bashrc？(y/n)");
-                var answer = Console.ReadLine();
-                if (answer == "y") {
-                    let bashrcScript = `\ncpp() {\nopencad cpp "$@"\n}`;
-                    File.AppendAllText(bashrcPath, bashrcScript, utf8);
-                    console.log("已注册cpp方法到.bashrc");
-                    console.log("请执行source ~/.bashrc");
-                }
+    if (OperatingSystem.IsLinux()) {
+        // 确认是否需要注册cpp方法到.bashrc
+        let bashrcPath = Path.Combine(env("userprofile"), ".bashrc");
+        let bashrc = File.ReadAllText(bashrcPath, utf8);
+        if (bashrc.includes("cpp()") == false) {
+            console.log("是否需要注册cpp方法到.bashrc？(y/n)");
+            var answer = Console.ReadLine();
+            if (answer == "y") {
+                let bashrcScript = `\ncpp() {\nopencad cpp "$@"\n}`;
+                File.AppendAllText(bashrcPath, bashrcScript, utf8);
+                console.log("已注册cpp方法到.bashrc");
+                console.log("请执行source ~/.bashrc");
             }
         }
     }
