@@ -1198,20 +1198,15 @@ let Searcher = () => {
         }
     };
     let installCAADoc = async (version: string) => {
+        
         await cloneSelf();
-        console.log(`Installing CAADoc ${version}...`);
         let indexJson = await getIndexJson();
-        console.log(`IndexJson ${indexJson}`);
         let caadocs = indexJson["CAADoc"];
-        console.log(`CAADocs ${caadocs}`);
         let caadoc = caadocs.find(item => item["version"] == version);
-        console.log(`CAADoc ${caadoc}`);
         if (caadoc) {
             let downloadUrl = caadoc["download_url"];
             console.log(`Downloading CAADoc ${version}...`);
-            console.log(`DownloadUrl: ${downloadUrl}`);
             let downloadPath = Path.Combine(downloadDirectory, Path.GetFileName(downloadUrl));
-            console.log(`DownloadPath: ${downloadPath}`);
             await axios.download(downloadUrl, downloadPath);
             let unzipDirectory = Path.Combine(caadocDirectory, Path.GetFileNameWithoutExtension(downloadUrl));
             zip.extract(downloadPath, unzipDirectory);
@@ -1292,6 +1287,7 @@ let help = () => {
     console.log(File.ReadAllText(Path.Combine(script_directory, "Readme.md"), utf8));
 };
 let main = async () => {
+    axios.setDefaultProxy();
     let noArgs = args.length == 0 || (args[0] == "--application-name");
     if (noArgs) {
         if (OperatingSystem.IsLinux()) {
