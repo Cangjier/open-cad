@@ -1050,7 +1050,7 @@ int LastIndexOf(const std::vector<${className}>& values, int start = -1) const {
         ${className} result;
         for (char item : Target)
         {
-            result.Append(func(item));
+            result.Append(func(${className}(item)));
         }
         return result;
         }
