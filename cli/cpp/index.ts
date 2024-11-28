@@ -70,6 +70,9 @@ let Installer = () => {
                 await cmdAsync(outputDirectory, generator);
             }
         }
+        else{
+            console.log(`SDK ${name} not found`);
+        }
     };
 
     return {
@@ -90,7 +93,7 @@ let main = async () => {
                 console.log("是否需要注册cpp方法到.bashrc？(y/n)");
                 var answer = Console.ReadLine();
                 if (answer == "y") {
-                    let bashrcScript = `\cpp() {\nopencad cpp "$@"\n}`;
+                    let bashrcScript = `\ncpp() {\nopencad cpp "$@"\n}`;
                     File.AppendAllText(bashrcPath, bashrcScript, utf8);
                     console.log("已注册cpp方法到.bashrc");
                     console.log("请执行source ~/.bashrc");

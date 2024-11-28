@@ -3732,36 +3732,37 @@ LocaleString IO::Path::Combine(LocaleString directory, LocaleString subPath1, Lo
         generateStringClasses().forEach((item) => {
             classes.push(item);
         });
-        generateTimeSpanClass(config.namespace, config.exportDefine).forEach((item) => {
-            classes.push(item);
-        });
-        generateDateTimeClass(config.namespace, config.exportDefine).forEach((item) => {
-            classes.push(item);
-        });
-        generateIDClass(config.namespace, config.exportDefine).forEach((item) => {
-            classes.push(item);
-        });
-        generateBytesClass(config.namespace, config.exportDefine).forEach((item) => {
-            classes.push(item);
-        });
-        generateFileInfoClass(config.namespace, config.exportDefine).forEach((item) => {
-            classes.push(item);
-        });
-        generateFileClass(config.namespace, config.exportDefine).forEach((item) => {
-            classes.push(item);
-        });
-        generateDirectoryClass(config.namespace, config.exportDefine).forEach((item) => {
-            classes.push(item);
-        });
-        generateDirectoryInfoClass(config.namespace, config.exportDefine).forEach((item) => {
-            classes.push(item);
-        });
-        generatePathClass(config.namespace, config.exportDefine).forEach((item) => {
-            classes.push(item);
-        });
         generateEXCEPTION(config.namespace).forEach((item) => {
             classes.push(item);
         });
+        // generateTimeSpanClass(config.namespace, config.exportDefine).forEach((item) => {
+        //     classes.push(item);
+        // });
+        // generateDateTimeClass(config.namespace, config.exportDefine).forEach((item) => {
+        //     classes.push(item);
+        // });
+        // generateIDClass(config.namespace, config.exportDefine).forEach((item) => {
+        //     classes.push(item);
+        // });
+        // generateBytesClass(config.namespace, config.exportDefine).forEach((item) => {
+        //     classes.push(item);
+        // });
+        // generateFileInfoClass(config.namespace, config.exportDefine).forEach((item) => {
+        //     classes.push(item);
+        // });
+        // generateFileClass(config.namespace, config.exportDefine).forEach((item) => {
+        //     classes.push(item);
+        // });
+        // generateDirectoryClass(config.namespace, config.exportDefine).forEach((item) => {
+        //     classes.push(item);
+        // });
+        // generateDirectoryInfoClass(config.namespace, config.exportDefine).forEach((item) => {
+        //     classes.push(item);
+        // });
+        // generatePathClass(config.namespace, config.exportDefine).forEach((item) => {
+        //     classes.push(item);
+        // });
+
         return classes;
     };
 
