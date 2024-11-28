@@ -60,6 +60,7 @@ let Installer = () => {
     };
     let clone = async (url: string) => {
         let tempDirectory = Path.Combine(downloadDirectory, Guid.NewGuid().ToString());
+        Directory.CreateDirectory(tempDirectory);
         await cmdAsync(tempDirectory, `git clone ${url} .`);
         return tempDirectory;
     };
