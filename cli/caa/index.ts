@@ -1646,8 +1646,6 @@ let main = async () => {
             }
             let framework = project.getFramework(frameworkName);
             let module = framework.getModule(moduleName);
-            
-            console.log(module.imakefile.getItems());
             framework.identityCard.addItem(info.frameworkName, "Public");
             module.imakefile.addWIZARD_LINK_MODULES([info.frameworkName]);
         }
