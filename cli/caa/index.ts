@@ -19,6 +19,7 @@ import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
 import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
 import { SearchOption } from "../.tsc/System/IO/SearchOption";
 import { htmlUtils } from "../.tsc/Cangjie/TypeSharp/System/htmlUtils";
+import { fileUtils } from "../.tsc/Cangjie/TypeSharp/System/fileUtils";
 let utf8 = new UTF8Encoding(false);
 let gb2312 = Encoding.GetEncoding("gb2312");
 
@@ -1233,7 +1234,7 @@ let Searcher = () => {
         File.WriteAllText(configPath, JSON.stringify(config), utf8);
     };
     let search = (searchDirectory: string, keyword: string) => {
-        let files = Directory.GetFiles(searchDirectory, "*.*", SearchOption.AllDirectories);
+        let files = fileUtils.search(searchDirectory, new Regex(".*\\.(htm|html)$"));
         let result = [] as string[];
         for (let file of files) {
             let fileName = Path.GetFileName(file).toLowerCase();

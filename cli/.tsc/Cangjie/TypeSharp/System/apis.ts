@@ -17,6 +17,9 @@ export class apis {
     public static runAsync(apiName?: string, args?: any): Promise<any> {
         return {} as any;
     }
+    public static list(): string[] {
+        return {} as any;
+    }
     public static get directory(): string {
         return {} as any;
     }

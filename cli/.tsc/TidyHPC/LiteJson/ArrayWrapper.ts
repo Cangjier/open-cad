@@ -18,6 +18,15 @@ export class ArrayWrapper {
     public Sort(onSort?: ((arg0?:any, arg1?:any)=>number)): void {
         return {} as any;
     }
+    public Splice(start?: number, deleteCount?: number, items?: any[]): any[] {
+        return {} as any;
+    }
+    public Slice(start?: number, end?: number): any[] {
+        return {} as any;
+    }
+    public Reverse(): any[] {
+        return {} as any;
+    }
     public Equals(obj?: any): boolean {
         return {} as any;
     }

@@ -1,3 +1,4 @@
+import { Regex } from "../../../System/Text/RegularExpressions/Regex";
 import { Type } from "../../../System/Type";
 export class fileUtils {
     public GetType(): Type {
@@ -18,6 +19,9 @@ export class fileUtils {
         return {} as any;
     }
     public static md5(path?: string): string {
+        return {} as any;
+    }
+    public static search(directory?: string, pattern?: Regex): string[] {
         return {} as any;
     }
 }
