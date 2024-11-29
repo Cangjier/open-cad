@@ -700,7 +700,7 @@ let ProjectV1 = (projectDirectory: string) => {
                     range: [index, text.length]
                 });
             }
-            return result;
+            return newResult;
         };
         let setItems = (items: {
             key: string,
@@ -1648,8 +1648,8 @@ let main = async () => {
             let module = framework.getModule(moduleName);
             
             console.log(module.imakefile.getItems());
-            // framework.identityCard.addItem(info.frameworkName, "Public");
-            // module.imakefile.addWIZARD_LINK_MODULES([info.frameworkName]);
+            framework.identityCard.addItem(info.frameworkName, "Public");
+            module.imakefile.addWIZARD_LINK_MODULES([info.frameworkName]);
         }
         else {
             help();
