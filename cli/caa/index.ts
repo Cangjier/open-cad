@@ -1464,13 +1464,12 @@ let main = async () => {
                 return;
             }
             let infos = searcher.getClassInfomationByLastDirectory(className);
-            let info  = infos.find(item => item.className == className);
+            let info  = infos.find(item => item.className.toLowerCase() == className.toLowerCase());
             if (info == undefined) {
                 console.log("Class not found.");
                 return;
             }
-            await cmd(Environment.CurrentDirectory,`code ${info.filePath}`);
-
+            cmd(Environment.CurrentDirectory,`code ${info.filePath}`);
         }
         else if (command == "import") {
 
