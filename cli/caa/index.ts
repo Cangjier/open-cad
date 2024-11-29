@@ -1234,7 +1234,7 @@ let Searcher = () => {
         File.WriteAllText(configPath, JSON.stringify(config), utf8);
     };
     let search = (searchDirectory: string, keyword: string) => {
-        let files = fileUtils.search(searchDirectory, new Regex(".*\\.(htm|html)$"));
+        let files = fileUtils.search(searchDirectory, new Regex(".*(class|interface).*\\.(htm|html)$"));
         let result = [] as string[];
         for (let file of files) {
             let fileName = Path.GetFileName(file).toLowerCase();
