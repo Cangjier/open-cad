@@ -336,10 +336,56 @@ let DirectoryFinder = () => {
             sourcePath
         };
     };
+    let findProjectDirectory = (path: string) => {
+        return "";
+    };
+    findProjectDirectory = (path: string) => {
+        let catiaV5LevelPath = Path.Combine(path, "CATIAV5Level.lvl");
+        if (File.Exists(catiaV5LevelPath)) {
+            return path;
+        }
+        let parentDirectory = Path.GetDirectoryName(path);
+        if (parentDirectory == "" || parentDirectory == "/" || parentDirectory.endsWith(":")) {
+            return "";
+        }
+        return findProjectDirectory(parentDirectory);
+    };
+    let findFrameworkDirectory = (path: string) => {
+        return "";
+    };
+    findFrameworkDirectory = (path: string) => {
+        let cnextDirectory = Path.Combine(path, "CNext");
+        if (Directory.Exists(cnextDirectory)) {
+            return path;
+        }
+        let parentDirectory = Path.GetDirectoryName(path);
+        if (parentDirectory == "" || parentDirectory == "/" || parentDirectory.endsWith(":")) {
+            return "";
+        }
+        return findFrameworkDirectory(parentDirectory);
+    };
+    let findModuleDirectory = (path: string) => {
+        return "";
+    };
+    findModuleDirectory = (path: string) => {
+        let imakefilePath = Path.Combine(path, "Imakefile.mk");
+        if (File.Exists(imakefilePath)) {
+            return path;
+        }
+        let parentDirectory = Path.GetDirectoryName(path);
+        if (parentDirectory == "" || parentDirectory == "/" || parentDirectory.endsWith(":")) {
+            return "";
+        }
+        return findModuleDirectory(parentDirectory);
+    };
+
     return {
         findHeaderDirectory,
         findSourceDirectory,
-        askHeaderSourceDirectory
+        askHeaderSourceDirectory,
+        findProjectDirectory,
+        findFrameworkDirectory,
+        findModuleDirectory
     };
 };
 
@@ -617,16 +663,60 @@ let ProjectV1 = (projectDirectory: string) => {
             let matches = imakefileRegex.Matches(text) as any;
             let result = [] as {
                 key: string,
-                value: string
+                value: string,
+                range: number[]
             }[];
             for (let match of matches) {
-                let line = (match as Match).Value;
+                let matchInstance = match as Match;
+                let line = matchInstance.Value;
                 result.push({
                     key: line.substring(0, line.indexOf("=")).trim(),
-                    value: line.substring(line.indexOf("=") + 1).trim()
+                    value: line.substring(line.indexOf("=") + 1).trim(),
+                    range: [matchInstance.Index, matchInstance.Index + matchInstance.Length]
+                });
+            }
+            // 将中间内容以key为空的item添加到result中
+            let index = 0;
+            let newResult = [] as {
+                key: string,
+                value: string,
+                range: number[]
+            }[];
+            for (let item of result) {
+                if (index < item.range[0]) {
+                    newResult.push({
+                        key: "",
+                        value: text.substring(index, item.range[0]).trim(),
+                        range: [index, item.range[0]]
+                    });
+                }
+                newResult.push(item);
+                index = item.range[1];
+            }
+            if (index < text.length) {
+                newResult.push({
+                    key: "",
+                    value: text.substring(index).trim(),
+                    range: [index, text.length]
                 });
             }
             return result;
+        };
+        let setItems = (items: {
+            key: string,
+            value: string
+        }[]) => {
+            let imakefileDirectory = Path.GetDirectoryName(imakeFilePath);
+            if (Directory.Exists(imakefileDirectory) == false) {
+                Directory.CreateDirectory(imakefileDirectory);
+            }
+            let lines = items.map(item => {
+                if (item.key == "") {
+                    return item.value;
+                }
+                return `${item.key} = ${item.value}`;
+            });
+            File.WriteAllText(imakeFilePath, lines.join("\n"), utf8);
         };
         let initialize = () => {
             if (File.Exists(imakeFilePath)) {
@@ -638,9 +728,26 @@ let ProjectV1 = (projectDirectory: string) => {
             }
             File.Copy(templatePath, imakeFilePath, true);
         };
+        let addWIZARD_LINK_MODULES = (modules: string[]) => {
+            let items = getItems();
+            let index = items.findIndex(item => item.key == "WIZARD_LINK_MODULES");
+            if (index == -1) {
+                items.push({
+                    key: "WIZARD_LINK_MODULES",
+                    value: modules.join(" "),
+                    range: [0, 0]
+                });
+            }
+            else {
+                items[index].value = items[index].value + " " + modules.join(" ");
+            }
+            setItems(items);
+        };
         return {
             getItems,
-            initialize
+            initialize,
+            setItems,
+            addWIZARD_LINK_MODULES
         };
     };
     let Addin = (module: any, name: string) => {
@@ -1464,15 +1571,81 @@ let main = async () => {
                 return;
             }
             let infos = searcher.getClassInfomationByLastDirectory(className);
-            let info  = infos.find(item => item.className.toLowerCase() == className.toLowerCase());
+            let info = infos.find(item => item.className.toLowerCase() == className.toLowerCase());
             if (info == undefined) {
                 console.log("Class not found.");
                 return;
             }
-            cmd(Environment.CurrentDirectory,`code ${info.filePath}`);
+            cmd(Environment.CurrentDirectory, `code ${info.filePath}`);
         }
         else if (command == "import") {
-
+            let className = args[1];
+            if (className.startsWith("--")) {
+                console.log("Please input class name.");
+                return;
+            }
+            let infos = searcher.getClassInfomationByLastDirectory(className);
+            let info = infos.find(item => item.className.toLowerCase() == className.toLowerCase());
+            if (info == undefined) {
+                console.log("Class not found.");
+                return;
+            }
+            let projectDirectory = directoryFinder.findProjectDirectory(Environment.CurrentDirectory);
+            if (projectDirectory == "") {
+                console.log("Project not found.");
+                return;
+            }
+            let project = ProjectV1(projectDirectory);
+            let frameworkDirectory = directoryFinder.findFrameworkDirectory(Environment.CurrentDirectory);
+            let frameworkName = "";
+            if (frameworkDirectory == "") {
+                console.log("Please select framework :");
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                console.log(`${"Index".padEnd(10)}|${"Framework".padEnd(32)}`);
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let frameworks = project.getFrameworks();
+                let index = 0;
+                for (let framework of frameworks) {
+                    console.log(`${++index}/${frameworks.length}|${framework}`);
+                }
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let selectIndex = Console.ReadLine();
+                if (selectIndex == "") {
+                    console.log("Invalid index.");
+                    return;
+                }
+                frameworkName = frameworks[parseInt(selectIndex) - 1];
+            }
+            else {
+                frameworkName = Path.GetFileName(frameworkDirectory);
+            }
+            let moduleName = "";
+            let moduleDirectory = directoryFinder.findModuleDirectory(Environment.CurrentDirectory);
+            if (moduleDirectory == "") {
+                console.log("Please select module :");
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                console.log(`${"Index".padEnd(10)}|${"Module".padEnd(32)}`);
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let modules = project.getFramework(frameworkName).getModules();
+                let index = 0;
+                for (let module of modules) {
+                    console.log(`${++index}/${modules.length}|${module}`);
+                }
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let selectIndex = Console.ReadLine();
+                if (selectIndex == "") {
+                    console.log("Invalid index.");
+                    return;
+                }
+                moduleName = modules[parseInt(selectIndex) - 1];
+            }
+            else {
+                moduleName = Path.GetFileNameWithoutExtension(moduleDirectory);
+            }
+            let framework = project.getFramework(frameworkName);
+            let module = framework.getModule(moduleName);
+            framework.identityCard.addItem(info.frameworkName, "Public");
+            module.imakefile.addWIZARD_LINK_MODULES([info.frameworkName]);
         }
         else {
             help();
