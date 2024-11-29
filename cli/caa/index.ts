@@ -1241,7 +1241,7 @@ let Searcher = () => {
                 result.push(file);
             }
             else {
-                let content = htmlUtils.getText(File.ReadAllText(file, utf8));
+                let content = htmlUtils.getAbstract(File.ReadAllText(file, utf8));
                 if (content.includes(keyword)) {
                     result.push(file);
                 }

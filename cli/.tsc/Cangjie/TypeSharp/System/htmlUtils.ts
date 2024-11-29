@@ -17,4 +17,7 @@ export class htmlUtils {
     public static getText(html?: string): string {
         return {} as any;
     }
+    public static getAbstract(html?: string): string {
+        return {} as any;
+    }
 }
