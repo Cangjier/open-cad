@@ -1437,8 +1437,11 @@ let main = async () => {
             }
             let infos = searcher.getClassInfomationByLastDirectory(keyword);
             let index = 0;
+            let padding = 20;
+            console.log(`${"Index".padEnd(10)}|${"Framework".padEnd(padding)}|${"Module".padEnd(padding)}|Class`);
             for (let info of infos) {
-                console.log(`${++index}/${infos.length} ${info}`);
+                let indexString = `${++index}/${infos.length}`;
+                console.log(`${indexString.padEnd(10)}|${info.frameworkName.padEnd(padding)}|${info.moduleName.padEnd(padding)}|${info.className}`);
             }
         }
         else {
