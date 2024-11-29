@@ -1236,12 +1236,12 @@ let Searcher = () => {
         let files = Directory.GetFiles(searchDirectory, "*.*", SearchOption.AllDirectories);
         let result = [] as string[];
         for (let file of files) {
-            let fileName = Path.GetFileName(file);
+            let fileName = Path.GetFileName(file).toLowerCase();
             if (fileName.includes(keyword)) {
                 result.push(file);
             }
             else {
-                let content = htmlUtils.getAbstract(File.ReadAllText(file, utf8)).toLocaleLowerCase();
+                let content = htmlUtils.getAbstract(File.ReadAllText(file, utf8)).toLowerCase();
                 if (content.includes(keyword)) {
                     result.push(file);
                 }
