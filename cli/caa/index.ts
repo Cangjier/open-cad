@@ -1260,11 +1260,12 @@ let Searcher = () => {
         }
         return [];
     };
+    let isGuided = () => {
+        let config = getConfig();
+        return config.guide;
+    };
     let guide = async () => {
         let config = getConfig();
-        if (config.guide) {
-            return;
-        }
         console.log("Welcome to CAADoc.");
         console.log("Please input the version you want to install:");
         let version = Console.ReadLine();
@@ -1278,7 +1279,8 @@ let Searcher = () => {
     };
     return {
         searchLastDirectory,
-        guide
+        guide,
+        isGuided
     }
 };
 
@@ -1363,12 +1365,18 @@ let main = async () => {
                 console.log("Please input keyword.");
                 return;
             }
-            await searcher.guide();
+            let isGuided = searcher.isGuided();
+            if (isGuided == undefined || isGuided == false) {
+                await searcher.guide();
+            }
             let files = searcher.searchLastDirectory(keyword);
             let index = 0;
             for (let file of files) {
                 console.log(`${++index}/${files.length} ${file}`);
             }
+        }
+        else if (command == "search-guide") {
+            await searcher.guide();
         }
         else {
             help();
