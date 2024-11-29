@@ -1209,7 +1209,7 @@ let Searcher = () => {
             let downloadPath = Path.Combine(downloadDirectory, Path.GetFileName(downloadUrl));
             await axios.download(downloadUrl, downloadPath);
             let unzipDirectory = Path.Combine(caadocDirectory, Path.GetFileNameWithoutExtension(downloadUrl));
-            zip.extract(downloadPath, unzipDirectory);
+            await zip.extract(downloadPath, unzipDirectory);
             console.log(`CAADoc Directory: ${unzipDirectory}`);
             return unzipDirectory;
         }
