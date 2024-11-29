@@ -739,7 +739,13 @@ let ProjectV1 = (projectDirectory: string) => {
                 });
             }
             else {
-                items[index].value = items[index].value + " " + modules.join(" ");
+                let valueItems = items[index].value.split(" ");
+                for (let module of modules) {
+                    if (valueItems.indexOf(module) == -1) {
+                        valueItems.push(module);
+                    }
+                }
+                items[index].value = valueItems.join(" ");
             }
             setItems(items);
         };
