@@ -1198,7 +1198,7 @@ let Searcher = () => {
         }
     };
     let installCAADoc = async (version: string) => {
-        
+
         await cloneSelf();
         let indexJson = await getIndexJson();
         let caadocs = indexJson["CAADoc"];
@@ -1241,7 +1241,7 @@ let Searcher = () => {
                 result.push(file);
             }
             else {
-                let content = htmlUtils.getAbstract(File.ReadAllText(file, utf8));
+                let content = htmlUtils.getAbstract(File.ReadAllText(file, utf8)).toLocaleLowerCase();
                 if (content.includes(keyword)) {
                     result.push(file);
                 }
@@ -1250,6 +1250,7 @@ let Searcher = () => {
         return result;
     };
     let searchLastDirectory = (keyword: string) => {
+        keyword = keyword.toLowerCase();
         let config = getConfig();
         if (config.lastSearchDirectory) {
             if (Directory.Exists(config.lastSearchDirectory) == false) {
