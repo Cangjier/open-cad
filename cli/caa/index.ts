@@ -1168,6 +1168,7 @@ let ProjectV1 = (projectDirectory: string) => {
 };
 
 let Searcher = () => {
+    let moduleRegex = new Regex("module:\\s*<b>(?<moduleName>[^<]+)</b>");
     let cache = {};
     let cloneSelf = async () => {
         let gitDirectory = Path.Combine(repositoryDirectory, ".git");
@@ -1279,6 +1280,26 @@ let Searcher = () => {
         config.lastSearchDirectory = installDirectory;
         setConfig(config);
     };
+    let getClassInfomationByFilePath = (file: string) => {
+        let frameworkName = Path.GetFileName(Path.GetDirectoryName(file));
+        let content = File.ReadAllText(file, utf8);
+        let moduleName = "";
+        let match = moduleRegex.Match(content);
+        if (match.Success) {
+            moduleName = match.Groups["moduleName"].Value;
+        }
+        let className = "";
+        let classNames = Path.GetFileNameWithoutExtension(file).split("_");
+        if (classNames.length >= 3) {
+            className = classNames[1];
+        }
+        return {
+            frameworkName,
+            moduleName,
+            className,
+            filePath: file
+        };
+    };
     let getClassInfomation = (searchDirectory: string, keyword: string) => {
         let files = fileUtils.search(searchDirectory, new Regex(`.*(class|interface).*${keyword}.*\\.(htm|html)$`, RegexOptions.IgnoreCase));
         if (files.length == 0) {
@@ -1287,28 +1308,11 @@ let Searcher = () => {
         let result = [] as {
             frameworkName: string,
             moduleName: string,
-            className: string
+            className: string,
+            filePath: string
         }[];
-        let moduleRegex = new Regex("module:\\s*<b>(?<moduleName>[^<]+)</b>");
         for (let file of files) {
-            let frameworkName = Path.GetFileName(Path.GetDirectoryName(file));
-            let content = File.ReadAllText(file, utf8);
-            let moduleName = "";
-            let match = moduleRegex.Match(content);
-            if (match.Success) {
-                moduleName = match.Groups["moduleName"].Value;
-            }
-            let className = "";
-            let classNames = Path.GetFileNameWithoutExtension(file).split("_");
-            if (classNames.length >= 3) {
-                className = classNames[1];
-            }
-            result.push({
-                frameworkName,
-                moduleName,
-                className
-            });
-
+            result.push(getClassInfomationByFilePath(file));
         }
         return result;
     };
@@ -1322,11 +1326,25 @@ let Searcher = () => {
         }
         return [];
     };
+    let printClassInfomation = (infos: any[]) => {
+        let index = 0;
+        let padding = 32;
+        console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
+        console.log(`${"Index".padEnd(10)}|${"Class".padEnd(padding)}|${"Framework".padEnd(padding)}|${"Module".padEnd(padding)}`);
+        console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
+        for (let info of infos) {
+            let indexString = `${++index}/${infos.length}`;
+            console.log(`${indexString.padEnd(10)}|${info.className.padEnd(padding)}|${info.frameworkName.padEnd(padding)}|${info.moduleName.padEnd(padding)}`);
+        }
+        console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
+    };
     return {
         searchLastDirectory,
         guide,
         isGuided,
-        getClassInfomationByLastDirectory
+        getClassInfomationByLastDirectory,
+        printClassInfomation,
+        getClassInfomationByFilePath
     }
 };
 
@@ -1416,10 +1434,11 @@ let main = async () => {
                 await searcher.guide();
             }
             let files = searcher.searchLastDirectory(keyword);
-            let index = 0;
+            let infos = [] as any[];
             for (let file of files) {
-                console.log(`${++index}/${files.length} ${file}`);
+                infos.push(searcher.getClassInfomationByFilePath(file));
             }
+            searcher.printClassInfomation(infos);
         }
         else if (command == "search-guide") {
             await searcher.guide();
@@ -1436,16 +1455,25 @@ let main = async () => {
                 await searcher.guide();
             }
             let infos = searcher.getClassInfomationByLastDirectory(keyword);
-            let index = 0;
-            let padding = 32;
-            console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
-            console.log(`${"Index".padEnd(10)}|${"Class".padEnd(padding)}|${"Framework".padEnd(padding)}|${"Module".padEnd(padding)}`);
-            console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
-            for (let info of infos) {
-                let indexString = `${++index}/${infos.length}`;
-                console.log(`${indexString.padEnd(10)}|${info.className.padEnd(padding)}|${info.frameworkName.padEnd(padding)}|${info.moduleName.padEnd(padding)}`);
+            searcher.printClassInfomation(infos);
+        }
+        else if (command == "openfile") {
+            let className = args[1];
+            if (className.startsWith("--")) {
+                console.log("Please input class name.");
+                return;
             }
-            console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
+            let infos = searcher.getClassInfomationByLastDirectory(className);
+            let info  = infos.find(item => item.className == className);
+            if (info == undefined) {
+                console.log("Class not found.");
+                return;
+            }
+            await cmd(Environment.CurrentDirectory,`code ${info.filePath}`);
+
+        }
+        else if (command == "import") {
+
         }
         else {
             help();
