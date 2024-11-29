@@ -1606,7 +1606,8 @@ let main = async () => {
                 let frameworks = project.getFrameworks();
                 let index = 0;
                 for (let framework of frameworks) {
-                    console.log(`${++index}/${frameworks.length}|${framework}`);
+                    let indexString = `${++index}/${frameworks.length}`;
+                    console.log(`${indexString.padEnd(10)}|${framework.padEnd(32)}`);
                 }
                 console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
                 let selectIndex = Console.ReadLine();
@@ -1629,7 +1630,8 @@ let main = async () => {
                 let modules = project.getFramework(frameworkName).getModules();
                 let index = 0;
                 for (let module of modules) {
-                    console.log(`${++index}/${modules.length}|${module}`);
+                    let indexString = `${++index}/${modules.length}`;
+                    console.log(`${indexString.padEnd(10)}|${module.padEnd(32)}`);
                 }
                 console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
                 let selectIndex = Console.ReadLine();
@@ -1644,9 +1646,10 @@ let main = async () => {
             }
             let framework = project.getFramework(frameworkName);
             let module = framework.getModule(moduleName);
-            framework.identityCard.addItem(info.frameworkName, "Public");
+            
             console.log(module.imakefile.getItems());
-            module.imakefile.addWIZARD_LINK_MODULES([info.frameworkName]);
+            // framework.identityCard.addItem(info.frameworkName, "Public");
+            // module.imakefile.addWIZARD_LINK_MODULES([info.frameworkName]);
         }
         else {
             help();
