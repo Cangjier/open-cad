@@ -20,6 +20,7 @@ import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
 import { SearchOption } from "../.tsc/System/IO/SearchOption";
 import { htmlUtils } from "../.tsc/Cangjie/TypeSharp/System/htmlUtils";
 import { fileUtils } from "../.tsc/Cangjie/TypeSharp/System/fileUtils";
+import { RegexOptions } from "../.tsc/System/Text/RegularExpressions/RegexOptions";
 let utf8 = new UTF8Encoding(false);
 let gb2312 = Encoding.GetEncoding("gb2312");
 
@@ -1278,10 +1279,54 @@ let Searcher = () => {
         config.lastSearchDirectory = installDirectory;
         setConfig(config);
     };
+    let getClassInfomation = (searchDirectory: string, keyword: string) => {
+        let files = fileUtils.search(searchDirectory, new Regex(`.*(class|interface).*${keyword}.*\\.(htm|html)$`, RegexOptions.IgnoreCase));
+        if (files.length == 0) {
+            return [];
+        }
+        let result = [] as {
+            frameworkName: string,
+            moduleName: string,
+            className: string
+        }[];
+        let moduleRegex = new Regex("module:\\s*<b>(?<moduleName>[^<]+)</b>");
+        for (let file of files) {
+            let frameworkName = Path.GetFileName(Path.GetDirectoryName(file));
+            let content = File.ReadAllText(file, utf8);
+            let moduleName = "";
+            let match = moduleRegex.Match(content);
+            if (match.Success) {
+                moduleName = match.Groups["moduleName"].Value;
+            }
+            let className = "";
+            let classNames = Path.GetFileNameWithoutExtension(file).split("_");
+            if (classNames.length >= 3) {
+                className = classNames[1];
+            }
+            result.push({
+                frameworkName,
+                moduleName,
+                className
+            });
+
+        }
+        return result;
+    };
+    let getClassInfomationByLastDirectory = (keyword: string) => {
+        let config = getConfig();
+        if (config.lastSearchDirectory) {
+            if (Directory.Exists(config.lastSearchDirectory) == false) {
+                return [];
+            }
+            return getClassInfomation(config.lastSearchDirectory, keyword);
+        }
+        return [];
+    };
     return {
         searchLastDirectory,
         guide,
-        isGuided
+        isGuided,
+        getClassInfomationByLastDirectory
     }
 };
 
@@ -1378,6 +1423,23 @@ let main = async () => {
         }
         else if (command == "search-guide") {
             await searcher.guide();
+        }
+        else if (command == "info") {
+            // 查询CADDoc信息
+            let keyword = args[1];
+            if (keyword.startsWith("--")) {
+                console.log("Please input keyword.");
+                return;
+            }
+            let isGuided = searcher.isGuided();
+            if (isGuided == undefined || isGuided == false) {
+                await searcher.guide();
+            }
+            let infos = searcher.getClassInfomationByLastDirectory(keyword);
+            let index = 0;
+            for (let info of infos) {
+                console.log(`${++index}/${infos.length} ${info}`);
+            }
         }
         else {
             help();
