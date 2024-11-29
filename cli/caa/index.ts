@@ -1233,7 +1233,7 @@ let Searcher = () => {
         File.WriteAllText(configPath, JSON.stringify(config), utf8);
     };
     let search = (searchDirectory: string, keyword: string) => {
-        let files = Directory.GetFiles(searchDirectory, "*", SearchOption.AllDirectories);
+        let files = Directory.GetFiles(searchDirectory, "*.(html|htm)", SearchOption.AllDirectories);
         let result = [] as string[];
         for (let file of files) {
             let fileName = Path.GetFileName(file);
