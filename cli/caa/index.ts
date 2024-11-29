@@ -1242,7 +1242,7 @@ let Searcher = () => {
                 result.push(file);
             }
             else {
-                let content = htmlUtils.getAbstract(File.ReadAllText(file, utf8)).toLowerCase();
+                let content = htmlUtils.getText(File.ReadAllText(file, utf8)).toLowerCase();
                 if (content.includes(keyword)) {
                     result.push(file);
                 }
