@@ -335,6 +335,7 @@ let IncludeFormatter = () => {
             for (let include of includes) {
                 if ((fileNames.includes(include) == false) && (fileNameWithoutExtensions.includes(include) == false)) {
                     if (reImportIncludes.includes(include) == false) {
+                        console.log(`Include ${include} not found`);
                         reImportIncludes.push(include);
                     }
                 }
@@ -349,16 +350,16 @@ let IncludeFormatter = () => {
                 if (File.Exists(includePath)) {
                     let targetPath = "";
                     if (includePath.endsWith(".h")) {
-                        Path.Combine(Path.GetDirectoryName(includePath), include);
+                        targetPath = Path.Combine(Path.GetDirectoryName(includePath), include);
                     }
                     else {
-                        Path.Combine(Path.GetDirectoryName(includePath), include + ".h");
+                        targetPath = Path.Combine(Path.GetDirectoryName(includePath), include + ".h");
                     }
                     lnCmds.push(`ln -s "${includePath}" "${targetPath}"`);
                 }
             }
             else {
-                console.log(`Include ${include} not found`);
+                console.log(`Include ${include} file path not found `);
             }
         }
         let cmdScope = lnCmds.join("\n");
