@@ -14,6 +14,8 @@ import { Guid } from "../.tsc/System/Guid";
 import { SearchOption } from "../.tsc/System/IO/SearchOption";
 import { Console } from "../.tsc/System/Console";
 import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
+import { fileUtils } from "../.tsc/Cangjie/TypeSharp/System/fileUtils";
+import { Regex } from "../.tsc/System/Text/RegularExpressions/Regex";
 let OPEN_CAD_DIR = Path.Combine(env("userprofile"), "OPEN_CAD");
 let utf8 = new UTF8Encoding(false);
 let repositoryDirectory = Path.Combine(OPEN_CAD_DIR, "repository");
@@ -308,6 +310,72 @@ let SDKManager = () => {
 
 let sdkManager = SDKManager();
 
+let IncludeFormatter = () => {
+    let format = async (directory: string) => {
+        let headerFiles = fileUtils.search(directory, new Regex(".*\\.h$"));
+        let fileNames = headerFiles.map(x => Path.GetFileName(x));
+        let fileNameWithoutExtensions = fileNames.map(x => Path.GetFileNameWithoutExtension(x));
+        let quoteRegex = new Regex("#include\\s+\"(?<fileName>\\S+)\"");
+        let angleRegex = new Regex("#include\\s+<(?<fileName>\\S+)>");
+        let reImportIncludes = [] as string[];
+        for (let headerFile of headerFiles) {
+            let lines = File.ReadAllLines(headerFile);
+            let includes = lines.filter(x => x.trim().startsWith("#include")).map(x => {
+                let match = quoteRegex.Match(x);
+                if (match.Success) {
+                    return match.Groups["fileName"].Value;
+                }
+                match = angleRegex.Match(x);
+                if (match.Success) {
+                    return match.Groups["fileName"].Value;
+                }
+                console.log(`Unknown include: ${x}`);
+                return "";
+            });
+            for (let include of includes) {
+                if ((fileNames.includes(include) == false) && (fileNameWithoutExtensions.includes(include) == false)) {
+                    if (reImportIncludes.includes(include) == false) {
+                        reImportIncludes.push(include);
+                    }
+                }
+            }
+        }
+        let lnCmds = [] as string[];
+        for (let include of reImportIncludes) {
+            let includePath = headerFiles.find(x => {
+                return ((Path.GetFileName(x).toLowerCase() == include.toLowerCase()) || (Path.GetFileNameWithoutExtension(x).toLowerCase() == include.toLowerCase()));
+            });
+            if (includePath) {
+                if (File.Exists(includePath)) {
+                    let targetPath = "";
+                    if (includePath.endsWith(".h")) {
+                        Path.Combine(Path.GetDirectoryName(includePath), include);
+                    }
+                    else {
+                        Path.Combine(Path.GetDirectoryName(includePath), include + ".h");
+                    }
+                    lnCmds.push(`ln -s "${includePath}" "${targetPath}"`);
+                }
+            }
+            else {
+                console.log(`Include ${include} not found`);
+            }
+        }
+        let cmdScope = lnCmds.join("\n");
+        let shPath = Path.Combine(directory, "reImportIncludes.sh");
+        File.WriteAllText(shPath, cmdScope, utf8);
+        await cmdAsync(directory, `chmod +x reImportIncludes.sh`);
+        await cmdAsync(directory, `./reImportIncludes.sh`);
+    };
+    return {
+        format
+    };
+};
+
+let includeFormatter = IncludeFormatter();
+
+
+
 let Installer = () => {
     let cache = {};
     let validExtensions = [".h", ".cpp"];
@@ -521,6 +589,18 @@ let main = async () => {
             version = "latest";
         }
         await installer.installSDK(name, version);
+    }
+    else if (command == "format-include") {
+        if (OperatingSystem.IsLinux() == false) {
+            console.log("Only support linux");
+            return;
+        }
+        if (args.length < 2 || (args[1].startsWith("--"))) {
+            console.log("Usage: format-include <directory>");
+            return;
+        }
+        let toFormatDirectory = args[1];
+        await includeFormatter.format(toFormatDirectory);
     }
     else {
         console.log(`Unknown command: ${command}`);
