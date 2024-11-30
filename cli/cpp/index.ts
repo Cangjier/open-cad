@@ -504,7 +504,7 @@ let main = async () => {
         }
         await installer.install(name, inputHeaderPath, inputSourcePath);
     }
-    else if (command == "sdk") {
+    else if (command == "install-sdk") {
         if (args.length < 3 || (args[1].startsWith("--"))) {
             console.log("Usage: sdk <name> [version]");
             return;
