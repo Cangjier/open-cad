@@ -94,16 +94,17 @@ let DirectoryFinder = () => {
     };
     let findVsCodeDirectory = (path: string) => "";
     findVsCodeDirectory = (path: string) => {
-        let parentPath = Path.GetDirectoryName(path);
-        if (parentPath == "") {
-            return "";
-        }
-        let directories = Directory.GetDirectories(parentPath);
+        let directories = Directory.GetDirectories(path);
         for (let directory of directories) {
-            if (directory.endsWith("vscode")) {
+            if (Path.GetFileName(directory) == ".vscode") {
                 return directory;
             }
         }
+        let parentPath = Path.GetDirectoryName(path);
+        if (parentPath == "" || parentPath == "/" || parentPath.endsWith(":")) {
+            return "";
+        }
+
         return findVsCodeDirectory(parentPath);
     };
     return {
@@ -395,7 +396,7 @@ let Installer = () => {
                 console.log("vscode directory not found");
                 return;
             }
-            let cppPropertiesPath = Path.Combine(vsCodeDirectory, ".vscode", "c_cpp_properties.json");
+            let cppPropertiesPath = Path.Combine(vsCodeDirectory, "c_cpp_properties.json");
             let cppProperties = Json.Load(cppPropertiesPath);
             let configurations = cppProperties["configurations"];
             if (configurations == undefined) {
