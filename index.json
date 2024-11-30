@@ -14,7 +14,7 @@
                 "version": "21"
             }
         ],
-        "WindowsInclude": [
+        "VS": [
             {
                 "name": "VS2005",
                 "download_url": "https://github.com/Cangjier/open-cad/releases/download/windows-include/VS2005.zip",
