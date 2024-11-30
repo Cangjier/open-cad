@@ -331,11 +331,10 @@ let IncludeFormatter = () => {
                 }
                 console.log(`Unknown include: ${x}`);
                 return "";
-            });
+            }).map(x => Path.GetFileName(x));
             for (let include of includes) {
                 if ((fileNames.includes(include) == false) && (fileNameWithoutExtensions.includes(include) == false)) {
                     if (reImportIncludes.includes(include) == false) {
-                        // console.log(`Include ${include} not found`);
                         reImportIncludes.push(include);
                     }
                 }
