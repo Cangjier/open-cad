@@ -335,13 +335,14 @@ let IncludeFormatter = () => {
             for (let include of includes) {
                 if ((fileNames.includes(include) == false) && (fileNameWithoutExtensions.includes(include) == false)) {
                     if (reImportIncludes.includes(include) == false) {
-                        console.log(`Include ${include} not found`);
+                        // console.log(`Include ${include} not found`);
                         reImportIncludes.push(include);
                     }
                 }
             }
         }
         let lnCmds = [] as string[];
+        console.log(`To reimport includes length: ${reImportIncludes.length}`);
         for (let include of reImportIncludes) {
             let includePath = headerFiles.find(x => {
                 return ((Path.GetFileName(x).toLowerCase() == include.toLowerCase()) || (Path.GetFileNameWithoutExtension(x).toLowerCase() == include.toLowerCase()));
