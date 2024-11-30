@@ -51,6 +51,259 @@ for (let i = 0; i < args.length; i++) {
     }
 }
 
+let DirectoryFinder = () => {
+    let isSourceDirectory = (path: string) => {
+        return Directory.GetFiles(path, "*.cpp").length > 0;
+    };
+    let isHeaderDirectory = (path: string) => {
+        return Directory.GetFiles(path, "*.h").length > 0;
+    };
+    let findHeaderDirectory = (path: string) => "";
+    findHeaderDirectory = (path: string) => {
+        if (isHeaderDirectory(path)) {
+            return path;
+        }
+        let subDirectories = Directory.GetDirectories(path);
+        for (let subDirectory of subDirectories) {
+            if (isHeaderDirectory(subDirectory)) {
+                return subDirectory;
+            }
+        }
+        let parentPath = Path.GetDirectoryName(path);
+        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
+            return "";
+        }
+        return findHeaderDirectory(parentPath);
+    };
+    let findSourceDirectory = (path: string) => "";
+    findSourceDirectory = (path: string) => {
+        if (isSourceDirectory(path)) {
+            return path;
+        }
+        let subDirectories = Directory.GetDirectories(path);
+        for (let subDirectory of subDirectories) {
+            if (isSourceDirectory(subDirectory)) {
+                return subDirectory;
+            }
+        }
+        let parentPath = Path.GetDirectoryName(path);
+        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
+            return "";
+        }
+        return findSourceDirectory(parentPath);
+    };
+    let findVsCodeDirectory = (path: string) => "";
+    findVsCodeDirectory = (path: string) => {
+        let parentPath = Path.GetDirectoryName(path);
+        if (parentPath == "") {
+            return "";
+        }
+        let directories = Directory.GetDirectories(parentPath);
+        for (let directory of directories) {
+            if (directory.endsWith("vscode")) {
+                return directory;
+            }
+        }
+        return findVsCodeDirectory(parentPath);
+    };
+    return {
+        findHeaderDirectory,
+        findSourceDirectory,
+        findVsCodeDirectory
+    };
+};
+
+let directoryFinder = DirectoryFinder();
+
+let SDKManager = () => {
+    let getIndexJson = async () => {
+        let indexJsonPath = Path.Combine(repositoryDirectory, "index.json");
+        return await Json.LoadAsync(indexJsonPath);
+    };
+    let getLatestSdkName = async (cadName: string) => {
+        cadName = cadName.toUpperCase();
+        // 安装cad的sdk
+        let indexJson = await getIndexJson();
+        let sdks = indexJson.SDK[cadName] as {
+            name: string,
+            version: string,
+            download_url: string
+        }[];
+        if (sdks == undefined) {
+            throw `cadName ${cadName} not found`;
+        }
+        // 从sdks中找到最新的版本
+        let sdk = sdks[0];
+        return sdk.name;
+    };
+    let _createLowerCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => { };
+    _createLowerCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => {
+        // 创建小写的符号链接
+        // ln -s /home/user/Project /home/user/project
+        let name = Path.GetFileName(directory);
+        let lowerName = name.toLowerCase();
+
+        if (name != lowerName) {
+            let baseRelativeDirectory = Path.GetRelativePath(baseDirectory, directory);
+            if (baseRelativeDirectory != ".") {
+                let lowerDirectory = Path.Combine(baseDirectory, baseRelativeDirectory.toLowerCase());
+                cmds.push(`ln -s "${directory}" "${lowerDirectory}"`);
+            }
+
+        }
+        let files = Directory.GetFiles(directory);
+        for (let file of files) {
+            let fileName = Path.GetFileName(file);
+            let lowerFileName = fileName.toLowerCase();
+            let baseRelativeFileName = Path.GetRelativePath(baseDirectory, file);
+            if (fileName != lowerFileName) {
+                let lowerFile = Path.Combine(baseDirectory, baseRelativeFileName.toLowerCase());
+                cmds.push(`ln -s "${file}" "${lowerFile}"`);
+            }
+        }
+        let directories = Directory.GetDirectories(directory);
+        for (let subDirectory of directories) {
+            _createLowerCaseLink(baseDirectory, subDirectory, cmds);
+        }
+    };
+    let createLowerCaseLink = async (directory: string) => {
+        let cmds = [] as string[];
+        _createLowerCaseLink(directory, directory, cmds);
+        let cmdScope = cmds.join("\n");
+        let shPath = Path.Combine(directory, "createLowerCaseLink.sh");
+        console.log(shPath);
+        await File.WriteAllTextAsync(shPath, cmdScope, utf8);
+        await cmdAsync(directory, `chmod +x createLowerCaseLink.sh`);
+        await cmdAsync(directory, `./createLowerCaseLink.sh`);
+    };
+    let words = [
+        "string",
+        "spec"
+    ];
+    let pascalCase = (name: string) => {
+        for (let word of words) {
+            if (name.includes(word) == false) {
+                continue;
+            }
+            name = name.replace(word, word[0].toUpperCase() + word.substring(1));
+        }
+        return name;
+    };
+    let _createPascalCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => { };
+    _createPascalCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => {
+        let files = Directory.GetFiles(directory);
+        for (let file of files) {
+            let fileName = Path.GetFileName(file);
+            let formatFileName = pascalCase(Path.GetFileNameWithoutExtension(file)) + Path.GetExtension(file);
+            if (fileName != formatFileName) {
+                let formatFile = Path.Combine(Path.GetDirectoryName(file), formatFileName);
+                cmds.push(`ln -s "${file}" "${formatFile}"`);
+            }
+        }
+        let directories = Directory.GetDirectories(directory);
+        for (let subDirectory of directories) {
+            _createPascalCaseLink(baseDirectory, subDirectory, cmds);
+        }
+    };
+    let createPascalCaseLink = async (directory: string) => {
+        let cmds = [] as string[];
+        _createPascalCaseLink(directory, directory, cmds);
+        let cmdScope = cmds.join("\n");
+        let shPath = Path.Combine(directory, "createPascalCaseLink.sh");
+        console.log(shPath);
+        await File.WriteAllTextAsync(shPath, cmdScope, utf8);
+        await cmdAsync(directory, `chmod +x createPascalCaseLink.sh`);
+        await cmdAsync(directory, `./createPascalCaseLink.sh`);
+    };
+    let installSDK = async (sdkName: string, cadVersion: string) => {
+        console.log(`InstallSDK ${sdkName} ${cadVersion}`);
+        // 安装cad的sdk
+        let indexJson = await getIndexJson();
+        let sdkKeys = Object.keys(indexJson.SDK);
+        let formatSDKName = sdkKeys.find(item => item.toUpperCase() == sdkName.toUpperCase());
+        if (formatSDKName == undefined) {
+            throw `SDK ${sdkName} not found`;
+        }
+        let sdks = indexJson.SDK[formatSDKName] as {
+            name: string,
+            version: string,
+            download_url: string
+        }[];
+        if (sdks == undefined) {
+            throw `SDKName ${formatSDKName} not found`;
+        }
+        // 从sdks中找到最新的版本
+        let sdk = {} as {
+            name: string,
+            version: string,
+            download_url: string,
+            installDirectory?: string,
+            linkCase?: {
+                lowerCase?: boolean,
+                pascalCase?: boolean
+            },
+            dependency?: {
+                sdkName: string,
+                version: string
+            }[]
+        } | undefined;
+        if (cadVersion == "latest") {
+            sdk = sdks[0];
+        }
+        else {
+            sdk = sdks.find(item => item.version == cadVersion);
+        }
+        if (sdk == undefined) {
+            throw `cadVersion ${cadVersion} not found`;
+        }
+
+        let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
+        let cadDirectory = Path.Combine(sdkDirectory, formatSDKName);
+        let cadSdkDirectory = Path.Combine(cadDirectory, sdk.name);
+        sdk.installDirectory = cadSdkDirectory;
+        if ((Directory.Exists(cadSdkDirectory) == false) || ((Directory.GetFiles(cadSdkDirectory).length == 0) && (Directory.GetDirectories(cadSdkDirectory).length == 0))) {
+            console.log(`downloading ${sdk.download_url} to ${download_path}`);
+            await axios.download(sdk.download_url, download_path);
+            console.log(`downloaded ${download_path}`);
+            if (Directory.Exists(cadDirectory) == false) {
+                Directory.CreateDirectory(cadDirectory);
+            }
+            await zip.extract(download_path, cadSdkDirectory);
+            File.Delete(download_path);
+            if (OperatingSystem.IsLinux()) {
+                if (sdk.linkCase?.lowerCase) {
+                    await createLowerCaseLink(cadSdkDirectory);
+                }
+                if (sdk.linkCase?.pascalCase) {
+                    await createPascalCaseLink(cadSdkDirectory);
+                }
+            }
+        }
+        if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetFileName(cadSdkDirectory)}.cmake`)) == false) {
+            console.log(`generating Find${Path.GetFileName(cadSdkDirectory)}.cmake`);
+            await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
+        }
+        console.log(`Installed ${sdk.name}`);
+        return sdk;
+    };
+    let install = async (cadName: string, cadVersion: string) => {
+        let sdk = await installSDK(cadName, cadVersion);
+        if (sdk.dependency) {
+            for (let item of sdk.dependency) {
+                await installSDK(item.sdkName, item.version);
+            }
+        }
+        return sdk;
+    };
+    return {
+        install,
+        createLowerCaseLink,
+        pascalCase
+    };
+};
+
+let sdkManager = SDKManager();
+
 let Installer = () => {
     let cache = {};
     let validExtensions = [".h", ".cpp"];
@@ -133,62 +386,57 @@ let Installer = () => {
             console.log(`SDK ${name} not found`);
         }
     };
+    let installSDK = async (name: string, version: string) => {
+        await cloneSelf();
+        let sdk = await sdkManager.install(name, version);
+        if (sdk.installDirectory) {
+            let vsCodeDirectory = directoryFinder.findVsCodeDirectory(Environment.CurrentDirectory);
+            if (vsCodeDirectory == "") {
+                console.log("vscode directory not found");
+                return;
+            }
+            let cppPropertiesPath = Path.Combine(vsCodeDirectory, ".vscode", "c_cpp_properties.json");
+            let cppProperties = Json.Load(cppPropertiesPath);
+            let configurations = cppProperties["configurations"];
+            if (configurations == undefined) {
+                configurations = [];
+                cppProperties["configurations"] = configurations;
+            }
+            if (configurations.length == 0) {
+                configurations.push({
+                    "name": "Linux",
+                    "includePath": [
+                        "${workspaceFolder}/**",
+                        `${sdk.installDirectory}/**`
+                    ],
+                    "defines": [],
+                    "compilerPath": "/usr/bin/x86_64-w64-mingw32-g++",
+                    "cStandard": "c11",
+                    "cppStandard": "c++17",
+                    "intelliSenseMode": "gcc-x64"
+                });
+            }
+            else {
+                let firstCppPropert = cppProperties["configurations"][0];
+                if (firstCppPropert.includePath == undefined) {
+                    firstCppPropert.includePath = [];
+                }
+                firstCppPropert.includePath.push(`${sdk.installDirectory}/**`);
+            }
+            File.WriteAllText(cppPropertiesPath, JSON.stringify(cppProperties), utf8);
+        }
+        else {
+            console.log(`SDK ${name} ${version} not found`);
+        }
+    };
 
     return {
-        install
+        install,
+        installSDK
     };
 };
 
 let installer = Installer();
-
-let DirectoryFinder = () => {
-    let isSourceDirectory = (path: string) => {
-        return Directory.GetFiles(path, "*.cpp").length > 0;
-    };
-    let isHeaderDirectory = (path: string) => {
-        return Directory.GetFiles(path, "*.h").length > 0;
-    };
-    let findHeaderDirectory = (path: string) => "";
-    findHeaderDirectory = (path: string) => {
-        if (isHeaderDirectory(path)) {
-            return path;
-        }
-        let subDirectories = Directory.GetDirectories(path);
-        for (let subDirectory of subDirectories) {
-            if (isHeaderDirectory(subDirectory)) {
-                return subDirectory;
-            }
-        }
-        let parentPath = Path.GetDirectoryName(path);
-        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
-            return "";
-        }
-        return findHeaderDirectory(parentPath);
-    };
-    let findSourceDirectory = (path: string) => "";
-    findSourceDirectory = (path: string) => {
-        if (isSourceDirectory(path)) {
-            return path;
-        }
-        let subDirectories = Directory.GetDirectories(path);
-        for (let subDirectory of subDirectories) {
-            if (isSourceDirectory(subDirectory)) {
-                return subDirectory;
-            }
-        }
-        let parentPath = Path.GetDirectoryName(path);
-        if ((stringUtils.trimEnd(parentPath, "/") == "") || (stringUtils.trimEnd(parentPath, "/").endsWith(":"))) {
-            return "";
-        }
-        return findSourceDirectory(parentPath);
-    };
-    return {
-        findHeaderDirectory,
-        findSourceDirectory
-    };
-};
-
-let directoryFinder = DirectoryFinder();
 
 let main = async () => {
     let noArgs = args.length == 0 || (args[0] == "--application-name");
@@ -255,6 +503,18 @@ let main = async () => {
             return;
         }
         await installer.install(name, inputHeaderPath, inputSourcePath);
+    }
+    else if (command == "sdk") {
+        if (args.length < 3 || (args[1].startsWith("--"))) {
+            console.log("Usage: sdk <name> [version]");
+            return;
+        }
+        let name = args[1];
+        let version = args[2];
+        if (version.startsWith("--")) {
+            version = "latest";
+        }
+        await installer.installSDK(name, version);
     }
     else {
         console.log(`Unknown command: ${command}`);

@@ -258,6 +258,7 @@ let imakefileRegex = (/^(?!#)(\w+)\s*=\s*(.*?)(?:\s*\\\s*\n\s*(.*?))*\s*(?=\n|$)
 let macDeclareHeaderRegex = (/MacDeclareHeader\((\w+)\);/) as any as Regex;
 let catCommandRegex = (/.*:.*CATCommand.*\(.*\).*/) as any as Regex;
 
+
 let DirectoryFinder = () => {
     let isSourceDirectory = (path: string) => {
         return Directory.GetFiles(path, "*.cpp").length > 0;
