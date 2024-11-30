@@ -280,6 +280,9 @@ let SDKManager = () => {
                 }
             }
         }
+        else {
+            console.log(`SDK ${sdk.name} ${sdk.version} already exists`);
+        }
         if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetFileName(cadSdkDirectory)}.cmake`)) == false) {
             console.log(`generating Find${Path.GetFileName(cadSdkDirectory)}.cmake`);
             await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
@@ -422,7 +425,9 @@ let Installer = () => {
                 if (firstCppPropert.includePath == undefined) {
                     firstCppPropert.includePath = [];
                 }
-                firstCppPropert.includePath.push(`${sdk.installDirectory}/**`);
+                if (firstCppPropert.includePath.includes(`${sdk.installDirectory}/**`) == false) {
+                    firstCppPropert.includePath.push(`${sdk.installDirectory}/**`);
+                }
             }
             File.WriteAllText(cppPropertiesPath, JSON.stringify(cppProperties), utf8);
         }
