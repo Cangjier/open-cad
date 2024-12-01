@@ -1,5 +1,5 @@
 import { shell } from "../.tsc/Cangjie/TypeSharp/System/shell";
-import { args } from "../.tsc/context";
+import { args, setLoggerPath } from "../.tsc/context";
 import { Environment } from "../.tsc/System/Environment";
 import { Task } from "../.tsc/System/Threading/Tasks/Task";
 
@@ -59,7 +59,35 @@ let Rade = () => {
 
 let rade = Rade();
 
+let parameters = {} as { [key: string]: string };
+
+for (let i = 0; i < args.length; i++) {
+    let arg = args[i];
+    if (arg.startsWith("--")) {
+        let key = arg.substring(2);
+        if (i + 1 < args.length) {
+            let value = args[i + 1];
+            parameters[key] = value;
+            i++;
+        }
+        else {
+            parameters[key] = "true";
+        }
+    }
+    else if (arg.startsWith("-")) {
+        let key = arg.substring(1);
+        let value = args[i + 1];
+        parameters[key] = value;
+        i++;
+    }
+}
+
+console.log(`parameters: ${parameters}`);
+
 let main = async () => {
+    if (parameters.logger) {
+        setLoggerPath(parameters.logger);
+    }
     await rade.build(Environment.CurrentDirectory);
 };
 

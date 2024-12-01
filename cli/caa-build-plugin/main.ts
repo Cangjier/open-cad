@@ -11,6 +11,9 @@ import { Environment } from "../.tsc/System/Environment";
 import { Regex } from "../.tsc/System/Text/RegularExpressions/Regex";
 import { Guid } from "../.tsc/System/Guid";
 import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
+import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
+
+let utf8 = new UTF8Encoding(false);
 
 let GitTokenManager = (gitUserTokenMap: any) => {
     console.log(`gitToken: ${gitUserTokenMap}`);
@@ -49,8 +52,6 @@ let GitTokenManager = (gitUserTokenMap: any) => {
         insertGitUserToken
     };
 };
-
-
 
 let GitManager = (gitUserTokenMap: any) => {
     let gitTokenManager = GitTokenManager(gitUserTokenMap);
@@ -173,9 +174,6 @@ let GitManager = (gitUserTokenMap: any) => {
     };
 };
 
-
-
-
 let main = async () => {
     if (args.length < 4) {
         console.log("Usage: plugin <inputPath> <outputPath> <loggerPath> <server>");
@@ -198,7 +196,9 @@ let main = async () => {
     };
     let gitUrl = input.webhook.repository.clone_url;
     if (await gitManager.gitClone(tempDirectory, gitUrl, input.webhook.head_commit.id)) {
-        await cmdAsync(tempDirectory, "opencad caa-build");
+        let buildLoggerPath = Path.Combine(tempDirectory, "build.log");
+        File.WriteAllText(buildLoggerPath, "", utf8);
+        await cmdAsync(tempDirectory, `opencad caa-build --logger ${buildLoggerPath}`);
         let win_b64Directory = Path.Combine(tempDirectory, "win_b64");
         if (Directory.Exists(win_b64Directory)) {
             let zipFilePath = Path.Combine(tempDirectory, "win_b64.zip");
@@ -209,7 +209,7 @@ let main = async () => {
             await execAsync({
                 filePath: Environment.ProcessPath,
                 arguments: ["run", "gitapis", "release", gitUrl, tagName,
-                    "--files", zipFilePath,
+                    "--files", `${zipFilePath},${buildLoggerPath}`,
                     "--token", token]
             });
         }
@@ -221,5 +221,6 @@ let main = async () => {
     File.WriteAllText(outputPath, JSON.stringify(output));
     deleteDirectory(tempDirectory);
 };
+
 
 await main();
