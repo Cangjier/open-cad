@@ -221,10 +221,14 @@ let main = async () => {
                 for (let i = 0; (i < 5) && (i < errorLoggerLines.length); i++) {
                     toReportLines.push(errorLoggerLines[i]);
                 }
+                let errorMessage = toReportLines.join("\n");
+                let isSuccess = toReportLines.length == 0;
+                let headerMessage = `${isSuccess? "✅" : "❌"} ${Path.GetFileName(gitUrl)} ${tagName} ${isSuccess? "成功" : "失败"}`;
+                let finalMessage = isSuccess ? headerMessage : `${headerMessage}\r\n${errorMessage}`;
                 await axios.post(`${stringUtils.trimEnd(server, "/")}/api/v1/tasks/run`, {
                     Input: {
                         id: manifest.wechaty.id,
-                        message: (toReportLines.length == 0 ? "Build success" : toReportLines.join("\n")),
+                        message: finalMessage
                     },
                     Processor: {
                         "Name": "lidongming/wechaty",
