@@ -2,10 +2,14 @@ import { shell } from "../.tsc/Cangjie/TypeSharp/System/shell";
 import { args, setLoggerPath } from "../.tsc/context";
 import { Environment } from "../.tsc/System/Environment";
 import { Task } from "../.tsc/System/Threading/Tasks/Task";
+import { File } from "../.tsc/System/IO/File";
+import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
+
+let utf8 = new UTF8Encoding(false);
 
 let Rade = () => {
     let tck_initPath = "C:\\Program Files (x86)\\Dassault Systemes\\B21\\intel_a\\code\\command\\tck_init.bat";
-    let build = async (frameworkDirectory: string) => {
+    let build = async (frameworkDirectory: string, loggerPath: string) => {
         let sh = shell.start({
             filePath: "cmd",
             workingDirectory: frameworkDirectory
@@ -48,6 +52,9 @@ let Rade = () => {
                 return true;
             }
             console.log(item);
+            if (loggerPath != "") {
+                File.AppendAllText(loggerPath, item + "\r\n", utf8);
+            }
             return false;
         });
         sh.kill();
@@ -85,10 +92,7 @@ for (let i = 0; i < args.length; i++) {
 console.log(`parameters: ${parameters}`);
 
 let main = async () => {
-    if (parameters.logger) {
-        setLoggerPath(parameters.logger);
-    }
-    await rade.build(Environment.CurrentDirectory);
+    await rade.build(Environment.CurrentDirectory, parameters.logger ?? "");
 };
 
 await main();

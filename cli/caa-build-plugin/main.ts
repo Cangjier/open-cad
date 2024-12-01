@@ -12,7 +12,7 @@ import { Regex } from "../.tsc/System/Text/RegularExpressions/Regex";
 import { Guid } from "../.tsc/System/Guid";
 import { zip } from "../.tsc/Cangjie/TypeSharp/System/zip";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
-
+import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
 let utf8 = new UTF8Encoding(false);
 
 let GitTokenManager = (gitUserTokenMap: any) => {
@@ -196,6 +196,8 @@ let main = async () => {
     };
     let gitUrl = input.webhook.repository.clone_url;
     if (await gitManager.gitClone(tempDirectory, gitUrl, input.webhook.head_commit.id)) {
+        let manifestPath = Path.Combine(tempDirectory, "manifest.json");
+        let manifest = Json.Load(manifestPath);
         let buildLoggerPath = Path.Combine(tempDirectory, "build.log");
         File.WriteAllText(buildLoggerPath, "", utf8);
         await cmdAsync(tempDirectory, `opencad caa-build --logger ${buildLoggerPath}`);
@@ -212,6 +214,26 @@ let main = async () => {
                     "--files", `${zipFilePath},${buildLoggerPath}`,
                     "--token", token]
             });
+            if (manifest.wechaty.id) {
+                let loggerLines = File.ReadAllLines(buildLoggerPath, utf8);
+                let errorLoggerLines = loggerLines.filter(line => line.toLowerCase().includes("error"));
+                let toReportLines = [] as string[];
+                for (let i = 0; (i < 5) && (i < errorLoggerLines.length); i++) {
+                    toReportLines.push(errorLoggerLines[i]);
+                }
+                await axios.post(`${stringUtils.trimEnd(server, "/")}/api/v1/tasks/run`, {
+                    Input: {
+                        id: manifest.wechaty.id,
+                        message: (toReportLines.length == 0 ? "Build success" : toReportLines.join("\n")),
+                    },
+                    Processor: {
+                        "Name": "lidongming/wechaty",
+                        "Type": "Plugin"
+                    }
+                }, {
+                    useDefaultProxy: false
+                });
+            }
         }
     }
     else {
