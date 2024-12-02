@@ -14,6 +14,14 @@ let Rade = () => {
             filePath: "cmd",
             workingDirectory: frameworkDirectory
         });
+        sh.writeLine(`chcp 65001 & echo ---`);
+        await sh.readLinesWhen(item => {
+            if (item == "---") {
+                return true;
+            }
+            console.log(item);
+            return false;
+        });
         sh.writeLine(`call "${tck_initPath}" & echo ---`);
         await sh.readLinesWhen(item => {
             if (item == "---") {
