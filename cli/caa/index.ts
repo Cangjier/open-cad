@@ -1569,12 +1569,13 @@ let main = async () => {
                 headerContent = headerContent.replace("//__NAMESPACE_ENDER__", "");
             }
             if (importType == "1") {
-                let importClassName = `CAT${classNameItems[classNameItems.length - 1]}`;
+                let lastClassName = classNameItems[classNameItems.length - 1];
+                let importClassName = `CAT${lastClassName}`;
                 await cmdAsync(Environment.CurrentDirectory, `opencad caa import ${importClassName}`, {
                     useShellExecute: false,
                     redirect: false
                 });
-                headerContent = headerContent.replace("//__INCLUDE_INSERTER__", `#include "CAT${className}.h"`);
+                headerContent = headerContent.replace("//__INCLUDE_INSERTER__", `#include "CAT${lastClassName}.h"`);
                 headerContent = headerContent.replace("//__TARGET_INSERTER__", `${importClassName}_var Target;`);
             }
             else {
