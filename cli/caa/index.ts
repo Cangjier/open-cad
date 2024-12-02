@@ -1557,16 +1557,20 @@ let main = async () => {
                 let namespaceItems = classNameItems.slice(0, classNameItems.length - 1);
                 let namespaceStarter = [] as string[];
                 let namespaceEnder = [] as string[];
+                let sourceNamespaceInserter = [] as string[];
                 for (let namespaceItem of namespaceItems) {
                     namespaceStarter.push(`namespace ${namespaceItem} {`);
                     namespaceEnder.push(`} // namespace ${namespaceItem}`);
+                    sourceNamespaceInserter.push(`using namespace ${namespaceItem};`);
                 }
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", namespaceStarter.join("\r\n"));
                 headerContent = headerContent.replace("//__NAMESPACE_ENDER__", namespaceEnder.join("\r\n"));
+                sourceContent = sourceContent.replace("//__NAMESPACE_INSERTER__", sourceNamespaceInserter.join("\r\n"));
             }
             else {
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", "");
                 headerContent = headerContent.replace("//__NAMESPACE_ENDER__", "");
+                sourceContent = sourceContent.replace("//__NAMESPACE_INSERTER__", "");
             }
             if (importType == "1") {
                 let lastClassName = classNameItems[classNameItems.length - 1];
