@@ -1527,6 +1527,13 @@ let main = async () => {
             if (classType == "") {
                 classType = "1";
             }
+            console.log("1. Auto import CAT-ClassName");
+            console.log("2. None");
+            console.log("Please input import type:(default 1)");
+            var importType = Console.ReadLine();
+            if (importType == "") {
+                importType = "1";
+            }
             let headerContent = "";
             let sourceContent = "";
             if (classType == "1") {
@@ -1542,8 +1549,38 @@ let main = async () => {
                 console.log("Exit.");
                 return;
             }
+
             headerContent = headerContent.replace("__CLASS_NAME__", className);
             sourceContent = sourceContent.replace("__CLASS_NAME__", className);
+            let classNameItems = className.split("_");
+            if (classNameItems.length >= 2) {
+                let namespaceItems = classNameItems.slice(0, classNameItems.length - 1);
+                let namespaceStarter = [] as string[];
+                let namespaceEnder = [] as string[];
+                for (let namespaceItem of namespaceItems) {
+                    namespaceStarter.push(`namespace ${namespaceItem} {`);
+                    namespaceEnder.push(`} // namespace ${namespaceItem}`);
+                }
+                headerContent = headerContent.replace("//__NAMESPACE_STARTER__", namespaceStarter.join("\r\n"));
+                headerContent = headerContent.replace("//__NAMESPACE_ENDER__", namespaceEnder.join("\r\n"));
+            }
+            else {
+                headerContent = headerContent.replace("//__NAMESPACE_STARTER__", "");
+                headerContent = headerContent.replace("//__NAMESPACE_ENDER__", "");
+            }
+            if (importType == "1") {
+                let importClassName = `CAT${classNameItems[classNameItems.length - 1]}`;
+                await cmdAsync(Environment.CurrentDirectory, `opencad caa import ${importClassName}`, {
+                    useShellExecute: false,
+                    redirect: false
+                });
+                headerContent = headerContent.replace("__INCLUDE_INSERTER__", `#include "CAT${className}.h"`);
+                headerContent = headerContent.replace("__TARGET_INSERTER__", `${importClassName}_var Target;`);
+            }
+            else {
+                headerContent = headerContent.replace("__INCLUDE_INSERTER__", "");
+                headerContent = headerContent.replace("__TARGET_INSERTER__", "");
+            }
             File.WriteAllText(Path.Combine(paths.headerPath, `${className}.h`), headerContent, utf8);
             File.WriteAllText(Path.Combine(paths.sourcePath, `${className}.cpp`), sourceContent, utf8);
             console.log("Class created.");
