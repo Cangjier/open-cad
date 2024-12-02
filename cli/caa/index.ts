@@ -1496,13 +1496,25 @@ let main = async () => {
     else {
         let command = args[0];
         if (command == "add-class") {
+            let defaultClassName = "";
+            if (args.length >= 2 && args[1].startsWith("--") == false) {
+                defaultClassName = args[1];
+            }
             let paths = directoryFinder.askHeaderSourceDirectory(Environment.CurrentDirectory);
             if (paths.success == false) {
                 console.log("Exit.");
                 return;
             }
-            console.log("Please input class name:");
+            if (defaultClassName == "") {
+                console.log(`Please input class name: `);
+            }
+            else {
+                console.log(`Please input class name: (${defaultClassName})`);
+            }
             var className = Console.ReadLine();
+            if (className == "") {
+                className = defaultClassName;
+            }
             if (className == "") {
                 console.log("Invalid class name.");
                 console.log("Exit.");
