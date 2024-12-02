@@ -1574,12 +1574,12 @@ let main = async () => {
                     useShellExecute: false,
                     redirect: false
                 });
-                headerContent = headerContent.replace("__INCLUDE_INSERTER__", `#include "CAT${className}.h"`);
-                headerContent = headerContent.replace("__TARGET_INSERTER__", `${importClassName}_var Target;`);
+                headerContent = headerContent.replace("//__INCLUDE_INSERTER__", `#include "CAT${className}.h"`);
+                headerContent = headerContent.replace("//__TARGET_INSERTER__", `${importClassName}_var Target;`);
             }
             else {
-                headerContent = headerContent.replace("__INCLUDE_INSERTER__", "");
-                headerContent = headerContent.replace("__TARGET_INSERTER__", "");
+                headerContent = headerContent.replace("//__INCLUDE_INSERTER__", "");
+                headerContent = headerContent.replace("//__TARGET_INSERTER__", "");
             }
             File.WriteAllText(Path.Combine(paths.headerPath, `${className}.h`), headerContent, utf8);
             File.WriteAllText(Path.Combine(paths.sourcePath, `${className}.cpp`), sourceContent, utf8);
