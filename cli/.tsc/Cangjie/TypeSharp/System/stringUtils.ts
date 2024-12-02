@@ -21,4 +21,7 @@ export class stringUtils {
     public static trim(self?: any, value?: any): string {
         return {} as any;
     }
+    public static changeEncoding(value?: string, fromCodePage?: number, toCodePage?: number): string {
+        return {} as any;
+    }
 }

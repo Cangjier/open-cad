@@ -14,7 +14,7 @@ export class JSON {
     }
     public constructor() {
     }
-    public static stringify(value?: any): string {
+    public static stringify(value?: any, replacer?: string[], space?: number): string {
         return {} as any;
     }
     public static parse(stringValue?: string): any {

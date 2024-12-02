@@ -4,6 +4,7 @@ import { Environment } from "../.tsc/System/Environment";
 import { Task } from "../.tsc/System/Threading/Tasks/Task";
 import { File } from "../.tsc/System/IO/File";
 import { UTF8Encoding } from "../.tsc/System/Text/UTF8Encoding";
+import { stringUtils } from "../.tsc/Cangjie/TypeSharp/System/stringUtils";
 
 let utf8 = new UTF8Encoding(false);
 
@@ -14,20 +15,20 @@ let Rade = () => {
             filePath: "cmd",
             workingDirectory: frameworkDirectory
         });
-        // sh.writeLine(`chcp 65001 & echo ---`);
-        // await sh.readLinesWhen(item => {
-        //     if (item == "---") {
-        //         return true;
-        //     }
-        //     console.log(item);
-        //     return false;
-        // });
+        sh.writeLine(`chcp 65001 & echo ---`);
+        await sh.readLinesWhen(item => {
+            if (item == "---") {
+                return true;
+            }
+            console.log(stringUtils.changeEncoding(item, 65001, 0));
+            return false;
+        });
         sh.writeLine(`call "${tck_initPath}" & echo ---`);
         await sh.readLinesWhen(item => {
             if (item == "---") {
                 return true;
             }
-            console.log(item);
+            console.log(stringUtils.changeEncoding(item, 65001, 0));
             return false;
         });
         sh.writeLine("tck_list & echo ---");
@@ -35,7 +36,7 @@ let Rade = () => {
             if (item == "---") {
                 return true;
             }
-            console.log(item);
+            console.log(stringUtils.changeEncoding(item, 65001, 0));
             return false;
         });
         sh.writeLine("tck_profile V5R21_B21 & echo ---");
@@ -43,7 +44,7 @@ let Rade = () => {
             if (item == "---") {
                 return true;
             }
-            console.log(item);
+            console.log(stringUtils.changeEncoding(item, 65001, 0));
             return false;
         });
         sh.writeLine(`mkCI -a & echo ---`);
@@ -51,7 +52,7 @@ let Rade = () => {
             if (item == "---") {
                 return true;
             }
-            console.log(item);
+            console.log(stringUtils.changeEncoding(item, 65001, 0));
             return false;
         });
         sh.writeLine("mkmk -a -g -u && mkrtv & echo ---");
@@ -59,9 +60,9 @@ let Rade = () => {
             if (item == "---") {
                 return true;
             }
-            console.log(item);
+            console.log(stringUtils.changeEncoding(item, 65001, 0));
             if (loggerPath != "") {
-                File.AppendAllText(loggerPath, item + "\r\n", utf8);
+                File.AppendAllText(loggerPath, stringUtils.changeEncoding(item, 65001, 0) + "\r\n", utf8);
             }
             return false;
         });
