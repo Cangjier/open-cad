@@ -1550,10 +1550,10 @@ let main = async () => {
                 return;
             }
 
-            headerContent = headerContent.replace("__CLASS_NAME__", className);
-            sourceContent = sourceContent.replace("__CLASS_NAME__", className);
+           
             let classNameItems = className.split("_");
             if (classNameItems.length >= 2) {
+                let lastClassName = classNameItems[classNameItems.length - 1];
                 let namespaceItems = classNameItems.slice(0, classNameItems.length - 1);
                 let namespaceStarter = [] as string[];
                 let namespaceEnder = [] as string[];
@@ -1563,11 +1563,15 @@ let main = async () => {
                     namespaceEnder.push(`} // namespace ${namespaceItem}`);
                     sourceNamespaceInserter.push(`using namespace ${namespaceItem};`);
                 }
+                headerContent = headerContent.replace("__CLASS_NAME__", lastClassName);
+                sourceContent = sourceContent.replace("__CLASS_NAME__", lastClassName);
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", namespaceStarter.join("\r\n"));
                 headerContent = headerContent.replace("//__NAMESPACE_ENDER__", namespaceEnder.join("\r\n"));
                 sourceContent = sourceContent.replace("//__NAMESPACE_INSERTER__", sourceNamespaceInserter.join("\r\n"));
             }
             else {
+                headerContent = headerContent.replace("__CLASS_NAME__", className);
+                sourceContent = sourceContent.replace("__CLASS_NAME__", className);
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", "");
                 headerContent = headerContent.replace("//__NAMESPACE_ENDER__", "");
                 sourceContent = sourceContent.replace("//__NAMESPACE_INSERTER__", "");
