@@ -1,4 +1,4 @@
-#include "__COMMAND_CLASS_NAME__.h"
+#include "__FILE_NAME__.h"
 
 #include "CATCreateExternalObject.h"
 CATCreateClass(__COMMAND_CLASS_NAME__);

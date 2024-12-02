@@ -1565,6 +1565,7 @@ let main = async () => {
                 }
                 headerContent = headerContent.replace("__CLASS_NAME__", lastClassName);
                 sourceContent = sourceContent.replace("__CLASS_NAME__", lastClassName);
+                sourceContent = sourceContent.replace("__FILE_NAME__", className);
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", namespaceStarter.join("\r\n"));
                 headerContent = headerContent.replace("//__NAMESPACE_ENDER__", namespaceEnder.join("\r\n"));
                 sourceContent = sourceContent.replace("//__NAMESPACE_INSERTER__", sourceNamespaceInserter.join("\r\n"));
@@ -1572,6 +1573,7 @@ let main = async () => {
             else {
                 headerContent = headerContent.replace("__CLASS_NAME__", className);
                 sourceContent = sourceContent.replace("__CLASS_NAME__", className);
+                sourceContent = sourceContent.replace("__FILE_NAME__", className);
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", "");
                 headerContent = headerContent.replace("//__NAMESPACE_ENDER__", "");
                 sourceContent = sourceContent.replace("//__NAMESPACE_INSERTER__", "");
