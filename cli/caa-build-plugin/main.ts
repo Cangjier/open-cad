@@ -224,7 +224,7 @@ let main = async () => {
                 }
                 let errorMessage = toReportLines.join("\n");
                 let isSuccess = toReportLines.length == 0;
-                let headerMessage = `${isSuccess ? "✅" : "❌"} ${Path.GetFileName(gitUrl)} ${tagName} ${message ?? ""} ${isSuccess ? "编译成功" : "编译失败"}`;
+                let headerMessage = `${isSuccess ? "✅" : "❌"} ${Path.GetFileName(gitUrl)} ${tagName} ${isSuccess ? "编译成功" : "编译失败"} ${message ?? ""}`;
                 let finalMessage = isSuccess ? headerMessage : `${headerMessage}\r\n${errorMessage}`;
                 await axios.post(`${stringUtils.trimEnd(server, "/")}/api/v1/tasks/run`, {
                     Input: {
