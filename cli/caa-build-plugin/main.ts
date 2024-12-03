@@ -202,7 +202,30 @@ let main = async () => {
         let buildLoggerPath = Path.Combine(tempDirectory, "build.log");
         File.WriteAllText(buildLoggerPath, "", utf8);
         await cmdAsync(tempDirectory, `opencad caa-build --logger ${buildLoggerPath}`);
+        let loggerLines = File.ReadAllLines(buildLoggerPath, utf8);
+        let errorLoggerLines = loggerLines.filter(line => line.toLowerCase().includes("error"));
         let win_b64Directory = Path.Combine(tempDirectory, "win_b64");
+        let testcaseMessageLines = [] as string[];
+        if (manifest.testCase && (errorLoggerLines.length == 0)) {
+            let resultPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            await cmdAsync(win_b64Directory, `opencad testcase ${manifestPath} --result ${resultPath}`);
+            let testCaseResult = Json.Load(resultPath);
+            for (let testCaseItemResult of testCaseResult.testCase) {
+                let testCaseItemOutputPath = testCaseItemResult.outputPath;
+                if (File.Exists(testCaseItemOutputPath)) {
+                    let testCaseItemOutput = Json.Load(testCaseItemOutputPath);
+                    if (testCaseItemOutput.success) {
+                        testcaseMessageLines.push(`TestCase ${testCaseItemResult.name} passed`);
+                    }
+                    else {
+                        testcaseMessageLines.push(`TestCase ${testCaseItemResult.name} failed: ${testCaseItemOutput.message ?? ""}`);
+                    }
+                }
+                else {
+                    testcaseMessageLines.push(`TestCase ${testCaseItemResult.name} failed: output not exists`);
+                }
+            }
+        }
         if (Directory.Exists(win_b64Directory)) {
             let zipFilePath = Path.Combine(tempDirectory, "win_b64.zip");
             await zip.compress(win_b64Directory, zipFilePath);
@@ -216,8 +239,7 @@ let main = async () => {
                     "--token", token]
             });
             if (manifest.wechaty.id) {
-                let loggerLines = File.ReadAllLines(buildLoggerPath, utf8);
-                let errorLoggerLines = loggerLines.filter(line => line.toLowerCase().includes("error"));
+
                 let toReportLines = [] as string[];
                 for (let i = 0; (i < 2) && (i < errorLoggerLines.length); i++) {
                     toReportLines.push(errorLoggerLines[i]);
@@ -225,7 +247,8 @@ let main = async () => {
                 let errorMessage = toReportLines.join("\n");
                 let isSuccess = toReportLines.length == 0;
                 let headerMessage = `${isSuccess ? "✅" : "❌"} ${Path.GetFileName(gitUrl)} ${tagName} ${isSuccess ? "编译成功" : "编译失败"} ${message ?? ""}`;
-                let finalMessage = isSuccess ? headerMessage : `${headerMessage}\r\n${errorMessage}`;
+                let finalMessage = isSuccess ? `${headerMessage}\r\n${testcaseMessageLines.join('\r\n')}` : `${headerMessage}\r\n${errorMessage}`;
+
                 await axios.post(`${stringUtils.trimEnd(server, "/")}/api/v1/tasks/run`, {
                     Input: {
                         id: manifest.wechaty.id,
