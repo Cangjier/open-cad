@@ -197,6 +197,8 @@ let main = async () => {
     let gitUrl = input.webhook.repository.clone_url;
     let message = input.webhook.head_commit.message;
     if (await gitManager.gitClone(tempDirectory, gitUrl, input.webhook.head_commit.id)) {
+        let Install_config_win_b64Path = Path.Combine(tempDirectory, "Install_config_win_b64");
+        let Install_config_win_b64Lines = File.ReadAllLines(Install_config_win_b64Path, utf8);
         let manifestPath = Path.Combine(tempDirectory, "manifest.json");
         let manifest = Json.Load(manifestPath);
         let buildLoggerPath = Path.Combine(tempDirectory, "build.log");
@@ -208,7 +210,15 @@ let main = async () => {
         let testcaseMessageLines = [] as string[];
         if (manifest.testCase && (errorLoggerLines.length == 0)) {
             let resultPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-            await cmdAsync(win_b64Directory, `opencad testcase ${manifestPath} --result ${resultPath}`);
+            let env = {
+                "Path": {
+                    "action": "add",
+                    "value": Install_config_win_b64Lines[Install_config_win_b64Lines.length - 1]
+                }
+            };
+            await cmdAsync(win_b64Directory, `opencad testcase ${manifestPath} --result ${resultPath}`, {
+                environment: env
+            });
             let testCaseResult = Json.Load(resultPath);
             for (let testCaseItemResult of testCaseResult.testCase) {
                 let testCaseItemOutputPath = testCaseItemResult.outputPath;

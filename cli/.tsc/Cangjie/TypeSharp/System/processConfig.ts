@@ -9,4 +9,5 @@ export class processConfig {
     public useShellExecute?: boolean;
     public redirect?: boolean;
     public createNoWindow?: boolean;
+    public environment?: any;
 }

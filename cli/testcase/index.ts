@@ -37,11 +37,16 @@ for (let i = 0; i < args.length; i++) {
 
 let main = async () => {
     if (args.length < 1 || (args[0].startsWith("-"))) {
-        console.log("Usage: <manifestPath> --input <inputPath> --output <outputPath> --logger <loggerPath> --result <resultPath>");
+        console.log("Usage: <manifestPath> --input <inputPath> --output <outputPath> --logger <loggerPath> --result <resultPath> --env <envPath>");
         return;
     }
     if (parameters.result == undefined) {
         throw `--result is required`;
+    }
+    let envPath = parameters.env;
+    let env = {};
+    if (envPath && (File.Exists(envPath))) {
+        env = Json.Load(envPath);
     }
     axios.setDefaultProxy();
     let manifestPath = args[0];
@@ -57,7 +62,7 @@ let main = async () => {
         let testCaseItemResult = {} as any;
         testCaseItemResult.name = testCaseItem.name;
         testCaseResult.push(testCaseItemResult);
-        
+
         let tempDirectory = Path.Combine(Environment.CurrentDirectory, "debug", testCaseItem.name);
         testCaseItemResult.tempDirectory = tempDirectory;
         let configOutputPath = parameters.output ?? Path.Combine(tempDirectory, "output.json");
@@ -118,7 +123,9 @@ let main = async () => {
         entry = entry.replace("{output}", configOutputPath);
         entry = entry.replace("{logger}", configLoggerPath);
         testCaseItemResult.entry = entry;
-        await cmdAsync(Environment.CurrentDirectory, entry);
+        await cmdAsync(Environment.CurrentDirectory, entry, {
+            environment: env
+        });
     }
 
     File.WriteAllText(parameters.result, JSON.stringify(result), utf8);
