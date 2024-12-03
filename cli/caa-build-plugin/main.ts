@@ -219,7 +219,7 @@ let main = async () => {
                 let loggerLines = File.ReadAllLines(buildLoggerPath, utf8);
                 let errorLoggerLines = loggerLines.filter(line => line.toLowerCase().includes("error"));
                 let toReportLines = [] as string[];
-                for (let i = 0; (i < 1) && (i < errorLoggerLines.length); i++) {
+                for (let i = 0; (i < 2) && (i < errorLoggerLines.length); i++) {
                     toReportLines.push(errorLoggerLines[i]);
                 }
                 let errorMessage = toReportLines.join("\n");
