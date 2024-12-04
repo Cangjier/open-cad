@@ -63,7 +63,7 @@ let main = async () => {
         testCaseItemResult.name = testCaseItem.name;
         testCaseResult.push(testCaseItemResult);
 
-        let tempDirectory = Path.Combine(Environment.CurrentDirectory, "debug", testCaseItem.name);
+        let tempDirectory = Path.Combine(Environment.CurrentDirectory, "testcase", testCaseItem.name);
         testCaseItemResult.tempDirectory = tempDirectory;
         let configOutputPath = parameters.output ?? Path.Combine(tempDirectory, "output.json");
         testCaseItemResult.outputPath = configOutputPath;
