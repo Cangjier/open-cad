@@ -219,22 +219,25 @@ let main = async () => {
             await cmdAsync(win_b64Directory, `opencad testcase ${manifestPath} --result ${resultPath}`, {
                 environment: env
             });
-            let testCaseResult = Json.Load(resultPath);
-            for (let testCaseItemResult of testCaseResult.testCase) {
-                let testCaseItemOutputPath = testCaseItemResult.outputPath;
-                if (File.Exists(testCaseItemOutputPath)) {
-                    let testCaseItemOutput = Json.Load(testCaseItemOutputPath);
-                    if (testCaseItemOutput.success) {
-                        testcaseMessageLines.push(`✅ TestCase<${testCaseItemResult.name}>: passed`);
+            if (File.Exists(resultPath)) {
+                let testCaseResult = Json.Load(resultPath);
+                for (let testCaseItemResult of testCaseResult.testCase) {
+                    let testCaseItemOutputPath = testCaseItemResult.outputPath;
+                    if (File.Exists(testCaseItemOutputPath)) {
+                        let testCaseItemOutput = Json.Load(testCaseItemOutputPath);
+                        if (testCaseItemOutput.success) {
+                            testcaseMessageLines.push(`✅ TestCase<${testCaseItemResult.name}>: passed`);
+                        }
+                        else {
+                            testcaseMessageLines.push(`❌ TestCase<${testCaseItemResult.name}>: failed, ${testCaseItemOutput.message ?? ""}`);
+                        }
                     }
                     else {
-                        testcaseMessageLines.push(`❌ TestCase<${testCaseItemResult.name}>: failed, ${testCaseItemOutput.message ?? ""}`);
+                        testcaseMessageLines.push(`❌ TestCase<${testCaseItemResult.name}>: failed, output not exists`);
                     }
                 }
-                else {
-                    testcaseMessageLines.push(`❌ TestCase<${testCaseItemResult.name}>: failed, output not exists`);
-                }
             }
+
         }
         if (Directory.Exists(win_b64Directory)) {
             let zipFilePath = Path.Combine(tempDirectory, "win_b64.zip");
