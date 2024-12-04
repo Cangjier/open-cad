@@ -225,14 +225,14 @@ let main = async () => {
                 if (File.Exists(testCaseItemOutputPath)) {
                     let testCaseItemOutput = Json.Load(testCaseItemOutputPath);
                     if (testCaseItemOutput.success) {
-                        testcaseMessageLines.push(`TestCase ${testCaseItemResult.name} passed`);
+                        testcaseMessageLines.push(`✅ TestCase<${testCaseItemResult.name}>: passed`);
                     }
                     else {
-                        testcaseMessageLines.push(`TestCase ${testCaseItemResult.name} failed: ${testCaseItemOutput.message ?? ""}`);
+                        testcaseMessageLines.push(`❌ TestCase<${testCaseItemResult.name}>: failed, ${testCaseItemOutput.message ?? ""}`);
                     }
                 }
                 else {
-                    testcaseMessageLines.push(`TestCase ${testCaseItemResult.name} failed: output not exists`);
+                    testcaseMessageLines.push(`❌ TestCase<${testCaseItemResult.name}>: failed, output not exists`);
                 }
             }
         }
