@@ -213,7 +213,7 @@ let main = async () => {
             let env = {
                 "Path": {
                     "action": "add",
-                    "value": Install_config_win_b64Lines[Install_config_win_b64Lines.length - 1]
+                    "value": Path.Combine(Install_config_win_b64Lines[Install_config_win_b64Lines.length - 1], "win_b64\\code\\bin")
                 }
             };
             await cmdAsync(win_b64Directory, `opencad testcase ${manifestPath} --result ${resultPath}`, {
