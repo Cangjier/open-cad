@@ -256,7 +256,7 @@ let main = async () => {
                 }
                 let errorMessage = toReportLines.join("\n");
                 let isSuccess = toReportLines.length == 0;
-                let headerMessage = `${isSuccess ? "✅" : "❌"} ${Path.GetFileName(gitUrl)} ${tagName} ${isSuccess ? "Build Succeed" : "Build Failed"} ${message ?? ""}`;
+                let headerMessage = `${isSuccess ? "✅" : "❌"} ${Path.GetFileName(gitUrl)} ${tagName} ${isSuccess ? "Build Succeed" : "Build Failed"}\r\nℹ️${message ?? ""}`;
                 let finalMessage = isSuccess ? `${headerMessage}\r\n${testcaseMessageLines.join('\r\n')}` : `${headerMessage}\r\n${errorMessage}`;
 
                 await axios.post(`${stringUtils.trimEnd(server, "/")}/api/v1/tasks/run`, {
