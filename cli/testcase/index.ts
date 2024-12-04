@@ -123,9 +123,11 @@ let main = async () => {
         entry = entry.replace("{output}", configOutputPath);
         entry = entry.replace("{logger}", configLoggerPath);
         testCaseItemResult.entry = entry;
-        await cmdAsync(Environment.CurrentDirectory, entry, {
+        let cmdResult = await cmdAsync(Environment.CurrentDirectory, entry, {
             environment: env
         });
+        testCaseItemResult.cmdResult = cmdResult;
+        File.WriteAllText(Path.Combine(tempDirectory, "result.json"), JSON.stringify(result), utf8);
     }
 
     File.WriteAllText(parameters.result, JSON.stringify(result), utf8);
