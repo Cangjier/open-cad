@@ -67,7 +67,7 @@ let main = async () => {
         testCaseItemResult.tempDirectory = tempDirectory;
         let configOutputPath = parameters.output ?? Path.Combine(tempDirectory, "output.json");
         testCaseItemResult.outputPath = configOutputPath;
-        let configLoggerPath = parameters.logger ?? Path.Combine(tempDirectory, "logger.json");
+        let configLoggerPath = parameters.logger ?? Path.Combine(tempDirectory, "logger.log");
         testCaseItemResult.loggerPath = configLoggerPath;
         Directory.CreateDirectory(tempDirectory);
         let downloadDirectory = Path.Combine(tempDirectory, "download");
@@ -124,7 +124,9 @@ let main = async () => {
         entry = entry.replace("{logger}", configLoggerPath);
         testCaseItemResult.entry = entry;
         let cmdResult = await cmdAsync(Environment.CurrentDirectory, entry, {
-            environment: env
+            environment: env,
+            redirect: true,
+            useShellExecute: false
         });
         testCaseItemResult.cmdResult = cmdResult;
         File.WriteAllText(Path.Combine(tempDirectory, "result.json"), JSON.stringify(result), utf8);
