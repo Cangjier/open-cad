@@ -1573,6 +1573,7 @@ let main = async () => {
                     sourceNamespaceInserter.push(`using namespace ${namespaceItem};`);
                 }
                 headerContent = headerContent.replace("__CLASS_NAME__", lastClassName);
+                headerContent = headerContent.replace("__FILE_NAME__", className);
                 sourceContent = sourceContent.replace("__CLASS_NAME__", lastClassName);
                 sourceContent = sourceContent.replace("__FILE_NAME__", className);
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", namespaceStarter.join("\r\n"));
@@ -1581,6 +1582,7 @@ let main = async () => {
             }
             else {
                 headerContent = headerContent.replace("__CLASS_NAME__", className);
+                headerContent = headerContent.replace("__FILE_NAME__", className);
                 sourceContent = sourceContent.replace("__CLASS_NAME__", className);
                 sourceContent = sourceContent.replace("__FILE_NAME__", className);
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", "");

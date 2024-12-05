@@ -1,5 +1,5 @@
-#ifndef ____CLASS_NAME___H__
-#define ____CLASS_NAME___H__
+#ifndef ____FILE_NAME___H__
+#define ____FILE_NAME___H__
 //__INCLUDE_INSERTER__
 //__NAMESPACE_STARTER__
 class __CLASS_NAME__
