@@ -1403,9 +1403,11 @@ let Searcher = () => {
             moduleName = match.Groups["moduleName"].Value;
         }
         let className = "";
-        let classNames = Path.GetFileNameWithoutExtension(file).split("_");
-        if (classNames.length >= 3) {
-            className = classNames[1];
+        let fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file);
+        let firstUnderLineIndex = fileNameWithoutExtension.indexOf("_");
+        let lastUnderLineIndex = fileNameWithoutExtension.lastIndexOf("_");
+        if (firstUnderLineIndex != -1 && lastUnderLineIndex != -1 && firstUnderLineIndex != lastUnderLineIndex) {
+            className = fileNameWithoutExtension.substring(firstUnderLineIndex + 1, lastUnderLineIndex);
         }
         return {
             frameworkName,
