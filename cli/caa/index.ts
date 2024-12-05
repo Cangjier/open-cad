@@ -1648,7 +1648,7 @@ let main = async () => {
                 console.log("Class not found.");
                 return;
             }
-            cmd(Environment.CurrentDirectory, `code ${info.filePath}`);
+            cmd(Environment.CurrentDirectory, `code "${info.filePath}"`);
         }
         else if (command == "import") {
             let className = args[1];
