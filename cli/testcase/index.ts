@@ -122,6 +122,27 @@ let main = async () => {
         entry = entry.replace("{input}", configInputPath);
         entry = entry.replace("{output}", configOutputPath);
         entry = entry.replace("{logger}", configLoggerPath);
+        let batPath = Path.Combine(tempDirectory, "demo.bat");
+        let batLines = [] as string[];
+        let envKeys = Object.keys(env);
+        for (let envKey of envKeys) {
+            let envValue = env[envKey];
+            if (typeof envValue == 'object') {
+                if (envValue.action == "add") {
+                    batLines.push(`set ${envKey}=%${envKey}%;${envValue.value}`);
+                }
+            }
+            else {
+                batLines.push(`set ${envKey}=${envValue}`);
+            }
+        }
+        batLines.push('cd ..');
+        batLines.push('cd ..');
+        batLines.push(testCaseItem.entry.replace("{input}", Path.GetRelativePath(Environment.CurrentDirectory, configInputPath))
+            .replace("{output}", Path.GetRelativePath(Environment.CurrentDirectory, configOutputPath))
+            .replace("{logger}", Path.GetRelativePath(Environment.CurrentDirectory, configLoggerPath)));
+        batLines.push('pause');
+        File.WriteAllText(batPath, batLines.join('\r\n'));
         testCaseItemResult.entry = entry;
         let cmdResult = await cmdAsync(Environment.CurrentDirectory, entry, {
             environment: env,
