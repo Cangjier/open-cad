@@ -8,7 +8,7 @@ import { EnvironmentVariableTarget } from "../.tsc/System/EnvironmentVariableTar
 import { Json } from "../.tsc/TidyHPC/LiteJson/Json";
 import { Regex } from "../.tsc/System/Text/RegularExpressions/Regex";
 import { Encoding } from "../.tsc/System/Text/Encoding";
-import { ICATNls, IDictionary, IPrereqComponent, Languages, Visiblity } from "./Interfaces";
+import { ICATNls, IClassInfomation, IDictionary, IPrereqComponent, Languages, Visiblity } from "./Interfaces";
 import { Match } from "../.tsc/System/Text/RegularExpressions/Match";
 import { code } from '../.tsc/Cangjie/TypeSharp/System/code';
 import { env } from "../.tsc/context";
@@ -1428,12 +1428,7 @@ let Searcher = () => {
         if (files.length == 0) {
             return [];
         }
-        let result = [] as {
-            frameworkName: string,
-            moduleName: string,
-            className: string,
-            filePath: string
-        }[];
+        let result = [] as IClassInfomation[];
         for (let file of files) {
             result.push(getClassInfomationByFilePath(file));
         }
@@ -1449,7 +1444,7 @@ let Searcher = () => {
         }
         return [];
     };
-    let printClassInfomation = (infos: any[]) => {
+    let printClassInfomation = (infos: IClassInfomation[]) => {
         let index = 0;
         let padding = 32;
         console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
@@ -1460,6 +1455,41 @@ let Searcher = () => {
             console.log(`${indexString.padEnd(10)}|${info.className.padEnd(padding)}|${info.frameworkName.padEnd(padding)}|${info.moduleName.padEnd(padding)}|${info.includeFileName.padEnd(padding)}`);
         }
         console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
+    };
+    let listInterfaceFiles = (searchDirectory: string) => {
+        let files = fileUtils.search(searchDirectory, new Regex(`.*(class|interface).*\\.(htm|html)$`, RegexOptions.IgnoreCase));
+        let interfaces = [] as string[];
+        for (let file of files) {
+            let fileName = Path.GetFileName(file);
+            if (fileName.includes("interface")) {
+                interfaces.push(file);
+            }
+        }
+        return interfaces;
+    };
+    let generateQueryInterfaces = (infos: IClassInfomation[]) => {
+        let includeLines = [] as string[];
+        let headerLines = [] as string[];
+        let sourceLines = [] as string[];
+        for (let info of infos) {
+            includeLines.push(`#include <${info.includeFileName}>`);
+            headerLines.push(`bool Is${info.className}();`);
+            sourceLines.push(`bool Is${info.className}() { 
+${info.className}* result=NULL;
+if(SUCCEEDED(Target->QueryInterface(IID_${info.className},(void**)&result)))
+{
+    result->Release();
+    return true;
+}
+return false;
+}`);
+        }
+        return {
+            includeLines,
+            headerLines,
+            sourceLines
+        };
+
     };
     return {
         searchLastDirectory,

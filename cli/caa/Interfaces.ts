@@ -19,3 +19,11 @@ export interface IDictionary {
     WorkshopName: string,
     ModuleName: string
 }
+
+export interface IClassInfomation {
+    frameworkName: string;
+    moduleName: string;
+    className: string;
+    includeFileName: string;
+    filePath: string;
+}
