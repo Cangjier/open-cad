@@ -1640,7 +1640,13 @@ let main = async () => {
                 return;
             }
             let infos = searcher.getClassInfomationByLastDirectory(className);
+            infos = infos.filter(item => item.className.toLowerCase().includes(className.toLowerCase()));
             let info = infos.find(item => item.className.toLowerCase() == className.toLowerCase());
+            if (info == undefined) {
+                if (infos.length > 0) {
+                    info = infos[0];
+                }
+            }
             if (info == undefined) {
                 console.log("Class not found.");
                 return;
