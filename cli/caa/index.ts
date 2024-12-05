@@ -1283,6 +1283,7 @@ let ProjectV1 = (projectDirectory: string) => {
 
 let Searcher = () => {
     let moduleRegex = new Regex("module:\\s*<b>(?<moduleName>[^<]+)</b>");
+    let includeFileRegex = new Regex("included in the file:\\s*<b>(?<fileName>[^<]+)</b>");
     let cache = {};
     let cloneSelf = async () => {
         let gitDirectory = Path.Combine(repositoryDirectory, ".git");
@@ -1402,6 +1403,11 @@ let Searcher = () => {
         if (match.Success) {
             moduleName = match.Groups["moduleName"].Value;
         }
+        let includeFileName = "";
+        match = includeFileRegex.Match(content);
+        if (match.Success) {
+            includeFileName = match.Groups["fileName"].Value;
+        }
         let className = "";
         let fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file);
         let firstUnderLineIndex = fileNameWithoutExtension.indexOf("_");
@@ -1413,6 +1419,7 @@ let Searcher = () => {
             frameworkName,
             moduleName,
             className,
+            includeFileName,
             filePath: file
         };
     };
@@ -1450,7 +1457,7 @@ let Searcher = () => {
         console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
         for (let info of infos) {
             let indexString = `${++index}/${infos.length}`;
-            console.log(`${indexString.padEnd(10)}|${info.className.padEnd(padding)}|${info.frameworkName.padEnd(padding)}|${info.moduleName.padEnd(padding)}|${Path.GetFileName(info.filePath).padEnd(padding)}`);
+            console.log(`${indexString.padEnd(10)}|${info.className.padEnd(padding)}|${info.frameworkName.padEnd(padding)}|${info.moduleName.padEnd(padding)}|${info.includeFileName.padEnd(padding)}`);
         }
         console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}|${"-".padEnd(padding, "-")}`);
     };
