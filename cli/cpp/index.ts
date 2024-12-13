@@ -375,7 +375,23 @@ let IncludeFormatter = () => {
 
 let includeFormatter = IncludeFormatter();
 
+let MingWManager = () => {
+    let isInstalled = () => {
+        return File.Exists("/usr/bin/x86_64-w64-mingw32-g++");
+    };
+    let install = async () => {
+        console.log("sudo apt update");
+        await cmdAsync(Environment.CurrentDirectory, "sudo apt update");
+        console.log("sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mingw-w64");
+        await cmdAsync(Environment.CurrentDirectory, "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mingw-w64");
+    };
+    return {
+        isInstalled,
+        install
+    };
+};
 
+let mingwManager = MingWManager();
 
 let Installer = () => {
     let cache = {};
@@ -590,6 +606,9 @@ let main = async () => {
             version = "latest";
         }
         await installer.installSDK(name, version);
+    }
+    else if (command == "install-mingw") {
+        await mingwManager.install();
     }
     else if (command == "format-include") {
         if (OperatingSystem.IsLinux() == false) {
