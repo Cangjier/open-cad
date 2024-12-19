@@ -1573,6 +1573,12 @@ let main = async () => {
             if (importType == "") {
                 importType = "1";
             }
+            if (importType == "1") {
+                let isGuided = searcher.isGuided();
+                if (isGuided == undefined || isGuided == false) {
+                    await searcher.guide();
+                }
+            }
             let headerContent = "";
             let sourceContent = "";
             if (classType == "1") {
@@ -1678,6 +1684,10 @@ let main = async () => {
                 console.log("Please input class name.");
                 return;
             }
+            let isGuided = searcher.isGuided();
+            if (isGuided == undefined || isGuided == false) {
+                await searcher.guide();
+            }
             let infos = searcher.getClassInfomationByLastDirectory(className);
             let info = infos.find(item => item.className.toLowerCase() == className.toLowerCase());
             if (info == undefined) {
@@ -1694,6 +1704,10 @@ let main = async () => {
             if (className.startsWith("--")) {
                 console.log("Please input class name.");
                 return;
+            }
+            let isGuided = searcher.isGuided();
+            if (isGuided == undefined || isGuided == false) {
+                await searcher.guide();
             }
             let infos = searcher.getClassInfomationByLastDirectory(className);
             let info = infos.find(item => item.className.toLowerCase() == className.toLowerCase());
