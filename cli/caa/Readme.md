@@ -37,6 +37,16 @@ namespace A{
 ```
 同时脚手架会自动导入相关的Module和Framework。
 该功能是可选项。
+# add-module
+```
+opencad caa add-module <module-name>
+```
+添加一个Module，使用前先将当前目录切换至Framework目录下，这样程序会自动识别引用目录的源代码目录。
+# add-framework
+```
+opencad caa add-framework <framework-name>
+```
+添加一个Framework，使用前先将当前目录切换至Project目录下，这样程序会自动识别引用目录的源代码目录。
 # search
 ```
 opencad caa search <value>

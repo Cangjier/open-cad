@@ -1550,11 +1550,11 @@ let main = async () => {
             else {
                 console.log(`Please input class name: (${defaultClassName})`);
             }
-            var className = Console.ReadLine();
-            if (className == "") {
-                className = defaultClassName;
+            var name = Console.ReadLine();
+            if (name == "") {
+                name = defaultClassName;
             }
-            if (className == "") {
+            if (name == "") {
                 console.log("Invalid class name.");
                 console.log("Exit.");
                 return;
@@ -1596,7 +1596,7 @@ let main = async () => {
             }
 
 
-            let classNameItems = className.split("_");
+            let classNameItems = name.split("_");
             if (classNameItems.length >= 2) {
                 let lastClassName = classNameItems[classNameItems.length - 1];
                 let namespaceItems = classNameItems.slice(0, classNameItems.length - 1);
@@ -1609,18 +1609,18 @@ let main = async () => {
                     sourceNamespaceInserter.push(`using namespace ${namespaceItem};`);
                 }
                 headerContent = headerContent.replace("__CLASS_NAME__", lastClassName);
-                headerContent = headerContent.replace("__FILE_NAME__", className);
+                headerContent = headerContent.replace("__FILE_NAME__", name);
                 sourceContent = sourceContent.replace("__CLASS_NAME__", lastClassName);
-                sourceContent = sourceContent.replace("__FILE_NAME__", className);
+                sourceContent = sourceContent.replace("__FILE_NAME__", name);
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", namespaceStarter.join("\r\n"));
                 headerContent = headerContent.replace("//__NAMESPACE_ENDER__", namespaceEnder.join("\r\n"));
                 sourceContent = sourceContent.replace("//__NAMESPACE_INSERTER__", sourceNamespaceInserter.join("\r\n"));
             }
             else {
-                headerContent = headerContent.replace("__CLASS_NAME__", className);
-                headerContent = headerContent.replace("__FILE_NAME__", className);
-                sourceContent = sourceContent.replace("__CLASS_NAME__", className);
-                sourceContent = sourceContent.replace("__FILE_NAME__", className);
+                headerContent = headerContent.replace("__CLASS_NAME__", name);
+                headerContent = headerContent.replace("__FILE_NAME__", name);
+                sourceContent = sourceContent.replace("__CLASS_NAME__", name);
+                sourceContent = sourceContent.replace("__FILE_NAME__", name);
                 headerContent = headerContent.replace("//__NAMESPACE_STARTER__", "");
                 headerContent = headerContent.replace("//__NAMESPACE_ENDER__", "");
                 sourceContent = sourceContent.replace("//__NAMESPACE_INSERTER__", "");
@@ -1639,8 +1639,8 @@ let main = async () => {
                 headerContent = headerContent.replace("//__INCLUDE_INSERTER__", "");
                 headerContent = headerContent.replace("//__TARGET_INSERTER__", "");
             }
-            File.WriteAllText(Path.Combine(paths.headerPath, `${className}.h`), headerContent, utf8);
-            File.WriteAllText(Path.Combine(paths.sourcePath, `${className}.cpp`), sourceContent, utf8);
+            File.WriteAllText(Path.Combine(paths.headerPath, `${name}.h`), headerContent, utf8);
+            File.WriteAllText(Path.Combine(paths.sourcePath, `${name}.cpp`), sourceContent, utf8);
             console.log("Class created.");
         }
         else if (command == "search") {
@@ -1773,6 +1773,87 @@ let main = async () => {
             let module = framework.getModule(moduleName);
             framework.identityCard.addItem(info.frameworkName, "Public");
             module.imakefile.addWIZARD_LINK_MODULES([info.moduleName]);
+        }
+        else if (command == "add-module") {
+            let defaultModuleName = "";
+            if (args.length >= 2 && args[1].startsWith("--") == false) {
+                defaultModuleName = args[1];
+            }
+            if (defaultModuleName == "") {
+                console.log(`Please input module name: `);
+            }
+            else {
+                console.log(`Please input module name: (${defaultModuleName})`);
+            }
+            var name = Console.ReadLine();
+            if (name == "") {
+                name = defaultModuleName;
+            }
+            if (name == "") {
+                console.log("Invalid moudle name.");
+                console.log("Exit.");
+                return;
+            }
+            let projectDirectory = directoryFinder.findProjectDirectory(Environment.CurrentDirectory);
+            if (projectDirectory == "") {
+                console.log("Project not found.");
+                return;
+            }
+            let project = ProjectV1(projectDirectory);
+            let frameworkDirectory = directoryFinder.findFrameworkDirectory(Environment.CurrentDirectory);
+            let frameworkName = "";
+            if (frameworkDirectory == "") {
+                console.log("Please select framework :");
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                console.log(`${"Index".padEnd(10)}|${"Framework".padEnd(32)}`);
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let frameworks = project.getFrameworks();
+                let index = 0;
+                for (let framework of frameworks) {
+                    let indexString = `${++index}/${frameworks.length}`;
+                    console.log(`${indexString.padEnd(10)}|${framework.padEnd(32)}`);
+                }
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let selectIndex = Console.ReadLine();
+                if (selectIndex == "") {
+                    console.log("Invalid index.");
+                    return;
+                }
+                frameworkName = frameworks[parseInt(selectIndex) - 1];
+            }
+            else {
+                frameworkName = Path.GetFileName(frameworkDirectory);
+            }
+            let framework = project.getFramework(frameworkName);
+            framework.createModule(name);
+        }
+        else if (command == "add-framework") {
+            let defaultName = "";
+            if (args.length >= 2 && args[1].startsWith("--") == false) {
+                defaultName = args[1];
+            }
+            if (defaultName == "") {
+                console.log(`Please input module name: `);
+            }
+            else {
+                console.log(`Please input module name: (${defaultName})`);
+            }
+            var name = Console.ReadLine();
+            if (name == "") {
+                name = defaultName;
+            }
+            if (name == "") {
+                console.log("Invalid moudle name.");
+                console.log("Exit.");
+                return;
+            }
+            let projectDirectory = directoryFinder.findProjectDirectory(Environment.CurrentDirectory);
+            if (projectDirectory == "") {
+                console.log("Project not found.");
+                return;
+            }
+            let project = ProjectV1(projectDirectory);
+            project.createFramework(name);
         }
         else {
             help();
