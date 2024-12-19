@@ -34,7 +34,15 @@ list(REMOVE_DUPLICATES INCLUDE_DIRS)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 # 2. 三方库
-
+if(WIN32)
+    execute_process(COMMAND cmd /c echo %USERPROFILE%
+    OUTPUT_VARIABLE HOME_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+elseif(UNIX)
+    set(HOME_DIR $HOME)
+else()
+    message(FATAL_ERROR "Unknown platform!")
+endif()
 ## 2.1 设置vcpkg工具链
 set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")
 

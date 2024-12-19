@@ -1,4 +1,4 @@
-import { args, cmdAsync, copyDirectory, script_path, execAsync } from "../.tsc/context";
+import { args, cmdAsync, copyDirectory, script_path, execAsync, env } from "../.tsc/context";
 import { Path } from "../.tsc/System/IO/Path";
 import { File } from "../.tsc/System/IO/File";
 import { Directory } from "../.tsc/System/IO/Directory";
@@ -36,7 +36,7 @@ let help = () => {
     console.log(File.ReadAllText(Path.Combine(Path.GetDirectoryName(script_path), "README.md"), utf8));
 };
 
-let OPEN_CAD_DIR = "C:\\OPEN_CAD";
+let OPEN_CAD_DIR = Path.Combine(env('userprofile'), 'OPEN_CAD');
 if (Environment.GetEnvironmentVariable("OPEN_CAD_DIR") == null) {
     Environment.SetEnvironmentVariable("OPEN_CAD_DIR", OPEN_CAD_DIR, EnvironmentVariableTarget.User);
 }
