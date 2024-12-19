@@ -114,7 +114,9 @@ let gitManager = GitManager();
 
 let CMakeManager = () => {
     let checkInstalled = async () => {
-        return (await cmdAsync(Environment.CurrentDirectory, "cmake --version")).output?.includes("cmake version") == true;
+        return (await cmdAsync(Environment.CurrentDirectory, "cmake --version", {
+            redirect: true
+        })).output?.includes("cmake version") == true;
     };
     let install = async () => {
         try {
@@ -152,7 +154,9 @@ let cmakeManager = CMakeManager();
 
 let VsCodeManager = () => {
     let checkInstalled = async () => {
-        let result = await cmdAsync(Environment.CurrentDirectory, "code --version");
+        let result = await cmdAsync(Environment.CurrentDirectory, "code --version",{
+            redirect: true
+        });
         console.log(result);
         if (result.output != undefined) {
             if (result.output.length > 0) {
@@ -242,7 +246,9 @@ let visualStudioManager = VisualStudioManager();
 
 let VcpkgManager = () => {
     let checkInstalled = async () => {
-        let cmdResult = await cmdAsync(Environment.CurrentDirectory, "vcpkg version");
+        let cmdResult = await cmdAsync(Environment.CurrentDirectory, "vcpkg version",{
+            redirect: true
+        });
         if (cmdResult.output && cmdResult.output.trim().length > 0) {
             return true;
         }
