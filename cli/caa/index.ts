@@ -1855,6 +1855,96 @@ let main = async () => {
             let project = ProjectV1(projectDirectory);
             project.createFramework(name);
         }
+        else if (command == "add-toolbar") {
+            let defaultName = "";
+            if (args.length >= 2 && args[1].startsWith("--") == false) {
+                defaultName = args[1];
+            }
+            if (defaultName == "") {
+                console.log(`Please input toolbar name: `);
+            }
+            else {
+                console.log(`Please input toolbar name: (${defaultName})`);
+            }
+            var name = Console.ReadLine();
+            if (name == "") {
+                name = defaultName;
+            }
+            if (name == "") {
+                console.log("Invalid toolbar name.");
+                console.log("Exit.");
+                return;
+            }
+            let projectDirectory = directoryFinder.findProjectDirectory(Environment.CurrentDirectory);
+            if (projectDirectory == "") {
+                console.log("Project not found.");
+                return;
+            }
+            let project = ProjectV1(projectDirectory);
+            let frameworkDirectory = directoryFinder.findFrameworkDirectory(Environment.CurrentDirectory);
+            let frameworkName = "";
+            if (frameworkDirectory == "") {
+                console.log("Please select framework :");
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                console.log(`${"Index".padEnd(10)}|${"Framework".padEnd(32)}`);
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let frameworks = project.getFrameworks();
+                let index = 0;
+                for (let framework of frameworks) {
+                    let indexString = `${++index}/${frameworks.length}`;
+                    console.log(`${indexString.padEnd(10)}|${framework.padEnd(32)}`);
+                }
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let selectIndex = Console.ReadLine();
+                if (selectIndex == "") {
+                    console.log("Invalid index.");
+                    return;
+                }
+                frameworkName = frameworks[parseInt(selectIndex) - 1];
+            }
+            else {
+                frameworkName = Path.GetFileName(frameworkDirectory);
+            }
+            let moduleName = "";
+            let moduleDirectory = directoryFinder.findModuleDirectory(Environment.CurrentDirectory);
+            if (moduleDirectory == "") {
+                console.log("Please select module :");
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                console.log(`${"Index".padEnd(10)}|${"Module".padEnd(32)}`);
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let modules = project.getFramework(frameworkName).getModules();
+                let index = 0;
+                for (let module of modules) {
+                    let indexString = `${++index}/${modules.length}`;
+                    console.log(`${indexString.padEnd(10)}|${module.padEnd(32)}`);
+                }
+                console.log(`${"-".padEnd(10, "-")}|${"-".padEnd(32, "-")}`);
+                let selectIndex = Console.ReadLine();
+                if (selectIndex == "") {
+                    console.log("Invalid index.");
+                    return;
+                }
+                moduleName = modules[parseInt(selectIndex) - 1];
+            }
+            else {
+                moduleName = Path.GetFileNameWithoutExtension(moduleDirectory);
+            }
+            let framework = project.getFramework(frameworkName);
+            let module = framework.getModule(moduleName);
+            module.createAddin(name);
+            let addin = module.getAddin(name);
+            console.log(`Please input command name: `);
+            var commandName = Console.ReadLine();
+            if (commandName == "") {
+                console.log("Invalid command name.");
+                return;
+            }
+            addin.addCommandToFirstToolbar(commandName, `${commandName}Cmd`);
+            module.createCommandClass(`${commandName}Cmd`);
+            addin.setCommandTitle(commandName, `Command ${commandName}`, "English");
+            addin.setCommandShortHelp(commandName, `Command ${commandName}`, "English");
+            addin.setCommandLongHelp(commandName, `Command ${commandName}`, "English");
+        }
         else {
             help();
         }
