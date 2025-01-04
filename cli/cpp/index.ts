@@ -139,85 +139,6 @@ let SDKManager = () => {
         let sdk = sdks[0];
         return sdk.name;
     };
-    let _createLowerCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => { };
-    _createLowerCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => {
-        // 创建小写的符号链接
-        // ln -s /home/user/Project /home/user/project
-        let name = Path.GetFileName(directory);
-        let lowerName = name.toLowerCase();
-
-        if (name != lowerName) {
-            let baseRelativeDirectory = Path.GetRelativePath(baseDirectory, directory);
-            if (baseRelativeDirectory != ".") {
-                let lowerDirectory = Path.Combine(baseDirectory, baseRelativeDirectory.toLowerCase());
-                cmds.push(`ln -s "${directory}" "${lowerDirectory}"`);
-            }
-
-        }
-        let files = Directory.GetFiles(directory);
-        for (let file of files) {
-            let fileName = Path.GetFileName(file);
-            let lowerFileName = fileName.toLowerCase();
-            let baseRelativeFileName = Path.GetRelativePath(baseDirectory, file);
-            if (fileName != lowerFileName) {
-                let lowerFile = Path.Combine(baseDirectory, baseRelativeFileName.toLowerCase());
-                cmds.push(`ln -s "${file}" "${lowerFile}"`);
-            }
-        }
-        let directories = Directory.GetDirectories(directory);
-        for (let subDirectory of directories) {
-            _createLowerCaseLink(baseDirectory, subDirectory, cmds);
-        }
-    };
-    let createLowerCaseLink = async (directory: string) => {
-        let cmds = [] as string[];
-        _createLowerCaseLink(directory, directory, cmds);
-        let cmdScope = cmds.join("\n");
-        let shPath = Path.Combine(directory, "createLowerCaseLink.sh");
-        console.log(shPath);
-        await File.WriteAllTextAsync(shPath, cmdScope, utf8);
-        await cmdAsync(directory, `chmod +x createLowerCaseLink.sh`);
-        await cmdAsync(directory, `./createLowerCaseLink.sh`);
-    };
-    let words = [
-        "string",
-        "spec"
-    ];
-    let pascalCase = (name: string) => {
-        for (let word of words) {
-            if (name.includes(word) == false) {
-                continue;
-            }
-            name = name.replace(word, word[0].toUpperCase() + word.substring(1));
-        }
-        return name;
-    };
-    let _createPascalCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => { };
-    _createPascalCaseLink = (baseDirectory: string, directory: string, cmds: string[]) => {
-        let files = Directory.GetFiles(directory);
-        for (let file of files) {
-            let fileName = Path.GetFileName(file);
-            let formatFileName = pascalCase(Path.GetFileNameWithoutExtension(file)) + Path.GetExtension(file);
-            if (fileName != formatFileName) {
-                let formatFile = Path.Combine(Path.GetDirectoryName(file), formatFileName);
-                cmds.push(`ln -s "${file}" "${formatFile}"`);
-            }
-        }
-        let directories = Directory.GetDirectories(directory);
-        for (let subDirectory of directories) {
-            _createPascalCaseLink(baseDirectory, subDirectory, cmds);
-        }
-    };
-    let createPascalCaseLink = async (directory: string) => {
-        let cmds = [] as string[];
-        _createPascalCaseLink(directory, directory, cmds);
-        let cmdScope = cmds.join("\n");
-        let shPath = Path.Combine(directory, "createPascalCaseLink.sh");
-        console.log(shPath);
-        await File.WriteAllTextAsync(shPath, cmdScope, utf8);
-        await cmdAsync(directory, `chmod +x createPascalCaseLink.sh`);
-        await cmdAsync(directory, `./createPascalCaseLink.sh`);
-    };
     let installSDK = async (sdkName: string, cadVersion: string) => {
         console.log(`InstallSDK ${sdkName} ${cadVersion}`);
         // 安装cad的sdk
@@ -273,14 +194,6 @@ let SDKManager = () => {
             }
             await zip.extract(download_path, cadSdkDirectory);
             File.Delete(download_path);
-            if (OperatingSystem.IsLinux()) {
-                if (sdk.linkCase?.lowerCase) {
-                    await createLowerCaseLink(cadSdkDirectory);
-                }
-                if (sdk.linkCase?.pascalCase) {
-                    await createPascalCaseLink(cadSdkDirectory);
-                }
-            }
         }
         else {
             console.log(`SDK ${sdk.name} ${sdk.version} already exists`);
@@ -302,9 +215,7 @@ let SDKManager = () => {
         return sdk;
     };
     return {
-        install,
-        createLowerCaseLink,
-        pascalCase
+        install
     };
 };
 

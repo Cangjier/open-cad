@@ -1,4 +1,4 @@
-import { args, cmd, cmdAsync, copyDirectory, script_path } from "../.tsc/context";
+import { args, cmd, cmdAsync, copyDirectory, execAsync, script_path } from "../.tsc/context";
 import { Environment } from "../.tsc/System/Environment";
 import { Path } from "../.tsc/System/IO/Path";
 import { File } from "../.tsc/System/IO/File";
@@ -1315,20 +1315,22 @@ let Searcher = () => {
             return {};
         }
     };
-    let installCAADoc = async (version: string) => {
-
+    let installCAADoc = async (version: string, force: boolean) => {
         await cloneSelf();
         let indexJson = await getIndexJson();
         let caadocs = indexJson["CAADoc"];
         let caadoc = caadocs.find(item => item["version"] == version);
         if (caadoc) {
             let downloadUrl = caadoc["download_url"];
-            console.log(`Downloading CAADoc ${version}...`);
-            let downloadPath = Path.Combine(downloadDirectory, Path.GetFileName(downloadUrl));
-            await axios.download(downloadUrl, downloadPath);
             let unzipDirectory = Path.Combine(caadocDirectory, Path.GetFileNameWithoutExtension(downloadUrl));
-            await zip.extract(downloadPath, unzipDirectory);
-            console.log(`CAADoc Directory: ${unzipDirectory}`);
+            if (Directory.Exists(unzipDirectory) == false || force) {
+                console.log(`Downloading CAADoc ${version}...`);
+                let downloadPath = Path.Combine(downloadDirectory, Path.GetFileName(downloadUrl));
+                await axios.download(downloadUrl, downloadPath);
+
+                await zip.extract(downloadPath, unzipDirectory);
+                console.log(`CAADoc Directory: ${unzipDirectory}`);
+            }
             return unzipDirectory;
         }
         else {
@@ -1387,7 +1389,7 @@ let Searcher = () => {
         console.log("Welcome to CAADoc.");
         console.log("Please input the version you want to install:");
         let version = Console.ReadLine();
-        let installDirectory = await installCAADoc(version);
+        let installDirectory = await installCAADoc(version, false);
         if (installDirectory == "") {
             return;
         }
@@ -1497,11 +1499,136 @@ return false;
         isGuided,
         getClassInfomationByLastDirectory,
         printClassInfomation,
-        getClassInfomationByFilePath
+        getClassInfomationByFilePath,
+        installCAADoc
     }
 };
 
 let searcher = Searcher();
+
+let SDKManager = () => {
+    let getIndexJson = async () => {
+        let indexJsonPath = Path.Combine(repositoryDirectory, "index.json");
+        return await Json.LoadAsync(indexJsonPath);
+    };
+    let getLatestSdkName = async (cadName: string) => {
+        cadName = cadName.toUpperCase();
+        // 安装cad的sdk
+        let indexJson = await getIndexJson();
+        let sdks = indexJson.SDK[cadName] as {
+            name: string,
+            version: string,
+            download_url: string
+        }[];
+        if (sdks == undefined) {
+            throw `cadName ${cadName} not found`;
+        }
+        // 从sdks中找到最新的版本
+        let sdk = sdks[0];
+        return sdk.name;
+    };
+    let installSDK = async (sdkName: string, cadVersion: string) => {
+        console.log(`InstallSDK ${sdkName} ${cadVersion}`);
+        // 安装cad的sdk
+        let indexJson = await getIndexJson();
+        let sdkKeys = Object.keys(indexJson.SDK);
+        let formatSDKName = sdkKeys.find(item => item.toUpperCase() == sdkName.toUpperCase());
+        if (formatSDKName == undefined) {
+            throw `SDK ${sdkName} not found`;
+        }
+        let sdks = indexJson.SDK[formatSDKName] as {
+            name: string,
+            version: string,
+            download_url: string
+        }[];
+        if (sdks == undefined) {
+            throw `SDKName ${formatSDKName} not found`;
+        }
+        // 从sdks中找到最新的版本
+        let sdk = {} as {
+            name: string,
+            version: string,
+            download_url: string,
+            installDirectory?: string,
+            linkCase?: {
+                lowerCase?: boolean,
+                pascalCase?: boolean
+            },
+            dependency?: {
+                sdkName: string,
+                version: string
+            }[]
+        } | undefined;
+        if (cadVersion == "latest") {
+            sdk = sdks[0];
+        }
+        else {
+            sdk = sdks.find(item => item.version == cadVersion);
+        }
+        if (sdk == undefined) {
+            throw `cadVersion ${cadVersion} not found`;
+        }
+
+        let download_path = Path.Combine(downloadDirectory, Path.GetFileName(sdk.download_url));
+        let cadDirectory = Path.Combine(sdkDirectory, formatSDKName);
+        let cadSdkDirectory = Path.Combine(cadDirectory, sdk.name);
+        sdk.installDirectory = cadSdkDirectory;
+        if ((Directory.Exists(cadSdkDirectory) == false) || ((Directory.GetFiles(cadSdkDirectory).length == 0) && (Directory.GetDirectories(cadSdkDirectory).length == 0))) {
+            console.log(`downloading ${sdk.download_url} to ${download_path}`);
+            await axios.download(sdk.download_url, download_path);
+            console.log(`downloaded ${download_path}`);
+            if (Directory.Exists(cadDirectory) == false) {
+                Directory.CreateDirectory(cadDirectory);
+            }
+            await zip.extract(download_path, cadSdkDirectory);
+            File.Delete(download_path);
+        }
+        else {
+            console.log(`SDK ${sdk.name} ${sdk.version} already exists`);
+        }
+        if (File.Exists(Path.Combine(cadSdkDirectory, `Find${Path.GetFileName(cadSdkDirectory)}.cmake`)) == false) {
+            console.log(`generating Find${Path.GetFileName(cadSdkDirectory)}.cmake`);
+            await cmdAsync(cadSdkDirectory, `opencad find-cmake`);
+        }
+        console.log(`Installed ${sdk.name}`);
+        return sdk;
+    };
+    let install = async (cadName: string, cadVersion: string) => {
+        let sdk = await installSDK(cadName, cadVersion);
+        if (sdk.dependency) {
+            for (let item of sdk.dependency) {
+                await installSDK(item.sdkName, item.version);
+            }
+        }
+        return sdk;
+    };
+    return {
+        install
+    };
+};
+
+let sdkManager = SDKManager();
+
+let MingWManager = () => {
+    let isInstalled = () => {
+        return File.Exists("/usr/bin/x86_64-w64-mingw32-g++");
+    };
+    let install = async () => {
+        if (isInstalled()) {
+            return;
+        }
+        console.log("sudo apt update");
+        await cmdAsync(Environment.CurrentDirectory, "sudo apt update");
+        console.log("sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mingw-w64");
+        await cmdAsync(Environment.CurrentDirectory, "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mingw-w64");
+    };
+    return {
+        isInstalled,
+        install
+    };
+};
+
+let mingwManager = MingWManager();
 
 let help = () => {
     console.log(File.ReadAllText(Path.Combine(script_directory, "Readme.md"), utf8));
@@ -1944,6 +2071,15 @@ let main = async () => {
             addin.setCommandTitle(commandName, `Command ${commandName}`, "English");
             addin.setCommandShortHelp(commandName, `Command ${commandName}`, "English");
             addin.setCommandLongHelp(commandName, `Command ${commandName}`, "English");
+        }
+        else if (command == "install") {
+            // 安装环境
+            // 1. SDK
+            await sdkManager.install("caa", "21");
+            // 2. 安装帮助文档
+            await searcher.installCAADoc("21", false);
+            // 3. 安装mingw
+            await mingwManager.install();
         }
         else {
             help();
