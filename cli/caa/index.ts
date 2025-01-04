@@ -1630,6 +1630,27 @@ let MingWManager = () => {
 
 let mingwManager = MingWManager();
 
+let cloneSelf = async () => {
+    let gitDirectory = Path.Combine(repositoryDirectory, ".git");
+    if (Directory.Exists(gitDirectory)) {
+        let cmd = `git pull origin master`;
+        console.log(cmd);
+        if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
+            console.log("pull failed");
+            return false;
+        }
+    }
+    else {
+        let cmd = `git clone https://github.com/Cangjier/open-cad.git .`;
+        console.log(cmd);
+        if ((await cmdAsync(repositoryDirectory, cmd)).exitCode != 0) {
+            console.log("clone failed");
+            return false;
+        }
+    }
+    return true;
+};
+
 let help = () => {
     console.log(File.ReadAllText(Path.Combine(script_directory, "Readme.md"), utf8));
 };
@@ -2073,6 +2094,7 @@ let main = async () => {
             addin.setCommandLongHelp(commandName, `Command ${commandName}`, "English");
         }
         else if (command == "install") {
+            await cloneSelf();
             // 安装环境
             // 1. SDK
             await sdkManager.install("caa", "21");
