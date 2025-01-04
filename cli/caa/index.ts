@@ -223,6 +223,7 @@ let cppAnalyser = () => {
             if (node.children == undefined) continue;
             for (let j = 0; j < node.children.length; j++) {
                 if (lastStart == -1) {
+                    console.log(`node.children[${j}].range=${node.children[j].range}`);
                     lastStart = node.children[j].range[0];
                 }
                 let child = node.children[j];
